@@ -36,7 +36,7 @@ const login = async (req, res) =>{
         const {email, password} = req.body;
         // Validate input
         if (!email || !password) {
-            return res.status(401).send('email and password are required');
+            return res.status(401).json({msg:'email and password are required'});
         }
 
         const sql = 'SELECT * FROM users WHERE email = ?';
@@ -44,7 +44,7 @@ const login = async (req, res) =>{
             if (err) throw err;
             // Check if user exists
             if (result.length === 0) {
-                return res.status(401).json({ 'message': 'Invalid email or password'});
+                return res.status(401).json({ 'msg': 'Invalid email or password'});
             }
             //Get user From database
             const user = result[0];
@@ -52,7 +52,7 @@ const login = async (req, res) =>{
             const passwordMatch = await bcrypt.compare(password, user.password);
 
             if (!passwordMatch) {
-                return res.status(401).json({ 'message': 'Invalid email or password'});
+                return res.status(401).json({ 'msg': 'Invalid email or password'});
             }
              // Generate JWT token (Include id, email in object)
             const token = jwt.sign({ id: user.id, email: user.email }, process.env.SECRET, { expiresIn: '10h' });
@@ -63,7 +63,7 @@ const login = async (req, res) =>{
         })
     } catch (error) {
         console.error('Login error:', error);
-        res.status(500).send('Error logging in');
+        res.status(500).json({msg: 'Error logging in'});
     }
 
 }

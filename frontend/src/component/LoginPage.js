@@ -7,21 +7,21 @@ import useLogin from '../hook/useLogin';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router-dom';
 
-
 const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const { login, error, isLoading } = useLogin();
+    const { error, isLoading, login } = useLogin();
     const [showErrorModal, setShowErrorModal] = useState(false);
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        await login(email, password);
-        navigate('/home');
-        // If there is an error, show the modal
-        if (error) {
+        const success = await login(email, password);
+
+        if (!success) {
             setShowErrorModal(true);
+        } else {
+            navigate('/home');
         }
     };
 

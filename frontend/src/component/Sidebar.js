@@ -17,7 +17,7 @@ const items = [
     { key: '8', label: 'From Insert' }
   ]},
   { key: 'sub3', icon: <FileExcelOutlined />, label: 'Wip_Fg', children: [
-    { key: '32', label: 'Report' },
+    { key: '32', label: <Link to="/fg">Report</Link>},
     { key: '7', label: 'Excel Insert' },
     { key: '9', label: 'From Insert' }
   ]},

@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Bom from './page/Bom/Bom';
+import Fg from './page/Fg/Fg'
 import LoginPage from './component/LoginPage';
 import HomePage from './page/HomePage';
 import { useAuthContext } from './hook/useAuthContext';
@@ -23,6 +24,7 @@ const App = () => {
         <Route path='/' element={isAuthenticated ? <Navigate to='/home' /> : <LoginPage />} />
         
         {/* Protected routes */}
+        {/* bom */}
         <Route path='/home' element={isAuthenticated ? <HomePage /> : <Navigate to='/' />} />
 
         <Route path='/bom' element={isAuthenticated ? <Bom /> : <Navigate to='/' />} />
@@ -32,8 +34,8 @@ const App = () => {
         <Route path='/createbomexcel' element={isAuthenticated ? <CreateBomExcel /> : <Navigate to='/' />} />
 
         <Route path='/createbom' element={isAuthenticated ? <CreateBom /> : <Navigate to='/' />} />
-
-
+        {/* fg */}
+        <Route path='/fg' element={isAuthenticated ? <Fg /> : <Navigate to='/'/>}/>
 
         <Route path='/dr' element={isAuthenticated ? <Dr /> : <Navigate to='/' />} />
 

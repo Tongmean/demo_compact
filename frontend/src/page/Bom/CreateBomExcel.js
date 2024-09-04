@@ -2,12 +2,13 @@ import { Layout } from 'antd';
 import Sidebar from '../../component/Sidebar';
 import HeaderComponent from '../../component/Header';
 import FooterComponent from '../../component/Footer';
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import * as XLSX from 'xlsx';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap styles
 import { useAuthContext } from '../../hook/useAuthContext';
-import template from '../../Asset/Bom_template.xlsx'
+import template from '../../Asset/Bom_template.xlsx';
+
 const { Content } = Layout;
 
 const CreateBomExcel = () => {
@@ -16,6 +17,8 @@ const CreateBomExcel = () => {
     const [excelData, setExcelData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null); // State to manage errors
+    const [successMessage, setSuccessMessage] = useState(null); // State to manage success messages
+    const fileInputRef = useRef(null); // Ref for the file input field
 
     // Function to handle file upload and reading the data
     const handleFileUpload = (event) => {
@@ -65,18 +68,22 @@ const CreateBomExcel = () => {
     const handleSubmit = () => {
         setLoading(true);
         setError(null); // Reset error before making the request
+        setSuccessMessage(null); // Reset success message before making the request
 
-        // Retrieve the user token, assuming it's stored in localStorage
-        // const token = localStorage.getItem('userToken'); // Modify according to your storage method
         axios.post('http://localhost:3030/api/bom/createExcel', excelData, {
             headers: {
                 Authorization: `Bearer ${user.token}` // Attach the token in the Authorization header
             }
         })
         .then(response => {
-            alert('Data saved successfully');
+            setSuccessMessage('Data saved successfully'); // Set success message
             console.log('Data saved successfully', response.data);
             setLoading(false);  // Stop loading when data is successfully saved
+
+            // Clear the file input
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
         })
         .catch(error => {
             console.log('Error saving data', error);
@@ -108,7 +115,7 @@ const CreateBomExcel = () => {
                                     </div>
                                     <div class="card-body">
                                         <blockquote class="blockquote mb-0">
-                                        <p>Code_Fg,	Name_Fg, Code_Dr, Name_Dr,Code_Wip, Name_Wip, Ra_Wip, Ra_L, Remark</p>
+                                        <p>Code_Fg, Name_Fg, Code_Dr, Name_Dr, Code_Wip, Name_Wip, Ra_Wip, Ra_L, Remark</p>
                                         <footer class="blockquote-footer">ต้องเรียงข้อมูลแต่ละ Column ตามนี้เท่านั้น</footer>
                                         </blockquote>
                                     </div>
@@ -123,12 +130,16 @@ const CreateBomExcel = () => {
                                 </div>
                                 <div className='row col-xl-8 col-lg-8 col-md-6'>
                                     <label htmlFor="formFile" className="form-label">Default file input example</label>
-                                    <input type="file" accept=".xlsx, .xls" onChange={handleFileUpload} className='form-control' />
+                                    <input
+                                        type="file"
+                                        accept=".xlsx, .xls"
+                                        onChange={handleFileUpload}
+                                        className='form-control'
+                                        ref={fileInputRef} // Attach ref to file input
+                                    />
                                     <button onClick={handleSubmit} disabled={loading} className='btn btn-primary mt-2'>
                                         {loading ? 'Uploading...' : 'Upload and Save Data'}
                                     </button>
-                                    {/* Download link for the Excel template */}
-                                    
                                 </div>
                             </div>
                         </div>
@@ -151,6 +162,26 @@ const CreateBomExcel = () => {
                                     </div>
                                     <div className="modal-footer">
                                         <button type="button" className="btn btn-secondary" onClick={() => setError(null)}>Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Bootstrap Modal for Success Notification */}
+                    {successMessage && (
+                        <div className="modal fade show" style={{ display: 'block' }} tabIndex="-1" role="dialog">
+                            <div className="modal-dialog" role="document">
+                                <div className="modal-content">
+                                    <div className="modal-header">
+                                        <h5 className="modal-title">Success</h5>
+                                      
+                                    </div>
+                                    <div className="modal-body">
+                                        <p>{successMessage}</p>
+                                    </div>
+                                    <div className="modal-footer">
+                                        <button type="button" className="btn btn-secondary" onClick={() => setSuccessMessage(null)}>Close</button>
                                     </div>
                                 </div>
                             </div>

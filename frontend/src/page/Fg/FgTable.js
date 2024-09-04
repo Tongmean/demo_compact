@@ -7,8 +7,8 @@ import * as XLSX from 'xlsx';
 import { useAuthContext } from '../../hook/useAuthContext';
 import { Modal, Button } from 'react-bootstrap'; // Import Bootstrap components
 import { useNavigate } from 'react-router-dom'; // Import useNavigate hook
-import {convertToUTCPlus7 } from '../../utility/Moment-timezone'
-const BomTable = () => {
+
+const FgTable = () => {
     const currentDate = new Date();
     const formattedDate = currentDate.toLocaleDateString(); // Local date format
     const { user } = useAuthContext(); // Retrieve user context
@@ -25,12 +25,6 @@ const BomTable = () => {
         },
         { headerName: 'Code_Fg', field: 'Code_Fg', filter: 'agTextColumnFilter' },
         { headerName: 'Name_Fg', field: 'Name_Fg', filter: 'agTextColumnFilter' },
-        { headerName: 'Code_Dr', field: 'Code_Dr', filter: 'agTextColumnFilter' },
-        { headerName: 'Name_Dr', field: 'Name_Dr', filter: 'agTextColumnFilter' },
-        { headerName: 'Code_Wip', field: 'Code_Wip', filter: 'agTextColumnFilter' },
-        { headerName: 'Name_Wip', field: 'Name_Wip', filter: 'agTextColumnFilter' },
-        { headerName: 'Ra_Wip', field: 'R_Wip', filter: 'agTextColumnFilter' },
-        { headerName: 'Ra_L', field: 'R_L', filter: 'agTextColumnFilter' },
         { headerName: 'Remark', field: 'Remark', filter: 'agTextColumnFilter' },
         {
             headerName: 'Actions',
@@ -77,26 +71,19 @@ const BomTable = () => {
     const fetchData = async () => {
         setLoading(true); // Start loading
         try {
-            const response = await fetch('http://localhost:3030/api/bom/', {
+            const response = await fetch('http://localhost:3030/api/fg', {
                 method: "GET",
                 headers: {
                     'Authorization': `Bearer ${user.token}`,
                 }
             });
-            const apiData = await response.json();
+            const apiData = (await response.json()).data;
+            
             const mappedData = apiData.map(item => ({
                 No: item.id,
                 Code_Fg: item.Code_Fg,
                 Name_Fg: item.Name_Fg,
-                Code_Dr: item.Code_Dr,
-                Name_Dr: item.Name_Dr,
-                Code_Wip: item.Code_Wip,
-                Name_Wip: item.Name_Wip,
-                R_Wip: item.Ra_Wip,
-                R_L: item.Ra_L,
                 Remark: item.Remark,
-                CreateAt: item.CreateAt,
-                UpdateAt: item.UpdateAt,
             }));
             setRowData(mappedData);
         } catch (error) {
@@ -142,23 +129,13 @@ const BomTable = () => {
             const customHeaders = {
                 Code_Fg: 'Code_Fg',
                 Name_Fg: 'Name_Fg',
-                Code_Dr: 'Code_Dr',
-                Name_Dr: 'Name_Dr',
-                Code_Wip: 'Code_Wip',
-                Name_Wip: 'Name_Wip',
-                R_Wip: 'Ra_Wip',
-                R_L: 'Ra_L',
+
                 Remark: 'Remark'
             };
             const mappedData = selectedRows.map(row => ({
                 'Code_Fg': row.Code_Fg,
                 'Name_Fg': row.Name_Fg,
-                'Code_Dr': row.Code_Dr,
-                'Name_Dr': row.Name_Dr,
-                'Code_Wip': row.Code_Wip,
-                'Name_Wip': row.Name_Wip,
-                'Ra_Wip': row.R_Wip,
-                'Ra_L': row.R_L,
+    
                 'Remark': row.Remark
             }));
             const worksheet = XLSX.utils.json_to_sheet(mappedData, { header: Object.values(customHeaders) });
@@ -249,15 +226,8 @@ const BomTable = () => {
                             <p><strong>No:</strong> {modalData.No}</p>
                             <p><strong>Code_Fg:</strong> {modalData.Code_Fg}</p>
                             <p><strong>Name_Fg:</strong> {modalData.Name_Fg}</p>
-                            <p><strong>Code_Dr:</strong> {modalData.Code_Dr}</p>
-                            <p><strong>Name_Dr:</strong> {modalData.Name_Dr}</p>
-                            <p><strong>Code_Wip:</strong> {modalData.Code_Wip}</p>
-                            <p><strong>Name_Wip:</strong> {modalData.Name_Wip}</p>
-                            <p><strong>Ra_Wip:</strong> {modalData.R_Wip}</p>
-                            <p><strong>Ra_L:</strong> {modalData.R_L}</p>
+          
                             <p><strong>Remark:</strong> {modalData.Remark}</p>
-                            <p><strong>Create At:</strong> {convertToUTCPlus7(modalData.CreateAt)}</p>
-                            <p><strong>Update At:</strong> {convertToUTCPlus7(modalData.UpdateAt)}</p>
                         </div>
                     )}
                 </Modal.Body>
@@ -289,4 +259,4 @@ const BomTable = () => {
     );
 };
 
-export default BomTable;
+export default FgTable;
