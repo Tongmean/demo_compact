@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { AgGridReact } from 'ag-grid-react';
-import 'ag-grid-community/styles/ag-grid.css'; // AG Grid CSS
-import 'ag-grid-community/styles/ag-theme-alpine.css'; // AG Grid theme
+import 'ag-grid-community/styles/ag-grid.css';
+import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
 import { useAuthContext } from '../../hook/useAuthContext';
-import { Modal, Button } from 'react-bootstrap'; // Import Bootstrap components
-import { useNavigate } from 'react-router-dom'; // Import useNavigate hook
-import {convertToUTCPlus7 } from '../../utility/Moment-timezone'
+import { Modal, Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+import { convertToUTCPlus7 } from '../../utility/Moment-timezone';
+
 const BomTable = () => {
     const currentDate = new Date();
-    const formattedDate = currentDate.toLocaleDateString(); // Local date format
-    const { user } = useAuthContext(); // Retrieve user context
-    const navigate = useNavigate(); // Initialize useNavigate hook
+    const formattedDate = currentDate.toLocaleDateString();
+    const { user } = useAuthContext();
+    const navigate = useNavigate();
 
-    // Define column definitions with initial fields and search feature
     const columnDefs = [
         {
             headerName: 'NO.',
@@ -62,20 +62,17 @@ const BomTable = () => {
         }
     ];
 
-    // Define the initial row data (sample data)
-    const [rowData, setRowData] = useState();
-    const [loading, setLoading] = useState(false); // Loading state
+    const [rowData, setRowData] = useState([]);
+    const [loading, setLoading] = useState(false);
     const [gridApi, setGridApi] = useState(null);
-    const [showModal, setShowModal] = useState(false); // Detail modal state
-    const [modalData, setModalData] = useState(null); // Data for the detail modal
-    const [showEditModal, setShowEditModal] = useState(false); // Edit modal state
-    const [editData, setEditData] = useState(null); // Data for the edit modal
-    const [showDeleteModal, setShowDeleteModal] = useState(false); // Delete modal state
-    const [deleteData, setDeleteData] = useState(null); // Data for the delete modal
+    const [showModal, setShowModal] = useState(false);
+    const [modalData, setModalData] = useState(null);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deleteData, setDeleteData] = useState(null);
 
-    // Fetch data from API
     const fetchData = async () => {
-        setLoading(true); // Start loading
+        setLoading(true);
         try {
             const response = await fetch('http://localhost:3030/api/bom/', {
                 method: "GET",
@@ -102,11 +99,10 @@ const BomTable = () => {
         } catch (error) {
             console.error("Error fetching data from API:", error);
         } finally {
-            setLoading(false); // End loading
+            setLoading(false);
         }
     };
 
-    // Delete data from API
     const deleteBomData = async (id) => {
         try {
             const response = await fetch(`http://localhost:3030/api/bom/deletebom/${id}`, {
@@ -117,7 +113,6 @@ const BomTable = () => {
             });
 
             if (response.ok) {
-                // Successfully deleted, now update the rowData state to remove the deleted row
                 setRowData(prevData => prevData.filter(item => item.No !== id));
                 console.log('Successfully deleted row with ID:', id);
             } else {
@@ -128,7 +123,6 @@ const BomTable = () => {
         }
     };
 
-    // Export selected rows to Excel file
     const exportToExcel = () => {
         try {
             if (!gridApi) {
@@ -172,24 +166,20 @@ const BomTable = () => {
         }
     };
 
-    // Handle showing details in the modal
     const handleShowDetails = (data) => {
         setModalData(data);
         setShowModal(true);
     };
 
-    // Handle showing edit modal
     const handleShowEdit = (data) => {
-        navigate(`/bom/${data.No}`); 
+        navigate(`/bom/${data.No}`);
     };
 
-    // Handle showing delete confirmation modal
     const handleShowDelete = (data) => {
         setDeleteData(data);
         setShowDeleteModal(true);
     };
 
-    // Handle delete confirmation
     const handleDelete = () => {
         if (deleteData && deleteData.No) {
             deleteBomData(deleteData.No);
@@ -197,9 +187,13 @@ const BomTable = () => {
         setShowDeleteModal(false);
     };
 
-    // Handle AG Grid ready event
     const onGridReady = params => {
         setGridApi(params.api);
+    };
+
+    const onSelectionChanged = () => {
+        const selectedRows = gridApi.getSelectedRows();
+        console.log('Selected rows:', selectedRows);
     };
 
     useEffect(() => {
@@ -216,29 +210,30 @@ const BomTable = () => {
             {loading ? (
                 <div>Loading data, please wait...</div>
             ) : (
-                <div className="ag-theme-alpine" style={{  height: 'calc(100vh - 100px)', width: '100%' }}>
+                <div className="ag-theme-alpine" style={{ height: 'calc(100vh - 100px)', width: '100%' }}>
                     <AgGridReact
                         columnDefs={columnDefs}
                         rowData={rowData}
                         rowSelection="multiple"
+                        enableRangeSelection={true}
+                        suppressClipboardPaste={false}  // Allow paste, set false to ensure clipboard functionality
+                        suppressMultiRangeSelection={false}  // Allow multi-range selection
+                        suppressCopySingleCellRanges={false}  // Allow copying single cell ranges
+                        enableRangeHandle={true}  // Enable range handles for easier selection
                         onGridReady={onGridReady}
-                        // onGridReady={params => {
-                        //     onGridReady(params);
-                        //     params.api.sizeColumnsToFit(); // Optional: to initially fit columns to grid width
-                        //     const allColumnIds = [];
-                        //     params.columnApi.getAllColumns().forEach(column => {
-                        //         allColumnIds.push(column.getId());
-                        //     });
-                        //     params.columnApi.autoSizeColumns(allColumnIds);
-                        // }}
-                        // domLayout='autoHeight'
+                        onSelectionChanged={onSelectionChanged}
                         pagination={true}
                         paginationPageSize={20}
+                        // Additional optional configurations
+                        defaultColDef={{
+                            resizable: true,
+                            sortable: true,
+                            filter: true
+                        }}
                     />
                 </div>
             )}
 
-            {/* Modal for showing row details */}
             <Modal show={showModal} onHide={() => setShowModal(false)}>
                 <Modal.Header closeButton>
                     <Modal.Title>Detail Information</Modal.Title>
@@ -268,7 +263,6 @@ const BomTable = () => {
                 </Modal.Footer>
             </Modal>
 
-            {/* Modal for confirming delete */}
             <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
                 <Modal.Header closeButton>
                     <Modal.Title>Confirm Delete</Modal.Title>

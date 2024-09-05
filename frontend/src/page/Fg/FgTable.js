@@ -96,7 +96,7 @@ const FgTable = () => {
     // Delete data from API
     const deleteBomData = async (id) => {
         try {
-            const response = await fetch(`http://localhost:3030/api/bom/deletebom/${id}`, {
+            const response = await fetch(`http://localhost:3030/api/fg/delete/${id}`, {
                 method: "DELETE",
                 headers: {
                     'Authorization': `Bearer ${user.token}`,
@@ -157,7 +157,7 @@ const FgTable = () => {
 
     // Handle showing edit modal
     const handleShowEdit = (data) => {
-        navigate(`/bom/${data.No}`); 
+        navigate(`/fg/${data.No}`); 
     };
 
     // Handle showing delete confirmation modal
@@ -199,16 +199,6 @@ const FgTable = () => {
                         rowData={rowData}
                         rowSelection="multiple"
                         onGridReady={onGridReady}
-                        // onGridReady={params => {
-                        //     onGridReady(params);
-                        //     params.api.sizeColumnsToFit(); // Optional: to initially fit columns to grid width
-                        //     const allColumnIds = [];
-                        //     params.columnApi.getAllColumns().forEach(column => {
-                        //         allColumnIds.push(column.getId());
-                        //     });
-                        //     params.columnApi.autoSizeColumns(allColumnIds);
-                        // }}
-                        // domLayout='autoHeight'
                         pagination={true}
                         paginationPageSize={20}
                     />

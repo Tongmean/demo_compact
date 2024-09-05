@@ -7,8 +7,10 @@ import HomePage from './page/HomePage';
 import { useAuthContext } from './hook/useAuthContext';
 import CreateBomExcel from './page/Bom/CreateBomExcel'
 import CreateBom from './page/Bom/CreateBom'
+import CreateFgExcel from './page/Fg/CreateFgExcel';
 import Dr from './page/Dr/Dr'
 import EditBom from './page/Bom/EditBom';
+import EditFg from './page/Fg/EditFg';
 import useTokenExpiration from './hook/useTokenExpiration';
 const App = () => {
   useTokenExpiration(); // Hook to handle token expiration
@@ -36,6 +38,12 @@ const App = () => {
         <Route path='/createbom' element={isAuthenticated ? <CreateBom /> : <Navigate to='/' />} />
         {/* fg */}
         <Route path='/fg' element={isAuthenticated ? <Fg /> : <Navigate to='/'/>}/>
+
+        <Route path='/fg/:id' element={isAuthenticated ? <EditFg/> : <Navigate to="/"/>} />
+
+        <Route path='/createfgexcel' element={isAuthenticated ? <CreateFgExcel/> : <Navigate to="/"/>} />
+
+        
 
         <Route path='/dr' element={isAuthenticated ? <Dr /> : <Navigate to='/' />} />
 

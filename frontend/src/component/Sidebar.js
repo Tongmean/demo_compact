@@ -18,7 +18,7 @@ const items = [
   ]},
   { key: 'sub3', icon: <FileExcelOutlined />, label: 'Wip_Fg', children: [
     { key: '32', label: <Link to="/fg">Report</Link>},
-    { key: '7', label: 'Excel Insert' },
+    { key: '7', label: <Link to="/createfgexcel">Excel Insert</Link> },
     { key: '9', label: 'From Insert' }
   ]},
   { key: 'sub4', icon: <FileExclamationOutlined />, label: 'Bom', children: [
