@@ -96,40 +96,93 @@ const postBom = async (req, res) =>{
     }
 
 };
-// Input by using excel
-const postBomExcel = async (req, res) =>{
-    //get value form request(Http)
-    let data = req.body;  // Array 
-    //Check if colum blank add "-"
+//post bom excel
+const postBomExcel = async (req, res) => {
+    let data = req.body;  // Array of rows from the client
+    
+    // Check if column is blank, add "-"
     data = data.map(row => row.map(value => value === "" || value === null ? "-" : value));
+
     try {
-        const sqlCommand = "INSERT INTO bom(Code_Fg, Name_Fg, Code_Dr, Name_Dr,Code_Wip, Name_Wip, Ra_Wip, Ra_L, Remark) VALUES ?";
-        dbconnect.query(sqlCommand,
-            [data],(err,result)=>{
-                if(err){
-                    res.status(400).json({
+        // Extract the Code_Dr values from the data
+        const codeDrArray = data.map(row => row[2]); // Assuming 'Code_Dr' is the 3rd column
+
+        // Check for existing Code_Dr values in the database
+        const checkSql = "SELECT Code_Dr FROM bom WHERE Code_Dr IN (?)";
+        dbconnect.query(checkSql, [codeDrArray], (err, existingRows) => {
+            if (err) {
+                return res.status(400).json({
+                    success: false,
+                    msg: "Error checking existing Code_Dr",
+                    data: err
+                });
+            }
+
+            // Map existing Code_Dr values to an array
+            const existingCodeDrs = existingRows.map(row => row.Code_Dr);
+
+            // Filter out rows where Code_Dr already exists and convert each row into an object
+            const filteredData = data.filter(row => !existingCodeDrs.includes(row[2])).map(row => ({
+                Code_Fg: row[0],
+                Name_Fg: row[1],
+                Code_Dr: row[2],
+                Name_Dr: row[3],
+                Code_Wip: row[4],
+                Name_Wip: row[5],
+                Ra_Wip: row[6],
+                Ra_L: row[7],
+                Remark: row[8]
+            }));
+
+            if (filteredData.length === 0) {
+                return res.status(200).json({
+                    success: true,
+                    msg: "No new data to insert, all Code_Dr already exist.",
+                    data: filteredData
+                });
+            }
+
+            // Insert the filtered data
+            const sqlCommand = "INSERT INTO bom(Code_Fg, Name_Fg, Code_Dr, Name_Dr, Code_Wip, Name_Wip, Ra_Wip, Ra_L, Remark) VALUES ?";
+            // Convert filteredData back to array format for bulk insertion
+            const insertData = filteredData.map(row => [
+                row.Code_Fg,
+                row.Name_Fg,
+                row.Code_Dr,
+                row.Name_Dr,
+                row.Code_Wip,
+                row.Name_Wip,
+                row.Ra_Wip,
+                row.Ra_L,
+                row.Remark
+            ]);
+
+            dbconnect.query(sqlCommand, [insertData], (err, result) => {
+                if (err) {
+                    return res.status(400).json({
                         success: false,
-                        msg: "There problems Accur",
+                        msg: "There was a problem during insertion",
                         data: err
-                    })
-                    console.log(err)
-                }else
+                    });
+                }
+
                 res.status(200).json({
                     success: true,
-                    msg: `Bom: Code_Fg: ${Code_Fg} insert successfull`,
+                    msg: "BOM: Insert successful",
                     data: result
-                })
-            }
-        )
+                });
+            });
+        });
     } catch (error) {
         res.status(400).json({
             success: false,
-            msg: "There problems Accur",
-            data: err
-        })
-        console.log(error)
-    }   
+            msg: "There was a problem",
+            data: error
+        });
+        console.log(error);
+    }
 };
+
 //update bom by Puut Method
 const updatebom = async (req, res) =>{
     //get value form request(Http)

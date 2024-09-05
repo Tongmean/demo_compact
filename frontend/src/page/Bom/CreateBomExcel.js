@@ -76,8 +76,11 @@ const CreateBomExcel = () => {
             }
         })
         .then(response => {
-            setSuccessMessage('Data saved successfully'); // Set success message
-            console.log('Data saved successfully', response.data);
+            if(response.data.success= "false"){
+                console.log(response.data)
+            }
+            setSuccessMessage(response.data.msg); // Set success message
+            // console.log('Data saved successfully', response.data);
             setLoading(false);  // Stop loading when data is successfully saved
 
             // Clear the file input
