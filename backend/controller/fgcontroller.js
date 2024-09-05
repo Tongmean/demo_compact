@@ -53,26 +53,49 @@ const getSigleFg = async (req, res) =>{
         });
     }
 }
-//Create Fg
-const postFg = async (req, res) =>{
-    const {Code_Fg, Name_Fg, Model, Part_No, OE_Part_No, Code,Chem_Grade, Pcs_Per_Set, Box_No, Weight_Box, 
+//create fg
+const postFg = async (req, res) => {
+    const {Code_Fg, Name_Fg, Model, Part_No, OE_Part_No, Code, Chem_Grade, Pcs_Per_Set, Box_No, Weight_Box, 
         Box_Erp_No, Rivet_No, Weight_Revit_Per_Set, Num_Revit_Per_Set, Revit_Erp_No, Remark} = req.body;
-    try{    
-        const sqlCommand = "INSERT INTO Fg (Code_Fg, Name_Fg, Model, Part_No, OE_Part_No, Code,Chem_Grade, Pcs_Per_Set, Box_No, Weight_Box, Box_Erp_No, Rivet_No, Weight_Revit_Per_Set, Num_Revit_Per_Set, Revit_Erp_No, Remark) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        dbconnect.query(sqlCommand, [Code_Fg, Name_Fg, Model, Part_No, OE_Part_No, Code,Chem_Grade, Pcs_Per_Set, Box_No, Weight_Box, Box_Erp_No, Rivet_No, Weight_Revit_Per_Set, Num_Revit_Per_Set, Revit_Erp_No, Remark],(err, result)=>{
-            if(err){
-                console.log("Error Accur", err);
-                res.status(500).json({
+    try {
+        // First, check if the Code_Fg already exists in the database
+        const checkSqlCommand = "SELECT * FROM Fg WHERE Code_Fg = ?";
+        
+        dbconnect.query(checkSqlCommand, [Code_Fg], (err, result) => {
+            if (err) {
+                console.error("Error checking Code_Fg:", err);
+                return res.status(500).json({
                     success: false,
-                    msg: "Database error occurred"
+                    msg: "Database error occurred while checking for Code_Fg"
                 });
-            }else{
-                res.status(200).json({
-                    success: true,
-                    data: result,
-                    msg: "Fg create Successful"
-                })
+            }
+
+            if (result.length > 0) {
+                // Code_Fg already exists, return an error response
+                return res.status(400).json({
+                    success: false,
+                    msg: "Code_Fg already exists, cannot save duplicate"
+                });
+            } else {
+                // Proceed with inserting new record since Code_Fg does not exist
+                const sqlCommand = "INSERT INTO Fg (Code_Fg, Name_Fg, Model, Part_No, OE_Part_No, Code, Chem_Grade, Pcs_Per_Set, Box_No, Weight_Box, Box_Erp_No, Rivet_No, Weight_Revit_Per_Set, Num_Revit_Per_Set, Revit_Erp_No, Remark) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+                dbconnect.query(sqlCommand, [Code_Fg, Name_Fg, Model, Part_No, OE_Part_No, Code, Chem_Grade, Pcs_Per_Set, Box_No, Weight_Box, Box_Erp_No, Rivet_No, Weight_Revit_Per_Set, Num_Revit_Per_Set, Revit_Erp_No, Remark], (err, result) => {
+                    if (err) {
+                        console.log("Error occurred:", err);
+                        return res.status(500).json({
+                            success: false,
+                            msg: "Database error occurred while saving Fg"
+                        });
+                    }
+
+                    res.status(200).json({
+                        success: true,
+                        data: result,
+                        msg: "Fg created successfully"
+                    });
+                });
             }
         });
     } catch (error) {
@@ -82,7 +105,8 @@ const postFg = async (req, res) =>{
             success: false
         });
     }
-}
+};
+
 //postfgexcel
 const postfgexcel = async (req, res) => {
     // Retrieve data from the request body
@@ -198,12 +222,14 @@ const deleteFg = async (req, res) =>{
                 console.log("Delete Error Accur", err);
                 res.status(500).json({
                     msg: 'An unexpected error occurred',
-                    success: false
+                    success: false,
+                    data: result
                 })
             }else{
                 res.status(200).json({
                     success: true,
                     msg: `Record ${id} was deleted`,
+                    data: result
                 })
             }
         })

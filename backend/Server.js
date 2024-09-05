@@ -18,6 +18,7 @@ const bomsrouter = require('../Backend/routes/bomRoutes');
 const userrouter = require('./routes/userRoutes')
 const fgRoutes = require('./routes/fgRoutes')
 const wipRoutes = require('./routes/wiproutes')
+const drRoutes = require('./routes/drRoutes')
 // Create Router (Table bom)
 app.use('/api/bom', bomsrouter);
 // Create Router (Table User)
@@ -26,6 +27,8 @@ app.use('/api/user', userrouter);
 app.use('/api/fg',fgRoutes)
 //wip
 app.use('/api/wip',wipRoutes)
+//dr
+app.use('/api/dr', drRoutes)
 
 
 

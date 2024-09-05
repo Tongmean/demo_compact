@@ -40,8 +40,14 @@ const EditBom = () => {
             });
 
             if (response.ok) {
-                const result = await response.json();
+                const json = await response.json()
+                const result = json.data;
+             
                 const data = result[0];
+                console.log("response", response)
+                console.log("json",json)
+                console.log('result',result)
+                console.log('data',data)
 
                 setFormData({
                     Code_Fg: data.Code_Fg || '',

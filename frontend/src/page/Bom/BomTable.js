@@ -80,7 +80,8 @@ const BomTable = () => {
                     'Authorization': `Bearer ${user.token}`,
                 }
             });
-            const apiData = await response.json();
+            const apiData = (await response.json()).data;
+            console.log(apiData)
             const mappedData = apiData.map(item => ({
                 No: item.id,
                 Code_Fg: item.Code_Fg,
