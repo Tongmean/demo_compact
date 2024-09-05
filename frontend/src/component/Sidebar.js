@@ -1,7 +1,8 @@
-import React from 'react';
-import { HomeOutlined , UserOutlined, ExceptionOutlined, FileExcelOutlined, FileExclamationOutlined , DashboardOutlined } from '@ant-design/icons';
+import React, { memo } from 'react';
+import { HomeOutlined, UserOutlined, ExceptionOutlined, FileExcelOutlined, FileExclamationOutlined, DashboardOutlined } from '@ant-design/icons';
 import { Menu, Layout } from 'antd';
 import { Link } from 'react-router-dom';
+
 const { Sider } = Layout;
 
 const items = [
@@ -17,24 +18,23 @@ const items = [
     { key: '8', label: 'From Insert' }
   ]},
   { key: 'sub3', icon: <FileExcelOutlined />, label: 'Wip_Fg', children: [
-    { key: '32', label: <Link to="/fg">Report</Link>},
+    { key: '32', label: <Link to="/fg">Report</Link> },
     { key: '7', label: <Link to="/createfgexcel">Excel Insert</Link> },
     { key: '9', label: 'From Insert' }
   ]},
   { key: 'sub4', icon: <FileExclamationOutlined />, label: 'Bom', children: [
-    { key: '33', label:  <Link to="/bom">Report</Link>},
-    { key: '10', label: <Link to="/createbomexcel">Excel Insert</Link>} ,
-    { key: '11', label: <Link to="/createbom">From Insert</Link>}
+    { key: '33', label: <Link to="/bom">Report</Link> },
+    { key: '10', label: <Link to="/createbomexcel">Excel Insert</Link> },
+    { key: '11', label: <Link to="/createbom">From Insert</Link> }
   ]},
-  { key: 'sub5', icon: <DashboardOutlined />, label: 'Dashbaord',children: [
+  { key: 'sub5', icon: <DashboardOutlined />, label: 'Dashboard', children: [
     { key: '15', label: 'WIP' },
     { key: '16', label: 'DR' },
     { key: '12', label: 'FG' },
-    { key: '13', label: 'BOM' },
+    { key: '13', label: 'BOM' }
   ]},
-  { key: '91', icon: <UserOutlined />, label: 'User Management' },
+  { key: '91', icon: <UserOutlined />, label: 'User Management' }
 ];
-
 
 const Sidebar = ({ collapsed, onCollapse }) => {
   return (
@@ -52,13 +52,12 @@ const Sidebar = ({ collapsed, onCollapse }) => {
       </div>
       <Menu
         theme="dark"
-        // defaultSelectedKeys={['1']}
         mode="inline"
         items={items}
-        // style={{ marginTop: '20px' }}
       />
     </Sider>
   );
 };
 
-export default Sidebar;
+// Memoize the Sidebar component to prevent unnecessary re-renders
+export default memo(Sidebar);

@@ -12,42 +12,46 @@ import Dr from './page/Dr/Dr'
 import EditBom from './page/Bom/EditBom';
 import EditFg from './page/Fg/EditFg';
 import useTokenExpiration from './hook/useTokenExpiration';
+import CreateFg from './page/Fg/CreateFg'
+
+
+
 const App = () => {
   useTokenExpiration(); // Hook to handle token expiration
   const { user } = useAuthContext(); // Retrieve user context
   const isAuthenticated = Boolean(user && user.token);
   
   console.log('App user:', user);
-  console.log('Is authenticated:', isAuthenticated);
   return (
     <Router>
       <Routes>
+
         {/* Redirect to /home if authenticated; otherwise, show LoginPage */}
-        <Route path='/' element={isAuthenticated ? <Navigate to='/home' /> : <LoginPage />} />
+        
+        <Route path='/login' element={isAuthenticated ? <Navigate to='/home' /> : <LoginPage />} />
         
         {/* Protected routes */}
         {/* bom */}
-        <Route path='/home' element={isAuthenticated ? <HomePage /> : <Navigate to='/' />} />
+        <Route path='/home' element={isAuthenticated ? <HomePage /> : <Navigate to='/login' />} />
 
-        <Route path='/bom' element={isAuthenticated ? <Bom /> : <Navigate to='/' />} />
+        <Route path='/bom' element={isAuthenticated ? <Bom /> : <Navigate to='/login' />} />
 
-        <Route path ='/bom/:id' element={isAuthenticated ? <EditBom /> : <Navigate to='/' />} />
+        <Route path ='/bom/:id' element={isAuthenticated ? <EditBom /> : <Navigate to='/login' />} />
 
-        <Route path='/createbomexcel' element={isAuthenticated ? <CreateBomExcel /> : <Navigate to='/' />} />
+        <Route path='/createbomexcel' element={isAuthenticated ? <CreateBomExcel /> : <Navigate to='/login' />} />
 
-        <Route path='/createbom' element={isAuthenticated ? <CreateBom /> : <Navigate to='/' />} />
+        <Route path='/createbom' element={isAuthenticated ? <CreateBom /> : <Navigate to='/login' />} />
         {/* fg */}
-        <Route path='/fg' element={isAuthenticated ? <Fg /> : <Navigate to='/'/>}/>
+        <Route path='/fg' element={isAuthenticated ? <Fg /> : <Navigate to='/login'/>}/>
 
-        <Route path='/fg/:id' element={isAuthenticated ? <EditFg/> : <Navigate to="/"/>} />
+        <Route path='/fg/:id' element={isAuthenticated ? <EditFg/> : <Navigate to="/login"/>} />
 
-        <Route path='/createfgexcel' element={isAuthenticated ? <CreateFgExcel/> : <Navigate to="/"/>} />
+        <Route path='/createfgexcel' element={isAuthenticated ? <CreateFgExcel/> : <Navigate to="/login"/>} />
 
+        <Route path='/createfg' element={isAuthenticated ? <CreateFg/>: <Navigate to="/login" />}/>
         
 
         <Route path='/dr' element={isAuthenticated ? <Dr /> : <Navigate to='/' />} />
-
-
         
         {/* Optional: Add a route for a 404 page */}
         {/* <Route path='*' element={<NotFoundPage />} /> */}

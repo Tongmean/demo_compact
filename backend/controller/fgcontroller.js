@@ -112,8 +112,6 @@ const postfgexcel = async (req, res) => {
             // Separate the data into new records (not in the existingCodes) and existing records
             const newData = data.filter(row => !existingCodes.includes(row[0]));
             const existingData = data.filter(row => existingCodes.includes(row[0]));
-            console.log("existingData", existingData);
-            console.log("newData", newData);
             
             if (newData.length > 0) {
                 // Convert newData into an array of objects with named keys for SQL insertion
