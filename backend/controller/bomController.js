@@ -43,7 +43,7 @@ const getSigleBom = async (req,res) =>{
             }else{
                 res.status(200).json({
                     success: true,
-                    msg: `Bom id: ${id} Retrirvr successful`,
+                    msg: `Bom id: ${id} Retrierve successful`,
                     data: result
                 });
             }

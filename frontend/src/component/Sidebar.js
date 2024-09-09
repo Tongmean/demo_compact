@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 const { Sider } = Layout;
 
 const items = [
-  { key: '1', icon: <HomeOutlined />, label: 'Home' },
+  { key: '1', icon: <HomeOutlined />, label: <Link to="/home">Home</Link> },
   { key: 'sub1', icon: <ExceptionOutlined />, label: 'Wip', children: [
     { key: '30', label: <Link to="/wip">Report</Link>  },
     { key: '3', label: <Link to="/createwipexcel">Excel Insert</Link> },
@@ -27,13 +27,13 @@ const items = [
     { key: '10', label: <Link to="/createbomexcel">Excel Insert</Link> },
     { key: '11', label: <Link to="/createbom">From Insert</Link> }
   ]},
-  { key: 'sub5', icon: <DashboardOutlined />, label: 'Dashboard', children: [
-    { key: '15', label: 'WIP' },
-    { key: '16', label: 'DR' },
-    { key: '12', label: 'FG' },
-    { key: '13', label: 'BOM' }
-  ]},
-  { key: '91', icon: <UserOutlined />, label: 'User Management' }
+  { key: 'sub5', icon: <DashboardOutlined />, label: <Link to="/dashboard">Dashboard</Link> },
+
+  { key: '91', icon: <UserOutlined />, label: 'User Management' ,children: [
+    { key: '100', label: <Link to="/user">User</Link> },
+    { key: '99', label: <Link to="/createuser">Insert User</Link> },
+
+  ]}
 ];
 
 const Sidebar = ({ collapsed, onCollapse }) => {

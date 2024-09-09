@@ -2,16 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-alpine.css';
-import { saveAs } from 'file-saver';
-import * as XLSX from 'xlsx';
 import { useAuthContext } from '../../hook/useAuthContext';
-import { Modal, Button } from 'react-bootstrap';
+import { Modal, Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { convertToUTCPlus7 } from '../../utility/Moment-timezone';
 
-const BomTable = () => {
-    const currentDate = new Date();
-    const formattedDate = currentDate.toLocaleDateString();
+const UserTable = () => {
     const { user } = useAuthContext();
     const navigate = useNavigate();
 
@@ -23,15 +18,9 @@ const BomTable = () => {
             checkboxSelection: true,
             headerCheckboxSelection: true,
         },
-        { headerName: 'Code_Fg', field: 'Code_Fg', filter: 'agTextColumnFilter' },
-        { headerName: 'Name_Fg', field: 'Name_Fg', filter: 'agTextColumnFilter' },
-        { headerName: 'Code_Dr', field: 'Code_Dr', filter: 'agTextColumnFilter' },
-        { headerName: 'Name_Dr', field: 'Name_Dr', filter: 'agTextColumnFilter' },
-        { headerName: 'Code_Wip', field: 'Code_Wip', filter: 'agTextColumnFilter' },
-        { headerName: 'Name_Wip', field: 'Name_Wip', filter: 'agTextColumnFilter' },
-        { headerName: 'Ra_Wip', field: 'R_Wip', filter: 'agTextColumnFilter' },
-        { headerName: 'Ra_L', field: 'R_L', filter: 'agTextColumnFilter' },
-        { headerName: 'Remark', field: 'Remark', filter: 'agTextColumnFilter' },
+        { headerName: 'Email', field: 'email', filter: 'agTextColumnFilter' },
+        { headerName: 'password', field: 'password', filter: 'agTextColumnFilter' },
+        { headerName: 'Role', field: 'role', filter: 'agTextColumnFilter' },
         {
             headerName: 'Actions',
             field: 'actions',
@@ -44,13 +33,13 @@ const BomTable = () => {
                     >
                         Detail
                     </button>
-                    <button
+                    {/* <button
                         className="btn btn-secondary btn-sm"
                         onClick={() => handleShowEdit(params.data)}
                         style={{ marginRight: '5px' }}
                     >
                         Edit
-                    </button>
+                    </button> */}
                     <button
                         className="btn btn-danger btn-sm"
                         onClick={() => handleShowDelete(params.data)}
@@ -70,54 +59,54 @@ const BomTable = () => {
     const [modalData, setModalData] = useState(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deleteData, setDeleteData] = useState(null);
-
-    const [showSuccessAlert, setShowSuccessAlert] = useState(false); //Alert Dellete success
-    const [successAlertMessage, setSuccessAlertMessage] = useState('');
+    // const [showEditModal, setShowEditModal] = useState(false);
+    // const [editData, setEditData] = useState(null);
+    const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+    const [feedbackMessage, setFeedbackMessage] = useState('');
+    const [feedbackType, setFeedbackType] = useState('success');
 
     const fetchData = async () => {
         setLoading(true);
         setError(null); // Reset error state before fetching
         try {
-            const response = await fetch('http://localhost:3030/api/bom/', {
+            const response = await fetch('http://localhost:3030/api/user', {
                 method: "GET",
                 headers: {
                     'Authorization': `Bearer ${user.token}`,
                 }
             });
-
+    
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.msg || 'An unknown error occurred');
             }
-
+    
             const apiData = (await response.json()).data;
+            console.log('apiData', apiData); // Log the full response
+    
             const mappedData = apiData.map(item => ({
                 No: item.id,
-                Code_Fg: item.Code_Fg,
-                Name_Fg: item.Name_Fg,
-                Code_Dr: item.Code_Dr,
-                Name_Dr: item.Name_Dr,
-                Code_Wip: item.Code_Wip,
-                Name_Wip: item.Name_Wip,
-                R_Wip: item.Ra_Wip,
-                R_L: item.Ra_L,
-                Remark: item.Remark,
+                email: item.email,
+                password: item.password,
+                role: item.role,
                 CreateAt: item.CreateAt,
                 UpdateAt: item.UpdateAt,
             }));
+            
             setRowData(mappedData);
+
         } catch (error) {
             setError(error.message);
-            console.log("Error fetching data from API:", error.msg);
-            alert(error.message)
+            console.log("Error fetching data from API:", error.message);
+            showFeedback('error', error.message);
         } finally {
             setLoading(false);
         }
     };
 
-    const deleteBomData = async (id) => {
+    const deleteUserData = async (id) => {
         try {
-            const response = await fetch(`http://localhost:3030/api/bom/deletebom/${id}`, {
+            const response = await fetch(`http://localhost:3030/api/user/delete/${id}`, {
                 method: "DELETE",
                 headers: {
                     'Authorization': `Bearer ${user.token}`,
@@ -127,60 +116,44 @@ const BomTable = () => {
             if (response.ok) {
                 setRowData(prevData => prevData.filter(item => item.No !== id));
                 console.log('Successfully deleted row with ID:', id);
-                setShowSuccessAlert(true);
-                setSuccessAlertMessage(`BOM with ID: ${id} deleted successfully!`);
-                setTimeout(() => setShowSuccessAlert(false), 1500); // Hide alert after 1.5 seconds
-
+                showFeedback('success', `User with ID: ${id} deleted successfully!`);
             } else {
                 const errorData = await response.json();
                 throw new Error(errorData.msg || 'Failed to delete the data');
             }
         } catch (error) {
             console.log("Error deleting data from API:", error.message);
-            alert(error.message)
+            showFeedback('error', error.message);
         }
     };
 
-    const exportToExcel = () => {
+    const updateUserData = async (id, updatedData) => {
         try {
-            if (!gridApi) {
-                throw new Error("Grid API is not available.");
+            const response = await fetch(`http://localhost:3030/api/users/update/${id}`, {
+                method: "PUT",
+                headers: {
+                    'Authorization': `Bearer ${user.token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedData)
+            });
+
+            if (response.ok) {
+                const updatedUser = await response.json();
+                setRowData(prevData =>
+                    prevData.map(item =>
+                        item.No === id ? updatedUser.data : item
+                    )
+                );
+                console.log('Successfully updated user with ID:', id);
+                showFeedback('success', `User with ID: ${id} updated successfully!`);
+            } else {
+                const errorData = await response.json();
+                throw new Error(errorData.msg || 'Failed to update the data');
             }
-            const selectedRows = gridApi.getSelectedRows();
-            if (selectedRows.length === 0) {
-                alert('No rows selected for export.');
-                return;
-            }
-            const customHeaders = {
-                Code_Fg: 'Code_Fg',
-                Name_Fg: 'Name_Fg',
-                Code_Dr: 'Code_Dr',
-                Name_Dr: 'Name_Dr',
-                Code_Wip: 'Code_Wip',
-                Name_Wip: 'Name_Wip',
-                R_Wip: 'Ra_Wip',
-                R_L: 'Ra_L',
-                Remark: 'Remark'
-            };
-            const mappedData = selectedRows.map(row => ({
-                'Code_Fg': row.Code_Fg,
-                'Name_Fg': row.Name_Fg,
-                'Code_Dr': row.Code_Dr,
-                'Name_Dr': row.Name_Dr,
-                'Code_Wip': row.Code_Wip,
-                'Name_Wip': row.Name_Wip,
-                'Ra_Wip': row.R_Wip,
-                'Ra_L': row.R_L,
-                'Remark': row.Remark
-            }));
-            const worksheet = XLSX.utils.json_to_sheet(mappedData, { header: Object.values(customHeaders) });
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, 'SelectedData');
-            const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-            const file = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-            saveAs(file, `${formattedDate}_Bom.xlsx`);
         } catch (error) {
-            console.error("Error exporting data to Excel:", error);
+            console.log("Error updating data from API:", error.message);
+            showFeedback('error', error.message);
         }
     };
 
@@ -189,20 +162,35 @@ const BomTable = () => {
         setShowModal(true);
     };
 
-    const handleShowEdit = (data) => {
-        navigate(`/bom/${data.No}`);
-    };
+    // const handleShowEdit = (data) => {
+    //     setEditData(data);
+    //     setShowEditModal(true);
+    // };
 
     const handleShowDelete = (data) => {
         setDeleteData(data);
         setShowDeleteModal(true);
     };
 
+    // const handleEditSave = async () => {
+    //     if (editData) {
+    //         await updateUserData(editData.No, editData);
+    //         setShowEditModal(false);
+    //     }
+    // };
+
     const handleDelete = () => {
         if (deleteData && deleteData.No) {
-            deleteBomData(deleteData.No);
+            deleteUserData(deleteData.No);
         }
         setShowDeleteModal(false);
+    };
+
+    const showFeedback = (type, message) => {
+        setFeedbackType(type);
+        setFeedbackMessage(message);
+        setShowFeedbackModal(true);
+        setTimeout(() => setShowFeedbackModal(false), 3000); // Hide feedback modal after 3 seconds
     };
 
     const onGridReady = params => {
@@ -221,9 +209,9 @@ const BomTable = () => {
     return (
         <div>
             <div>
-                <button onClick={exportToExcel} style={{ marginBottom: '10px' }}>
+                {/* <button style={{ marginBottom: '10px' }}>
                     Export Selected Rows to Excel
-                </button>
+                </button> */}
             </div>
             {loading ? (
                 <div>Loading data, please wait...</div>
@@ -236,10 +224,10 @@ const BomTable = () => {
                         rowData={rowData}
                         rowSelection="multiple"
                         enableRangeSelection={true}
-                        suppressClipboardPaste={false} 
+                        suppressClipboardPaste={false}
                         suppressMultiRangeSelection={false}
-                        suppressCopySingleCellRanges={false} 
-                        enableRangeHandle={true} 
+                        suppressCopySingleCellRanges={false}
+                        enableRangeHandle={true}
                         onGridReady={onGridReady}
                         onSelectionChanged={onSelectionChanged}
                         pagination={true}
@@ -252,27 +240,20 @@ const BomTable = () => {
                     />
                 </div>
             )}
-    
+
             {/* Detail Modal */}
             <Modal show={showModal} onHide={() => setShowModal(false)}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Detail Information</Modal.Title>
+                    <Modal.Title>User Detail</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     {modalData && (
                         <div>
                             <p><strong>No:</strong> {modalData.No}</p>
-                            <p><strong>Code_Fg:</strong> {modalData.Code_Fg}</p>
-                            <p><strong>Name_Fg:</strong> {modalData.Name_Fg}</p>
-                            <p><strong>Code_Dr:</strong> {modalData.Code_Dr}</p>
-                            <p><strong>Name_Dr:</strong> {modalData.Name_Dr}</p>
-                            <p><strong>Code_Wip:</strong> {modalData.Code_Wip}</p>
-                            <p><strong>Name_Wip:</strong> {modalData.Name_Wip}</p>
-                            <p><strong>Ra_Wip:</strong> {modalData.R_Wip}</p>
-                            <p><strong>Ra_L:</strong> {modalData.R_L}</p>
-                            <p><strong>Remark:</strong> {modalData.Remark}</p>
-                            <p><strong>Create At:</strong> {convertToUTCPlus7(modalData.CreateAt)}</p>
-                            <p><strong>Update At:</strong> {convertToUTCPlus7(modalData.UpdateAt)}</p>
+                            <p><strong>Email:</strong> {modalData.email}</p>
+                            <p><strong>Role:</strong> {modalData.role}</p>
+                            <p><strong>Create At:</strong> {modalData.CreateAt}</p>
+                            <p><strong>Update At:</strong> {modalData.UpdateAt}</p>
                             {/* Add more fields as needed */}
                         </div>
                     )}
@@ -283,14 +264,56 @@ const BomTable = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
-    
+
+            {/* Edit Modal */}
+            {/* <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Edit User</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {editData && (
+                        <Form>
+                            <Form.Group controlId="formEmail">
+                                <Form.Label>Email</Form.Label>
+                                <Form.Control
+                                    type="email"
+                                    value={editData.email}
+                                    onChange={(e) => setEditData({ ...editData, email: e.target.value })}
+                                />
+                            </Form.Group>
+                            <Form.Group controlId="formRole">
+                                <Form.Label>Role</Form.Label>
+                                <Form.Control
+                                    as="select"
+                                    value={editData.role}
+                                    onChange={(e) => setEditData({ ...editData, role: e.target.value })}
+                                >
+                                    <option selected value="-">--</option>
+                                    <option value="creator">Creator</option>
+                                    <option value="user">User</option>
+                                    <option value="admin">Admin</option>
+                                </Form.Control>
+                            </Form.Group>
+                        </Form>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowEditModal(false)}>
+                        Close
+                    </Button>
+                    <Button variant="primary" onClick={handleEditSave}>
+                        Save Changes
+                    </Button>
+                </Modal.Footer>
+            </Modal> */}
+
             {/* Delete Confirmation Modal */}
             <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Confirm Delete</Modal.Title>
+                    <Modal.Title>Confirm Deletion</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <p>Are you sure you want to delete <strong>{deleteData ? deleteData.Name_Fg : ''}</strong>?</p>
+                    Are you sure you want to delete this user?
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
@@ -301,24 +324,26 @@ const BomTable = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
-    
-            {/* Success Alert Modal */}
-            <Modal show={showSuccessAlert} onHide={() => setShowSuccessAlert(false)} size="md">
+
+            {/* Feedback Modal */}
+            <Modal show={showFeedbackModal} onHide={() => setShowFeedbackModal(false)}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Success</Modal.Title>
+                    <Modal.Title>Feedback</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {successAlertMessage}
+                    <div className={`alert alert-${feedbackType}`}>
+                        {feedbackMessage}
+                    </div>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+                    <Button variant="secondary" onClick={() => setShowFeedbackModal(false)}>
                         Cancel
                     </Button>
                 </Modal.Footer>
+          
             </Modal>
         </div>
     );
-    
 };
 
-export default BomTable;
+export default UserTable;

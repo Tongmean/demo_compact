@@ -26,6 +26,13 @@ import Dr from './page/Dr/Dr'
 import CreateDrExcel from './page/Dr/CreateDrExcel';
 import EditDr from './page/Dr/EditDr';
 import CreateDrill from './page/Dr/CreateDr';
+
+
+import User from './page/User/User';
+import CreateUser from './page/User/CreateUser';
+
+import Dashboard from './page/Dash/Dashboard';
+
 const App = () => {
   useTokenExpiration(); // Hook to handle token expiration
   const { user } = useAuthContext(); // Retrieve user context
@@ -77,6 +84,14 @@ const App = () => {
         <Route path='/createdrexcel' element={isAuthenticated ? <CreateDrExcel /> : <Navigate to='/login' />} />
 
         <Route path='/createdr' element={isAuthenticated ? < CreateDrill /> : <Navigate to='/login' />} />
+
+
+
+        <Route path='/user' element={isAuthenticated ? < User /> : <Navigate to='/login' />} />
+        
+        <Route path='/createuser' element={isAuthenticated ? < CreateUser /> : <Navigate to='/login' />} />
+
+        <Route path='/dashboard' element={isAuthenticated ? < Dashboard /> : <Navigate to='/login' />} />
         
         {/* Optional: Add a route for a 404 page */}
         {/* <Route path='*' element={<NotFoundPage />} /> */}

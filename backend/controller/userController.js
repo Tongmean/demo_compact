@@ -2,32 +2,115 @@
 const dbconnect = require('../DbConnect');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-//Get All boms
+//Get All user
 const getUsers= async (req,res) =>{
-    dbconnect.query("SELECT * FROM users",(err, result) =>{
-        if(err){
-            console.log(err);
-        }else{
-            res.status(200).send(result);
-        }
-    });
+    try {
+        dbconnect.query("SELECT * FROM users",(err, result) =>{
+            if(err){
+                res.status(500).json({
+                    success: false,
+                    msg: "Failed to retrieve data from the database.",
+                    data: err
+                })
+            }else{
+                res.status(200).json({
+                    success: false,
+                    msg:"Retieve successful",
+                    data:result
+                })
+            }
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            msg: "Failed to retrieve data from the database.",
+            data: error
+        })
+    }
+};
+
+//Get single user
+const getSingleUser = async(req,res) =>{
+    const id = req.params.id;
+    const sqlCommand = "SELECT * FROM users WHERE id = ?";
+    try {
+        dbconnect.query(sqlCommand, id, (err, result)=>{
+            if(err){
+                res.status(500).json({
+                    success: false,
+                    msg: "Failed to retrieve data from the database.",
+                    data: err
+                })
+            }else{
+                res.status(200).json({
+                    success: true,
+                    msg:"Retieve successful",
+                    data:result
+                })
+            }
+        })
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            msg: "Failed to retrieve data from the database.",
+            data: error
+        })
+    }
 }
-//Get All boms
-const createuser = async (req,res) =>{
-    const email = req.body.email;
-    const password = req.body.password;
-    const role = req.body.role;
-    const hashpassword = await bcrypt.hash(password, 10); // Hash password
-    dbconnect.query("INSERT INTO users(email, password, role) VALUES( ?, ?, ?)",
-    [email, hashpassword, role],
-    (err, result) =>{
-        if(err){
-            res.status(500).json({ error: "Internal Server Error" });
-        }else{
-            res.status(200).json({ message: "Registered Successfully" });
-        }
-    });
-}
+//Create user
+const createuser = async (req, res) => {
+    const { email, password, role } = req.body;
+
+    try {
+        // Check if email already exists
+        dbconnect.query("SELECT email FROM users WHERE email = ?", [email], async (err, result) => {
+            if (err) {
+                return res.status(500).json({
+                    success: false,
+                    msg: 'Error checking email. Please try again!',
+                    data: err
+                });
+            }
+
+            if (result.length > 0) {
+                // Email already exists
+                return res.status(400).json({
+                    success: false,
+                    msg: 'Email already exists. Please use a different email.',
+                });
+            }
+
+            // Hash password
+            const hashpassword = await bcrypt.hash(password, 10);
+            
+            // Insert new user into the database
+            dbconnect.query("INSERT INTO users(email, password, role) VALUES( ?, ?, ?)", 
+            [email, hashpassword, role], 
+            (err, result) => {
+                if (err) {
+                    res.status(500).json({
+                        success: false,
+                        msg: 'Register Unsuccessful. Please try again!',
+                        data: err
+                    });
+                } else {
+                    res.status(200).json({
+                        success: true,
+                        msg: "Registered Successfully",
+                        data: result
+                    });
+                }
+            });
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            msg: 'Register Unsuccessful. Please try again!',
+            data: error
+        });
+    }
+};
+
 
 //create login
 
@@ -68,10 +151,42 @@ const login = async (req, res) =>{
 
 }
 
+//Delete user
+const deleteUser = async (req, res) =>{
+    const id = req.params.id;
+    const sqlCommand = "DELETE FROM users WHERE id = ?";
+    try {
+        dbconnect.query(sqlCommand, id, (err, result) => {
+            if(err){
+                res.status(500).json({
+                    success: false,
+                    msg:`Delete userid: ${id} Unsuccessful. Please try again! `,
+                    data: err,
+                })
+            }else{
+                res.status(200).json({
+                    success: true,
+                    msg:`Delete User Id: ${id} successful`,
+                    data: result
+                })
+               
+            }
+        })
+    } catch (error) {
+        // console.log(error)
+        res.status(500).json({
+            success: false,
+            msg:`Delete userid: ${id} Unsuccessful. Please try again!`,
+            data: error,
+        })
+    }
+}
 
 
 module.exports ={
     getUsers,
     createuser,
     login,
+    getSingleUser,
+    deleteUser,
 }

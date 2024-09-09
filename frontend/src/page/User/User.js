@@ -3,16 +3,16 @@ import { Layout } from 'antd';
 import Sidebar from '../../component/Sidebar';
 import HeaderComponent from '../../component/Header';
 import FooterComponent from '../../component/Footer';
+import UserTable from './UserTable';
 const { Content } = Layout;
 
-const HomePage = () => {
+const User = () => {
   const [collapsed, setCollapsed] = useState(false);
-
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Sidebar collapsed={collapsed} onCollapse={setCollapsed} />
       <Layout>
-        <HeaderComponent/>
+        <HeaderComponent />
         <Content
           style={{
             margin: '24px 16px 0',
@@ -23,7 +23,7 @@ const HomePage = () => {
           }}
         >
           <div>
-            .
+            <UserTable/>
           </div>
         </Content>
         <FooterComponent />
@@ -32,4 +32,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default User;

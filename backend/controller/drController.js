@@ -69,7 +69,7 @@ const postDr = async (req, res) =>{
                 console.log("Code_Dr already Exit:", result)
                 return res.status(400).json({
                     success: false,
-                    msg: `Code_Dr ${result[0].Code_Dr} already exist.`
+                    msg: `Code_Dr: ${result[0].Code_Dr} already exist.`
                 })
             }else{
                 const sqlCommand = "INSERT INTO drill (Code_Dr, Name_Dr, Name_Wip, Name_Fg_1, Demension, Type_Brake, Chem_Grade, Status_Dr,No_Grind, Num_Hole, No_Jig_Drill, No_Drill,No_Reamer, Code, Remark, Color, Color_Spray, Grind_Back, Grind_Front, Grind_Detail, Drill, Baat, Ji_Hou, Fon_Hou, Tha_Khob, Cut,Form) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ? )";

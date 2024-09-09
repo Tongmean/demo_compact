@@ -23,7 +23,10 @@ const HeaderComponent = () => {
         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
       }}
     >
-      <span>User: {user ? `${user.user.email}` : ''}</span>
+      <span>
+        User: {user ? `${user.user.email}` : ''}
+        ({user ? `${user.user.role}` : ''}) 
+      </span>
       {user && (
         <Button type="primary" icon={<LogoutOutlined />} onClick={onLogout}>
           Logout

@@ -300,6 +300,11 @@ const WipTable = () => {
                 <Modal.Body>
                     {successAlertMessage}
                 </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
+                        Cancel
+                    </Button>
+                </Modal.Footer>
             </Modal>
         </div>
     );

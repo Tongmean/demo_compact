@@ -19,6 +19,7 @@ const userrouter = require('./routes/userRoutes')
 const fgRoutes = require('./routes/fgRoutes')
 const wipRoutes = require('./routes/wiproutes')
 const drRoutes = require('./routes/drRoutes')
+const dashRoutes = require('./routes/dashRoutes')
 // Create Router (Table bom)
 app.use('/api/bom', bomsrouter);
 // Create Router (Table User)
@@ -29,6 +30,9 @@ app.use('/api/fg',fgRoutes)
 app.use('/api/wip',wipRoutes)
 //dr
 app.use('/api/dr', drRoutes)
+
+//dash
+app.use('/api/dash', dashRoutes)
 
 
 
