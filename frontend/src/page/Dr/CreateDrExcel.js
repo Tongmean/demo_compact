@@ -7,11 +7,11 @@ import * as XLSX from 'xlsx';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap styles
 import { useAuthContext } from '../../hook/useAuthContext';
-import template from '../../Asset/Wip_template.xlsx'; // Update template path if necessary
+import template from '../../Asset/Dr_template.xlsx'; // Ensure you have the appropriate template
 
 const { Content } = Layout;
 
-const CreateWipExcel = () => {
+const CreateDrExcel = () => {
     const { user } = useAuthContext(); // Retrieve user context
     const [collapsed, setCollapsed] = useState(false);
     const [excelData, setExcelData] = useState([]);
@@ -36,17 +36,17 @@ const CreateWipExcel = () => {
 
             // Process headers (first row)
             const headers = worksheet[0];
-            if (headers.length !== 13) { // 13 columns for Wip
-                console.error('Header does not have exactly 13 columns.');
+            if (headers.length !== 27) { // Adjust the column count as needed
+                console.error('Header does not have exactly 18 columns.');
                 alert('Check the Excel template again!');
                 return;
             }
 
             // Process data rows
             const dataFromSecondLine = worksheet.slice(1).map(row => {
-                // Ensure each row has 13 columns
-                const processedRow = row.slice(0, 13); // Truncate to 13 columns
-                while (processedRow.length < 13) {
+                // Ensure each row has 18 columns
+                const processedRow = row.slice(0, 27); // Adjust to 18 columns or as needed
+                while (processedRow.length < 27) {
                     processedRow.push("-"); // Add "-" for missing columns
                 }
 
@@ -75,7 +75,7 @@ const CreateWipExcel = () => {
         setError(null); // Reset error before making the request
         setSuccessMessage(null); // Reset success message before making the request
 
-        axios.post('http://localhost:3030/api/wip/createExcel', excelData, {
+        axios.post('http://localhost:3030/api/dr/createExcel', excelData, {
             headers: {
                 Authorization: `Bearer ${user.token}` // Attach the token in the Authorization header
             }
@@ -85,6 +85,7 @@ const CreateWipExcel = () => {
                 setSuccessMessage(response.data.msg); // Set success message
                 console.log('Data saved successfully', response.data.msg);
                 setLoading(false);  // Stop loading when data is successfully saved
+
             }else{
                 setSuccessMessage(response.data.msg); // Set success message
                 console.log('Data saved unsuccessfully', response.data.msg);
@@ -126,8 +127,9 @@ const CreateWipExcel = () => {
                                     </div>
                                     <div className="card-body">
                                         <blockquote className="blockquote mb-0">
-                                        <p>Code_Wip, Name_Wip, Code_Mold, Dimension, Chem_Grade, Weight_Per_Pcs, Pcs_Per_Mold, Pcs_Per_Set, Type_Brake, Type_Mold, Time_Per_Mold, Mold_Per_8_Hour, Remark</p>
+                                        <p>Code_Dr, Name_Dr, Name_Wip, Name_Fg_1, Dimension, Type_Brake, Chem_Grade, Status_Dr, No_Grind, Num_Hole, No_Jig_Drill, No_Drill, No_Reamer, Code, Remark, Color, Color_Spray, Grind_Back, Grind_Front, Grind_Detail, Drill, Baat, Ji_Hou, Fon_Hou, Tha_Khob, Cut, and Form</p>
                                         <footer className="blockquote-footer">ต้องเรียงข้อมูลแต่ละ Column ตามนี้เท่านั้น</footer>
+                                        <footer className="blockquote-footer">Note: ถ้า Code_Dr มีอยู่ในฐานข้อมูลอยู่แล้า ไม่สามารถบันทึกซ้ำได้ ):</footer>
                                         </blockquote>
                                     </div>
                                 </div>
@@ -136,7 +138,7 @@ const CreateWipExcel = () => {
                                 <div className='row col-xl-4 col-lg-4 col-md-6'>
                                     Excel Template
                                     <div>
-                                        <a href={template} download="Wip_template.xlsx" className="btn btn-secondary">Download Excel Template</a>
+                                        <a href={template} download="Dr_template.xlsx" className="btn btn-secondary ">Download Excel Template</a>
                                     </div>
                                 </div>
                                 <div className='row col-xl-8 col-lg-8 col-md-6'>
@@ -202,4 +204,4 @@ const CreateWipExcel = () => {
     );
 };
 
-export default CreateWipExcel;
+export default CreateDrExcel;

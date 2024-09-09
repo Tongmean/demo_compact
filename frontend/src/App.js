@@ -1,21 +1,31 @@
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Bom from './page/Bom/Bom';
-import Fg from './page/Fg/Fg'
+import useTokenExpiration from './hook/useTokenExpiration';
+
 import LoginPage from './component/LoginPage';
-import HomePage from './page/HomePage';
+import HomePage from './page/Home/HomePage';
 import { useAuthContext } from './hook/useAuthContext';
+
+import Bom from './page/Bom/Bom';
 import CreateBomExcel from './page/Bom/CreateBomExcel'
 import CreateBom from './page/Bom/CreateBom'
-import CreateFgExcel from './page/Fg/CreateFgExcel';
-import Dr from './page/Dr/Dr'
 import EditBom from './page/Bom/EditBom';
+
+
+import Fg from './page/Fg/Fg'
+import CreateFgExcel from './page/Fg/CreateFgExcel';
 import EditFg from './page/Fg/EditFg';
-import useTokenExpiration from './hook/useTokenExpiration';
 import CreateFg from './page/Fg/CreateFg'
 
+import Wip from './page/Wip/Wip'
+import EditWip from './page/Wip/EditWip';
+import CreateWipExcel from './page/Wip/CreateWipExcel';
+import CreateWip from './page/Wip/CreateWip';
 
-
+import Dr from './page/Dr/Dr'
+import CreateDrExcel from './page/Dr/CreateDrExcel';
+import EditDr from './page/Dr/EditDr';
+import CreateDrill from './page/Dr/CreateDr';
 const App = () => {
   useTokenExpiration(); // Hook to handle token expiration
   const { user } = useAuthContext(); // Retrieve user context
@@ -51,7 +61,22 @@ const App = () => {
         <Route path='/createfg' element={isAuthenticated ? <CreateFg/>: <Navigate to="/login" />}/>
         
 
-        <Route path='/dr' element={isAuthenticated ? <Dr /> : <Navigate to='/' />} />
+        <Route path='/wip' element={isAuthenticated ? <Wip /> : <Navigate to='/login'/>}/>
+
+        <Route path='/wip/:id' element={isAuthenticated ? <EditWip /> : <Navigate to='/login'/>}/>
+
+      
+        <Route path='/createwip' element={isAuthenticated ? <CreateWip /> : <Navigate to='/login'/>}/>
+
+        <Route path='/createwipexcel' element={isAuthenticated ? <CreateWipExcel /> : <Navigate to='/login'/>}/>
+
+        <Route path='/dr' element={isAuthenticated ? <Dr /> : <Navigate to='/login' />} />
+
+        <Route path='/dr/:id' element={isAuthenticated ? <EditDr /> : <Navigate to='/login' />} />
+
+        <Route path='/createdrexcel' element={isAuthenticated ? <CreateDrExcel /> : <Navigate to='/login' />} />
+
+        <Route path='/createdr' element={isAuthenticated ? < CreateDrill /> : <Navigate to='/login' />} />
         
         {/* Optional: Add a route for a 404 page */}
         {/* <Route path='*' element={<NotFoundPage />} /> */}

@@ -10,28 +10,25 @@ import { Form, Button, Spinner, Row, Col, Modal as BootstrapModal } from 'react-
 
 const { Content } = Layout;
 
-const EditFg = () => {
+const EditWip = () => {
     const [collapsed, setCollapsed] = useState(false);
     const { id } = useParams();
     const navigate = useNavigate();
     const { user } = useAuthContext();
 
     const [formData, setFormData] = useState({
-        Code_Fg: '',
-        Name_Fg: '',
-        Model: '',
-        Part_No: '',
-        OE_Part_No: '',
-        Code: '',
+        Code_Wip: '',
+        Name_Wip: '',
+        Code_Mold: '',
+        Dimension: '',
         Chem_Grade: '',
+        Weight_Per_Pcs: '',
+        Pcs_Per_Mold: '',
         Pcs_Per_Set: '',
-        Box_No: '',
-        Weight_Box: '',
-        Box_Erp_No: '',
-        Rivet_No: '',
-        Weight_Revit_Per_Set: '',
-        Num_Revit_Per_Set: '',
-        Revit_Erp_No: '',
+        Type_Brake: '',
+        Type_Mold: '',
+        Time_Per_Mold: '',
+        Mold_Per_8_Hour: '',
         Remark: ''
     });
 
@@ -40,10 +37,10 @@ const EditFg = () => {
     const [modalTitle, setModalTitle] = useState('');
     const [modalMessage, setModalMessage] = useState('');
 
-    const fetchFgData = async () => {
+    const fetchWipData = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:3030/api/fg/${id}`, {
+            const response = await fetch(`http://localhost:3030/api/wip/${id}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${user.token}`,
@@ -57,21 +54,18 @@ const EditFg = () => {
                 if (result.length > 0) {
                     const data = result[0];
                     setFormData({
-                        Code_Fg: data.Code_Fg || '',
-                        Name_Fg: data.Name_Fg || '',
-                        Model: data.Model || '',
-                        Part_No: data.Part_No || '',
-                        OE_Part_No: data.OE_Part_No || '',
-                        Code: data.Code || '',
+                        Code_Wip: data.Code_Wip || '',
+                        Name_Wip: data.Name_Wip || '',
+                        Code_Mold: data.Code_Mold || '',
+                        Dimension: data.Dimension || '',
                         Chem_Grade: data.Chem_Grade || '',
+                        Weight_Per_Pcs: data.Weight_Per_Pcs || '',
+                        Pcs_Per_Mold: data.Pcs_Per_Mold || '',
                         Pcs_Per_Set: data.Pcs_Per_Set || '',
-                        Box_No: data.Box_No || '',
-                        Weight_Box: data.Weight_Box || '',
-                        Box_Erp_No: data.Box_Erp_No || '',
-                        Rivet_No: data.Rivet_No || '',
-                        Weight_Revit_Per_Set: data.Weight_Revit_Per_Set || '',
-                        Num_Revit_Per_Set: data.Num_Revit_Per_Set || '',
-                        Revit_Erp_No: data.Revit_Erp_No || '',
+                        Type_Brake: data.Type_Brake || '',
+                        Type_Mold: data.Type_Mold || '',
+                        Time_Per_Mold: data.Time_Per_Mold || '',
+                        Mold_Per_8_Hour: data.Mold_Per_8_Hour || '',
                         Remark: data.Remark || ''
                     });
                 } else {
@@ -81,12 +75,12 @@ const EditFg = () => {
                 }
             } else {
                 setModalTitle('Fetch Error');
-                setModalMessage(`Failed to fetch FG data: ${json.msg}`);
+                setModalMessage(`Failed to fetch WIP data: ${json.msg}`);
                 setModalVisible(true);
             }
         } catch (error) {
             setModalTitle('Fetch Error');
-            setModalMessage(`Error fetching FG data: ${error.message}`);
+            setModalMessage(`Error fetching WIP data: ${error.message}`);
             setModalVisible(true);
         } finally {
             setLoading(false);
@@ -94,7 +88,7 @@ const EditFg = () => {
     };
 
     useEffect(() => {
-        fetchFgData();
+        fetchWipData();
     }, [id]);
 
     const handleChange = (e) => {
@@ -108,7 +102,7 @@ const EditFg = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:3030/api/fg/update/${id}`, {
+            const response = await fetch(`http://localhost:3030/api/wip/update/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -126,16 +120,16 @@ const EditFg = () => {
 
                 // Delay navigation by 2 seconds
                 setTimeout(() => {
-                    navigate('/fg');
+                    navigate('/wip');
                 }, 1000);
             } else {
                 setModalTitle('Update Error');
-                setModalMessage(`Failed to update FG: ${json.msg}`);
+                setModalMessage(`Failed to update WIP: ${json.msg}`);
                 setModalVisible(true);
             }
         } catch (error) {
             setModalTitle('Update Error');
-            setModalMessage(`Error updating FG: ${error.message}`);
+            setModalMessage(`Error updating WIP: ${error.message}`);
             setModalVisible(true);
         } finally {
             setLoading(false);
@@ -143,7 +137,7 @@ const EditFg = () => {
     };
 
     const handleOnClick = () => {
-        navigate('/fg');
+        navigate('/wip');
     };
 
     return (
@@ -161,71 +155,51 @@ const EditFg = () => {
                     }}
                 >
                     <div>
-                        <h2>Edit FG</h2>
+                        <h2>Edit WIP</h2>
                         {loading ? (
                             <Spinner animation="border" variant="primary" />
                         ) : (
                             <Form onSubmit={handleSubmit}>
                                 <Row>
                                     <Col md={6}>
-                                        <Form.Group controlId="Code_Fg">
-                                            <Form.Label>Code Fg</Form.Label>
+                                        <Form.Group controlId="Code_Wip">
+                                            <Form.Label>Code Wip</Form.Label>
                                             <Form.Control
                                                 type="text"
-                                                name="Code_Fg"
-                                                value={formData.Code_Fg}
+                                                name="Code_Wip"
+                                                value={formData.Code_Wip}
                                                 onChange={handleChange}
                                                 required
                                             />
                                         </Form.Group>
 
-                                        <Form.Group controlId="Name_Fg">
-                                            <Form.Label>Name Fg</Form.Label>
+                                        <Form.Group controlId="Name_Wip">
+                                            <Form.Label>Name Wip</Form.Label>
                                             <Form.Control
                                                 type="text"
-                                                name="Name_Fg"
-                                                value={formData.Name_Fg}
+                                                name="Name_Wip"
+                                                value={formData.Name_Wip}
                                                 onChange={handleChange}
                                                 required
                                             />
                                         </Form.Group>
 
-                                        <Form.Group controlId="Model">
-                                            <Form.Label>Model</Form.Label>
+                                        <Form.Group controlId="Code_Mold">
+                                            <Form.Label>Code Mold</Form.Label>
                                             <Form.Control
                                                 type="text"
-                                                name="Model"
-                                                value={formData.Model}
+                                                name="Code_Mold"
+                                                value={formData.Code_Mold}
                                                 onChange={handleChange}
                                             />
                                         </Form.Group>
 
-                                        <Form.Group controlId="Part_No">
-                                            <Form.Label>Part No</Form.Label>
+                                        <Form.Group controlId="Dimension">
+                                            <Form.Label>Dimension</Form.Label>
                                             <Form.Control
                                                 type="text"
-                                                name="Part_No"
-                                                value={formData.Part_No}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
-
-                                        <Form.Group controlId="OE_Part_No">
-                                            <Form.Label>OE Part No</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="OE_Part_No"
-                                                value={formData.OE_Part_No}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
-
-                                        <Form.Group controlId="Code">
-                                            <Form.Label>Code</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Code"
-                                                value={formData.Code}
+                                                name="Dimension"
+                                                value={formData.Dimension}
                                                 onChange={handleChange}
                                             />
                                         </Form.Group>
@@ -239,11 +213,29 @@ const EditFg = () => {
                                                 onChange={handleChange}
                                             />
                                         </Form.Group>
-                                    </Col>
 
-                                    <Col md={6}>
+                                        <Form.Group controlId="Weight_Per_Pcs">
+                                            <Form.Label>Weight Per Piece</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                name="Weight_Per_Pcs"
+                                                value={formData.Weight_Per_Pcs}
+                                                onChange={handleChange}
+                                            />
+                                        </Form.Group>
+
+                                        <Form.Group controlId="Pcs_Per_Mold">
+                                            <Form.Label>Pieces Per Mold</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                name="Pcs_Per_Mold"
+                                                value={formData.Pcs_Per_Mold}
+                                                onChange={handleChange}
+                                            />
+                                        </Form.Group>
+
                                         <Form.Group controlId="Pcs_Per_Set">
-                                            <Form.Label>Pcs Per Set</Form.Label>
+                                            <Form.Label>Pieces Per Set</Form.Label>
                                             <Form.Control
                                                 type="text"
                                                 name="Pcs_Per_Set"
@@ -252,72 +244,44 @@ const EditFg = () => {
                                             />
                                         </Form.Group>
 
-                                        <Form.Group controlId="Box_No">
-                                            <Form.Label>Box No</Form.Label>
+                                        <Form.Group controlId="Type_Brake">
+                                            <Form.Label>Type Brake</Form.Label>
                                             <Form.Control
                                                 type="text"
-                                                name="Box_No"
-                                                value={formData.Box_No}
+                                                name="Type_Brake"
+                                                value={formData.Type_Brake}
+                                                onChange={handleChange}
+                                            />
+                                        </Form.Group>
+                                    </Col>
+
+                                    <Col md={6}>
+                                        <Form.Group controlId="Type_Mold">
+                                            <Form.Label>Type Mold</Form.Label>
+                                            <Form.Control
+                                                type="text"
+                                                name="Type_Mold"
+                                                value={formData.Type_Mold}
                                                 onChange={handleChange}
                                             />
                                         </Form.Group>
 
-                                        <Form.Group controlId="Weight_Box">
-                                            <Form.Label>Weight Box</Form.Label>
+                                        <Form.Group controlId="Time_Per_Mold">
+                                            <Form.Label>Time Per Mold</Form.Label>
                                             <Form.Control
                                                 type="text"
-                                                name="Weight_Box"
-                                                value={formData.Weight_Box}
+                                                name="Time_Per_Mold"
+                                                value={formData.Time_Per_Mold}
                                                 onChange={handleChange}
                                             />
                                         </Form.Group>
 
-                                        <Form.Group controlId="Box_Erp_No">
-                                            <Form.Label>Box Erp No</Form.Label>
+                                        <Form.Group controlId="Mold_Per_8_Hour">
+                                            <Form.Label>Mold Per 8 Hour</Form.Label>
                                             <Form.Control
                                                 type="text"
-                                                name="Box_Erp_No"
-                                                value={formData.Box_Erp_No}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
-
-                                        <Form.Group controlId="Rivet_No">
-                                            <Form.Label>Rivet No</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Rivet_No"
-                                                value={formData.Rivet_No}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
-
-                                        <Form.Group controlId="Weight_Revit_Per_Set">
-                                            <Form.Label>Weight Revit Per Set</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Weight_Revit_Per_Set"
-                                                value={formData.Weight_Revit_Per_Set}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
-
-                                        <Form.Group controlId="Num_Revit_Per_Set">
-                                            <Form.Label>Num Revit Per Set</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Num_Revit_Per_Set"
-                                                value={formData.Num_Revit_Per_Set}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
-
-                                        <Form.Group controlId="Revit_Erp_No">
-                                            <Form.Label>Revit Erp No</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Revit_Erp_No"
-                                                value={formData.Revit_Erp_No}
+                                                name="Mold_Per_8_Hour"
+                                                value={formData.Mold_Per_8_Hour}
                                                 onChange={handleChange}
                                             />
                                         </Form.Group>
@@ -333,28 +297,27 @@ const EditFg = () => {
                                         </Form.Group>
                                     </Col>
                                 </Row>
-                                
-                                <Button variant="primary" type="submit" disabled={loading}>
-                                    {loading ? <Spinner animation="border" size="sm" /> : 'Update FG'}
+                           
+                                <Button variant="primary" type="submit"  className="mt-2" isabled={loading}>
+                                    {loading ? <Spinner animation="border" size="sm" /> : 'Update Wip'}
                                 </Button>
-                                <Button variant="secondary" onClick={handleOnClick} className="ml-2">
+                                <Button variant="secondary"  onClick={handleOnClick} className="mt-2 ms-2">
                                     Cancel
                                 </Button>
                             </Form>
                         )}
+                        <BootstrapModal show={modalVisible} onHide={() => setModalVisible(false)}>
+                            <BootstrapModal.Header closeButton>
+                                <BootstrapModal.Title>{modalTitle}</BootstrapModal.Title>
+                            </BootstrapModal.Header>
+                            <BootstrapModal.Body>{modalMessage}</BootstrapModal.Body>
+                            <BootstrapModal.Footer>
+                                <Button variant="secondary" onClick={() => setModalVisible(false)}>
+                                    Close
+                                </Button>
+                            </BootstrapModal.Footer>
+                        </BootstrapModal>
                     </div>
-
-                    <BootstrapModal show={modalVisible} onHide={() => setModalVisible(false)}>
-                        <BootstrapModal.Header closeButton>
-                            <BootstrapModal.Title>{modalTitle}</BootstrapModal.Title>
-                        </BootstrapModal.Header>
-                        <BootstrapModal.Body>{modalMessage}</BootstrapModal.Body>
-                        <BootstrapModal.Footer>
-                            <Button variant="primary" onClick={() => setModalVisible(false)}>
-                                Close
-                            </Button>
-                        </BootstrapModal.Footer>
-                    </BootstrapModal>
                 </Content>
                 <FooterComponent />
             </Layout>
@@ -362,4 +325,4 @@ const EditFg = () => {
     );
 };
 
-export default EditFg;
+export default EditWip;

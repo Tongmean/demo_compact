@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Layout } from 'antd';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import Sidebar from '../../component/Sidebar';
 import HeaderComponent from '../../component/Header';
 import FooterComponent from '../../component/Footer';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../hook/useAuthContext';
-import { Form, Button, Spinner, Row, Col } from 'react-bootstrap'; // Import Row and Col
+import { Form, Button, Spinner, Row, Col, Modal as BootstrapModal } from 'react-bootstrap';
+
 const { Content } = Layout;
 
 const EditBom = () => {
@@ -28,6 +30,9 @@ const EditBom = () => {
     });
 
     const [loading, setLoading] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalTitle, setModalTitle] = useState('');
+    const [modalMessage, setModalMessage] = useState('');
 
     const fetchBomData = async () => {
         setLoading(true);
@@ -39,33 +44,38 @@ const EditBom = () => {
                 }
             });
 
+            const json = await response.json();
             if (response.ok) {
-                const json = await response.json()
                 const result = json.data;
-             
-                const data = result[0];
-                console.log("response", response)
-                console.log("json",json)
-                console.log('result',result)
-                console.log('data',data)
 
-                setFormData({
-                    Code_Fg: data.Code_Fg || '',
-                    Name_Fg: data.Name_Fg || '',
-                    Code_Dr: data.Code_Dr || '',
-                    Name_Dr: data.Name_Dr || '',
-                    Code_Wip: data.Code_Wip || '',
-                    Name_Wip: data.Name_Wip || '',
-                    Ra_Wip: data.Ra_Wip || '',
-                    Ra_L: data.Ra_L || '',
-                    Remark: data.Remark || '',
-                    CreateAt: data.CreateAt || ''
-                });
+                if (result.length > 0) {
+                    const data = result[0];
+                    setFormData({
+                        Code_Fg: data.Code_Fg || '',
+                        Name_Fg: data.Name_Fg || '',
+                        Code_Dr: data.Code_Dr || '',
+                        Name_Dr: data.Name_Dr || '',
+                        Code_Wip: data.Code_Wip || '',
+                        Name_Wip: data.Name_Wip || '',
+                        Ra_Wip: data.Ra_Wip || '',
+                        Ra_L: data.Ra_L || '',
+                        Remark: data.Remark || '',
+                        CreateAt: data.CreateAt || ''
+                    });
+                } else {
+                    setModalTitle('No Data Found');
+                    setModalMessage(json.msg);
+                    setModalVisible(true);
+                }
             } else {
-                console.error('Failed to fetch data:', response.statusText);
+                setModalTitle('Fetch Error');
+                setModalMessage(`Failed to fetch BOM data: ${json.msg}`);
+                setModalVisible(true);
             }
         } catch (error) {
-            console.error('Error fetching BOM data:', error);
+            setModalTitle('Fetch Error');
+            setModalMessage(`Error fetching BOM data: ${error.message}`);
+            setModalVisible(true);
         } finally {
             setLoading(false);
         }
@@ -95,14 +105,25 @@ const EditBom = () => {
                 body: JSON.stringify(formData)
             });
 
+            const json = await response.json();
+
             if (response.ok) {
-                alert('BOM updated successfully!');
-                navigate('/bom');
+                setModalTitle('Success');
+                setModalMessage(json.msg);
+                setModalVisible(true);
+
+                // Delay navigation by 2 seconds
+                setTimeout(() => {
+                    navigate('/bom');
+                }, 1000);
             } else {
-                alert('Failed to update BOM.');
+                throw new Error(json.msg || `HTTP error! Status: ${response.status}`);
             }
         } catch (error) {
-            console.error('Error updating BOM:', error);
+            setModalTitle('Update Error');
+            setModalMessage(`Error updating BOM: ${error.message}`);
+            setModalVisible(true);
+            console.log(error.message)
         } finally {
             setLoading(false);
         }
@@ -244,6 +265,19 @@ const EditBom = () => {
                 </Content>
                 <FooterComponent />
             </Layout>
+
+            {/* Bootstrap Modal for messages */}
+            <BootstrapModal show={modalVisible} onHide={() => setModalVisible(false)}>
+                <BootstrapModal.Header closeButton>
+                    <BootstrapModal.Title>{modalTitle}</BootstrapModal.Title>
+                </BootstrapModal.Header>
+                <BootstrapModal.Body>{modalMessage}</BootstrapModal.Body>
+                <BootstrapModal.Footer>
+                    <Button variant="secondary" onClick={() => setModalVisible(false)}>
+                        Close
+                    </Button>
+                </BootstrapModal.Footer>
+            </BootstrapModal>
         </Layout>
     );
 };

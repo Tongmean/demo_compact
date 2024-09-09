@@ -64,15 +64,19 @@ const BomTable = () => {
 
     const [rowData, setRowData] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
     const [gridApi, setGridApi] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [modalData, setModalData] = useState(null);
-    const [showEditModal, setShowEditModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deleteData, setDeleteData] = useState(null);
 
+    const [showSuccessAlert, setShowSuccessAlert] = useState(false); //Alert Dellete success
+    const [successAlertMessage, setSuccessAlertMessage] = useState('');
+
     const fetchData = async () => {
         setLoading(true);
+        setError(null); // Reset error state before fetching
         try {
             const response = await fetch('http://localhost:3030/api/bom/', {
                 method: "GET",
@@ -80,8 +84,13 @@ const BomTable = () => {
                     'Authorization': `Bearer ${user.token}`,
                 }
             });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.msg || 'An unknown error occurred');
+            }
+
             const apiData = (await response.json()).data;
-            console.log(apiData)
             const mappedData = apiData.map(item => ({
                 No: item.id,
                 Code_Fg: item.Code_Fg,
@@ -98,7 +107,9 @@ const BomTable = () => {
             }));
             setRowData(mappedData);
         } catch (error) {
-            console.error("Error fetching data from API:", error);
+            setError(error.message);
+            console.log("Error fetching data from API:", error.msg);
+            alert(error.message)
         } finally {
             setLoading(false);
         }
@@ -116,11 +127,17 @@ const BomTable = () => {
             if (response.ok) {
                 setRowData(prevData => prevData.filter(item => item.No !== id));
                 console.log('Successfully deleted row with ID:', id);
+                setShowSuccessAlert(true);
+                setSuccessAlertMessage(`BOM with ID: ${id} deleted successfully!`);
+                setTimeout(() => setShowSuccessAlert(false), 1500); // Hide alert after 1.5 seconds
+
             } else {
-                console.error('Failed to delete row with ID:', id);
+                const errorData = await response.json();
+                throw new Error(errorData.msg || 'Failed to delete the data');
             }
         } catch (error) {
-            console.error("Error deleting data from API:", error);
+            console.log("Error deleting data from API:", error.message);
+            alert(error.message)
         }
     };
 
@@ -210,6 +227,8 @@ const BomTable = () => {
             </div>
             {loading ? (
                 <div>Loading data, please wait...</div>
+            ) : error ? (
+                <div style={{ color: 'red' }}>{error}</div>
             ) : (
                 <div className="ag-theme-alpine" style={{ height: 'calc(100vh - 100px)', width: '100%' }}>
                     <AgGridReact
@@ -217,24 +236,24 @@ const BomTable = () => {
                         rowData={rowData}
                         rowSelection="multiple"
                         enableRangeSelection={true}
-                        suppressClipboardPaste={false}  // Allow paste, set false to ensure clipboard functionality
-                        suppressMultiRangeSelection={false}  // Allow multi-range selection
-                        suppressCopySingleCellRanges={false}  // Allow copying single cell ranges
-                        enableRangeHandle={true}  // Enable range handles for easier selection
+                        suppressClipboardPaste={false} 
+                        suppressMultiRangeSelection={false}
+                        suppressCopySingleCellRanges={false} 
+                        enableRangeHandle={true} 
                         onGridReady={onGridReady}
                         onSelectionChanged={onSelectionChanged}
                         pagination={true}
                         paginationPageSize={20}
-                        // Additional optional configurations
                         defaultColDef={{
                             resizable: true,
                             sortable: true,
-                            filter: true
+                            filter: true,
                         }}
                     />
                 </div>
             )}
-
+    
+            {/* Detail Modal */}
             <Modal show={showModal} onHide={() => setShowModal(false)}>
                 <Modal.Header closeButton>
                     <Modal.Title>Detail Information</Modal.Title>
@@ -254,6 +273,7 @@ const BomTable = () => {
                             <p><strong>Remark:</strong> {modalData.Remark}</p>
                             <p><strong>Create At:</strong> {convertToUTCPlus7(modalData.CreateAt)}</p>
                             <p><strong>Update At:</strong> {convertToUTCPlus7(modalData.UpdateAt)}</p>
+                            {/* Add more fields as needed */}
                         </div>
                     )}
                 </Modal.Body>
@@ -263,7 +283,8 @@ const BomTable = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
-
+    
+            {/* Delete Confirmation Modal */}
             <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
                 <Modal.Header closeButton>
                     <Modal.Title>Confirm Delete</Modal.Title>
@@ -280,8 +301,19 @@ const BomTable = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
+    
+            {/* Success Alert Modal */}
+            <Modal show={showSuccessAlert} onHide={() => setShowSuccessAlert(false)} size="md">
+                <Modal.Header closeButton>
+                    <Modal.Title>Success</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {successAlertMessage}
+                </Modal.Body>
+            </Modal>
         </div>
     );
+    
 };
 
 export default BomTable;

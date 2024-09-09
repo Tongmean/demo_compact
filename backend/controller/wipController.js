@@ -85,12 +85,13 @@ const postWip = async (req, res) =>{
 
 const postWipExcel = async (req, res) =>{
     //get value form request(Http)
-    let data =req.body;  // Array 
+    let data = req.body;  // Array 
     //Check if colum blank add "-"
     data = data.map(row => row.map(value => value === "" || value === null ? "-" : value));
-    const sqlCommand = "INSERT INTO bom(Code_Wip,Name_Wip,Code_Mold,Dimension,Chem_Grade,Weight_Per_Pcs,Pcs_Per_Mold,Pcs_Per_Set,Type_Brake,Type_Mold,Time_Per_Mold,Mold_Per_8_Hour, Remark) VALUES ?";
+    // console.log(data)
+    const sqlCommand = "INSERT INTO wip(Code_Wip,Name_Wip,Code_Mold,Dimension,Chem_Grade,Weight_Per_Pcs,Pcs_Per_Mold,Pcs_Per_Set,Type_Brake,Type_Mold,Time_Per_Mold,Mold_Per_8_Hour, Remark) VALUES ?";
     try {
-        dbconnect.query(sqlCommand, data, (err, result)=>{
+        dbconnect.query(sqlCommand, [data], (err, result)=>{
             if(err){
                 res.status(400).json({
                     success: false,
@@ -100,7 +101,7 @@ const postWipExcel = async (req, res) =>{
             }else{
                 res.status(200).json({
                     success: true,
-                    msg: "Save Wip successful",
+                    msg: 'Code_Wip was insert successful',
                     data: result
                 })
             }
@@ -115,11 +116,44 @@ const postWipExcel = async (req, res) =>{
 };
 
 
+//Update Wip
+const updateWip = async (req, res) =>{
+    const id = req.params.id;
+    const {Code_Wip,Name_Wip,Code_Mold,Dimension,Chem_Grade,Weight_Per_Pcs,Pcs_Per_Mold,Pcs_Per_Set,Type_Brake,Type_Mold,Time_Per_Mold,Mold_Per_8_Hour, Remark} = req.body;
+    const sqlCommand = "UPDATE wip SET Code_Wip =? ,Name_Wip=? ,Code_Mold=? ,Dimension=? ,Chem_Grade=? ,Weight_Per_Pcs=? ,Pcs_Per_Mold=? ,Pcs_Per_Set=?,Type_Brake=? ,Type_Mold=? ,Time_Per_Mold=? ,Mold_Per_8_Hour=? , Remark=?  WHERE id = ?";
+    const value = [Code_Wip,Name_Wip,Code_Mold,Dimension,Chem_Grade,Weight_Per_Pcs,Pcs_Per_Mold,Pcs_Per_Set,Type_Brake,Type_Mold,Time_Per_Mold,Mold_Per_8_Hour, Remark, id];
+    try {
+        dbconnect.query(sqlCommand, value, (err, result)=>{
+            if(err){
+                console.log("err", err);
+                res.status(500).json({
+                    msg: "There was error while Query Database",
+                    success: false,
+                    data: err
+                })
+            }else{
+                res.status(200).json({
+                    msg: `Wip Id: ${id} & Code_Wip: ${Code_Wip} was update successful`,
+                    success: true,
+                    data: result
+                })
+            }
+        })
+    } catch (error) {
+        res.status(500).json({
+            msg: "There was error with connection",
+            success: false,
+            data: error
+        })
+    }
+}
+
+
 //Dellete Wip
 const deleteWip = async (req, res) =>{
     const id = req.params.id;
     try {
-        dbconnect.query("DELETE FROM wip WHRER id = ?", id,(err, result)=>{
+        dbconnect.query("DELETE FROM wip WHERE id = ?", id ,(err, result)=>{
             if(err){
                 res.status(400).json({
                     msg: "There are some Problem",
@@ -136,7 +170,7 @@ const deleteWip = async (req, res) =>{
         })
     } catch (error) {
         res.status(400).json({
-            msg: "There are some Problem",
+            msg: "There are some Problem with connection",
             data: error,
             success: false
         })
@@ -147,5 +181,7 @@ module.exports ={
     getSingleWip,
     postWip,
     deleteWip,
+    updateWip,
+    postWipExcel
 
 }

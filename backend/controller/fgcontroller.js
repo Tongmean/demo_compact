@@ -10,12 +10,13 @@ const getFgs = async (req, res) => {
                 res.status(500).json({
                     success: false,
                     msg: "Failed to retrieve data from the database.",
-                    error: err.message
+                    data: err
                 });
             } else {
                 res.status(200).json({
                     success: true,
-                    data: result
+                    data: result,
+                    msg: "Retrieve data from the database Unsuccessful"
                 });
             }
         });
@@ -24,6 +25,7 @@ const getFgs = async (req, res) => {
         res.status(500).json({
             success: false,
             msg: "An unexpected error occurred.",
+            data: error
         });
     }
 };
@@ -75,7 +77,7 @@ const postFg = async (req, res) => {
                 // Code_Fg already exists, return an error response
                 return res.status(400).json({
                     success: false,
-                    msg: "Code_Fg already exists, cannot save duplicate"
+                    msg: "Code_Fg already exists, cannot save duplicate value"
                 });
             } else {
                 // Proceed with inserting new record since Code_Fg does not exist
@@ -93,7 +95,7 @@ const postFg = async (req, res) => {
                     res.status(200).json({
                         success: true,
                         data: result,
-                        msg: "Fg created successfully"
+                        msg: `Code_Fg: ${Code_Fg} was created Successful.`
                     });
                 });
             }
@@ -126,7 +128,9 @@ const postfgexcel = async (req, res) => {
                 // Return an error response if the query fails
                 return res.status(400).json({
                     success: false,
-                    msg: err
+                    msg: "There error with check Code_Fg duplicate",
+                    data: err
+
                 });
             }
             
@@ -185,21 +189,24 @@ const postfgexcel = async (req, res) => {
                         // Return an error response if the insertion fails
                         return res.status(400).json({
                             success: false,
-                            msg: "There is some Problems"
+                            msg: `There error with Insert Code_Fg: ${Code_Fg}`,
+                            data: result
                         });
                     }
 
                     // Return a success response with the count of inserted and skipped records
                     res.status(200).json({
                         success: true,
-                        msg: `Insert data successful. Inserted ${newData.length} records. ${existingData.length} records were skipped as they already exist.`
+                        msg: `Insert data successful. Inserted ${newData.length} records. ${existingData.length} records were skipped as they already exist.`,
+                        data: result
                     });
                 });
             } else {
                 // Return a response if all records already exist
                 res.status(200).json({
                     success: true,
-                    msg: `All records already exist. Skipped ${existingData.length} records.`
+                    msg: `All records already exist. Skipped ${existingData.length} records.`,
+                    data: existingData
                 });
             }
         });
@@ -207,11 +214,43 @@ const postfgexcel = async (req, res) => {
         // Return a response if there is an exception during processing
         res.status(400).json({
             success: false,
-            msg: error.message
+            msg:"There Got Problem with Post Excel",
+            data: error
         });
     }
 };
+//Update Fg
+const updateFg = async(req, res) =>{
+    const id = req.params.id;
+    const {Code_Fg, Name_Fg, Model, Part_No, OE_Part_No, Code, Chem_Grade, Pcs_Per_Set, Box_No, Weight_Box, Box_Erp_No, Rivet_No, Weight_Revit_Per_Set, Num_Revit_Per_Set, Revit_Erp_No, Remark} = req.body;
+    const sqlCommand = "UPDATE fg SET Code_Fg = ?, Name_Fg = ?, Model =?, Part_No=?, OE_Part_No=?, Code=?, Chem_Grade=?, Pcs_Per_Set=?, Box_No=?, Weight_Box=?, Box_Erp_No =?, Rivet_No=?, Weight_Revit_Per_Set=?, Num_Revit_Per_Set=?, Revit_Erp_No=?, Remark=? WHERE id = ? ";
+    const value = [Code_Fg, Name_Fg, Model, Part_No, OE_Part_No, Code, Chem_Grade, Pcs_Per_Set, Box_No, Weight_Box, Box_Erp_No, Rivet_No, Weight_Revit_Per_Set, Num_Revit_Per_Set, Revit_Erp_No, Remark, id];
 
+    try {
+        dbconnect.query(sqlCommand, value, (err, result)=>{
+            if(err){
+                console.log(err)
+                res.status(500).json({
+                    msg: `There was problems while update Code_Fg: ${Code_Fg}`,
+                    data: err,
+                    success: false
+                })
+            }else{
+                res.status(200).json({
+                    msg: `Code_Fg: ${Code_Fg} was update successful`,
+                    data: result
+                })
+            }
+        })
+    } catch (error) {
+        res.status(500).json({
+            msg: "Connection Interupt by internet",
+            data: err,
+            success: false
+        })
+    }
+
+}
 
 //Delete Fg
 const deleteFg = async (req, res) =>{
@@ -246,5 +285,6 @@ module.exports = {
     getSigleFg,
     postFg,
     postfgexcel,
-    deleteFg
+    deleteFg,
+    updateFg
 };

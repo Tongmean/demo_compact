@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { Layout, Form, Input, Button, Alert } from 'antd';
+import { Layout, Form, Input, Button } from 'antd';
 import Sidebar from '../../component/Sidebar';
 import HeaderComponent from '../../component/Header';
 import FooterComponent from '../../component/Footer';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../hook/useAuthContext';
+import { Modal } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const { Content } = Layout;
 
@@ -20,9 +22,12 @@ const CreateBom = () => {
     const [Ra_L, setRa_L] = useState('');
     const [Remark, setRemark] = useState('');
     const [isPending, setIsPending] = useState(false);
-    const [error, setError] = useState('');
+    const [modalContent, setModalContent] = useState('');
+    const [showModal, setShowModal] = useState(false);
     const navigate = useNavigate();
     const { user } = useAuthContext(); // Retrieve user context
+
+    const handleCloseModal = () => setShowModal(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -30,33 +35,41 @@ const CreateBom = () => {
 
         const bom = { Code_Fg, Name_Fg, Code_Dr, Name_Dr, Code_Wip, Name_Wip, Ra_Wip, Ra_L, Remark };
 
-        // console.log('Submitting BOM:', bom); // Debugging line
-
         try {
             const response = await fetch('http://localhost:3030/api/bom/create', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${user.token}`,
-                    'Content-Type': 'application/json' // Ensure correct content type
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(bom),
             });
 
+            const data = await response.json();
+            //if cilent status != 200. Then throw Error message (data.msg got from server-side)
             if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+                throw new Error(data.msg || `HTTP error! Status: ${response.status}`);
             }
 
-            const data = await response.json();
-            console.log('New BOM Created:', data);
-            alert('New BOM Created');
-            navigate('/bom');
+            // Success modal message from the server
+            setModalContent(data.msg); // Use message from server-side
+            setShowModal(true);
+            setTimeout(() => {
+                setShowModal(false);
+                navigate('/bom');
+            }, 2000); // Redirect after 2 seconds
 
         } catch (error) {
-            // console.error('Error:', error);
-            setError('Please check the details and try again.');
+            // Error modal message from the server
+            //Catch message from throm have 2 sanarios: 1, Problem from query. 2, From catch error.
+            setModalContent(error.message || 'Please check the details and try again.');
+            setShowModal(true);
         } finally {
             setIsPending(false);
         }
+    };
+    const handleOnClick = () => {
+        navigate('/bom');
     };
 
     return (
@@ -156,6 +169,10 @@ const CreateBom = () => {
                                     </div>
                                     <div className='col-12'>
                                         <Form.Item>
+                                            <Button type="" className='me-2' onClick={handleOnClick}>
+                                                Back
+                                            </Button>
+
                                             <Button
                                                 type="primary"
                                                 htmlType="submit"
@@ -164,7 +181,6 @@ const CreateBom = () => {
                                                 {isPending ? 'Saving...' : 'Save Data'}
                                             </Button>
                                         </Form.Item>
-                                        {error && <Alert message={error} type="error" />}
                                     </div>
                                 </div>
                             </div>
@@ -173,6 +189,19 @@ const CreateBom = () => {
                 </Content>
                 <FooterComponent />
             </Layout>
+
+            {/* Modal for showing success/error messages */}
+            <Modal show={showModal} onHide={handleCloseModal}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Message</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>{modalContent}</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseModal}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </Layout>
     );
 };

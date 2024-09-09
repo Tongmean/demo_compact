@@ -16,6 +16,7 @@ router.post('/create',postBom);
 router.post('/createExcel',postBomExcel);
 //Update bom
 router.put('/update/:id',updatebom);
+//delete
 router.delete('/deletebom/:id',deletebom);
 
 

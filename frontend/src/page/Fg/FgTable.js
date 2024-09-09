@@ -7,6 +7,7 @@ import * as XLSX from 'xlsx';
 import { useAuthContext } from '../../hook/useAuthContext';
 import { Modal, Button } from 'react-bootstrap'; // Import Bootstrap components
 import { useNavigate } from 'react-router-dom'; // Import useNavigate hook
+import { convertToUTCPlus7 } from '../../utility/Moment-timezone';
 
 const FgTable = () => {
     const currentDate = new Date();
@@ -25,6 +26,14 @@ const FgTable = () => {
         },
         { headerName: 'Code_Fg', field: 'Code_Fg', filter: 'agTextColumnFilter' },
         { headerName: 'Name_Fg', field: 'Name_Fg', filter: 'agTextColumnFilter' },
+        // { headerName: 'Model', field: 'Model', filter: 'agTextColumnFilter' },
+        // { headerName: 'Part_No', field: 'Part_No', filter: 'agTextColumnFilter' },
+        { headerName: 'Code', field: 'Code', filter: 'agTextColumnFilter' },
+        { headerName: 'Chem_Grade', field: 'Chem_Grade', filter: 'agTextColumnFilter' },
+        { headerName: 'Pcs_Per_Set', field: 'Pcs_Per_Set', filter: 'agTextColumnFilter' },
+        { headerName: 'Box_No', field: 'Box_No', filter: 'agTextColumnFilter' },
+        { headerName: 'Rivet_No', field: 'Rivet_No', filter: 'agTextColumnFilter' },
+        { headerName: 'Num_Revit_Per_Set', field: 'Num_Revit_Per_Set', filter: 'agTextColumnFilter' },
         { headerName: 'Remark', field: 'Remark', filter: 'agTextColumnFilter' },
         {
             headerName: 'Actions',
@@ -62,11 +71,11 @@ const FgTable = () => {
     const [gridApi, setGridApi] = useState(null);
     const [showModal, setShowModal] = useState(false); // Detail modal state
     const [modalData, setModalData] = useState(null); // Data for the detail modal
-    const [showEditModal, setShowEditModal] = useState(false); // Edit modal state
-    const [editData, setEditData] = useState(null); // Data for the edit modal
     const [showDeleteModal, setShowDeleteModal] = useState(false); // Delete modal state
     const [deleteData, setDeleteData] = useState(null); // Data for the delete modal
 
+    const [showSuccessAlert, setShowSuccessAlert] = useState(false); //Alert Dellete success
+    const [successAlertMessage, setSuccessAlertMessage] = useState('');
     // Fetch data from API
     const fetchData = async () => {
         setLoading(true); // Start loading
@@ -77,17 +86,41 @@ const FgTable = () => {
                     'Authorization': `Bearer ${user.token}`,
                 }
             });
-            const apiData = (await response.json()).data;
+            if(response.ok){
+                const Data = await response.json();
+                const apiData = Data.data;
+                
+                const mappedData = apiData.map(item => ({
+                    No: item.id,
+                    Code_Fg: item.Code_Fg,
+                    Name_Fg: item.Name_Fg,
+                    Model: item.Model,
+                    Part_No: item.Part_No,
+                    OE_Part_No: item.OE_Part_No,
+                    Code: item.Code,
+                    Chem_Grade: item.Chem_Grade,
+                    Pcs_Per_Set: item.Pcs_Per_Set,
+                    Box_No: item.Box_No,
+                    Weight_Box: item.Weight_Box,
+                    Box_Erp_No: item.Box_Erp_No,
+                    Rivet_No: item.Rivet_No,
+                    Weight_Revit_Per_Set: item.Weight_Revit_Per_Set,
+                    Num_Revit_Per_Set: item.Num_Revit_Per_Set,
+                    Revit_Erp_No: item.Revit_Erp_No,
+                    Remark: item.Remark,
+                    CreateAt: item.CreateAt,
+                    UpdateAt: item.UpdateAt,
+                }));
+                setRowData(mappedData);
+                // console.log('api', Data)
+                // console.log('mapdata',mappedData)
+            }else{
+                throw new Error((await response.json()).msg || `HTTP error! Status: ${response.status}`);
+            }
             
-            const mappedData = apiData.map(item => ({
-                No: item.id,
-                Code_Fg: item.Code_Fg,
-                Name_Fg: item.Name_Fg,
-                Remark: item.Remark,
-            }));
-            setRowData(mappedData);
         } catch (error) {
-            console.error("Error fetching data from API:", error);
+            console.error(error.message);
+            alert(error.message)
         } finally {
             setLoading(false); // End loading
         }
@@ -107,11 +140,15 @@ const FgTable = () => {
                 // Successfully deleted, now update the rowData state to remove the deleted row
                 setRowData(prevData => prevData.filter(item => item.No !== id));
                 console.log('Successfully deleted row with ID:', id);
+                setShowSuccessAlert(true);
+                setSuccessAlertMessage(`BOM with ID: ${id} deleted successfully!`);
+                setTimeout(() => setShowSuccessAlert(false), 1500); // Hide alert after 1.5 seconds
             } else {
-                console.error('Failed to delete row with ID:', id);
+                throw new Error((await response.json()).msg || `HTTP error! Status: ${response.status}`);
             }
         } catch (error) {
-            console.error("Error deleting data from API:", error);
+            console.log(error.message);
+            alert(error.message)
         }
     };
 
@@ -129,21 +166,45 @@ const FgTable = () => {
             const customHeaders = {
                 Code_Fg: 'Code_Fg',
                 Name_Fg: 'Name_Fg',
-
+                Model: 'Model',
+                Part_No: 'Part_No',
+                OE_Part_No: 'OE_Part_No',
+                Code: 'Code',
+                Chem_Grade: 'Chem_Grade',
+                Pcs_Per_Set: 'Pcs_Per_Set',
+                Box_No: 'Box_No',
+                Weight_Box: 'Weight_Box',
+                Box_Erp_No: 'Box_Erp_No',
+                Rivet_No: 'Rivet_No',
+                Weight_Revit_Per_Set:'Weight_Revit_Per_Set',
+                Num_Revit_Per_Set: 'Num_Revit_Per_Set',
+                Revit_Erp_No: 'Revit_Erp_No',
                 Remark: 'Remark'
             };
-            const mappedData = selectedRows.map(row => ({
-                'Code_Fg': row.Code_Fg,
-                'Name_Fg': row.Name_Fg,
-    
-                'Remark': row.Remark
+            const mappedData = selectedRows.map(item => ({
+                Code_Fg: item.Code_Fg,
+                Name_Fg: item.Name_Fg,
+                Model: item.Model,
+                Part_No: item.Part_No,
+                OE_Part_No: item.OE_Part_No,
+                Code: item.Code,
+                Chem_Grade: item.Chem_Grade,
+                Pcs_Per_Set: item.Pcs_Per_Set,
+                Box_No: item.Box_No,
+                Weight_Box: item.Weight_Box,
+                Box_Erp_No: item.Box_Erp_No,
+                Rivet_No: item.Rivet_No,
+                Weight_Revit_Per_Set:item.Weight_Revit_Per_Set,
+                Num_Revit_Per_Set: item.Num_Revit_Per_Set,
+                Revit_Erp_No: item.Revit_Erp_No,
+                Remark: item.Remark,
             }));
             const worksheet = XLSX.utils.json_to_sheet(mappedData, { header: Object.values(customHeaders) });
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, 'SelectedData');
             const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
             const file = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-            saveAs(file, `${formattedDate}_Bom.xlsx`);
+            saveAs(file, `${formattedDate}_Fg.xlsx`);
         } catch (error) {
             console.error("Error exporting data to Excel:", error);
         }
@@ -177,6 +238,7 @@ const FgTable = () => {
     // Handle AG Grid ready event
     const onGridReady = params => {
         setGridApi(params.api);
+
     };
 
     useEffect(() => {
@@ -216,8 +278,25 @@ const FgTable = () => {
                             <p><strong>No:</strong> {modalData.No}</p>
                             <p><strong>Code_Fg:</strong> {modalData.Code_Fg}</p>
                             <p><strong>Name_Fg:</strong> {modalData.Name_Fg}</p>
-          
+                            <p><strong>Model:</strong> {modalData.Model}</p>
+                            <p><strong>Part_No:</strong> {modalData.Part_No}</p>
+                            <p><strong>OE_Part_No:</strong> {modalData.OE_Part_No}</p>
+                            <p><strong>Code:</strong> {modalData.Code}</p>
+                            <p><strong>Chem_Grade:</strong> {modalData.Chem_Grade}</p>
+                            <p><strong>Pcs_Per_Set:</strong> {modalData.Pcs_Per_Set}</p>
+                            <p><strong>Box_No:</strong> {modalData.Box_No}</p>
+                            <p><strong>Weight_Box:</strong> {modalData.Weight_Box}</p>
+                            <p><strong>Box_Erp_No:</strong> {modalData.Box_Erp_No}</p>
+                            <p><strong>Rivet_No:</strong> {modalData.Rivet_No}</p>
+
+                            <p><strong>Weight_Revit_Per_Set:</strong> {modalData.Weight_Revit_Per_Set}</p>
+                            <p><strong>Num_Rivet_Per_Set:</strong> {modalData.Num_Rivet_Per_Set}</p>
+                            <p><strong>Revit_Erp_No:</strong> {modalData.Revit_Erp_No}</p>
                             <p><strong>Remark:</strong> {modalData.Remark}</p>
+                            <p><strong>Create At:</strong> {convertToUTCPlus7(modalData.CreateAt)}</p>
+                            <p><strong>Update At:</strong> {convertToUTCPlus7(modalData.UpdateAt)}</p>
+          
+                            
                         </div>
                     )}
                 </Modal.Body>
@@ -244,6 +323,16 @@ const FgTable = () => {
                         Delete
                     </Button>
                 </Modal.Footer>
+            </Modal>
+
+
+            <Modal show={showSuccessAlert} onHide={() => setShowSuccessAlert(false)} size="md">
+                <Modal.Header closeButton>
+                    <Modal.Title>Success</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {successAlertMessage}
+                </Modal.Body>
             </Modal>
         </div>
     );

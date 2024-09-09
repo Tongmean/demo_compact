@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { Layout } from 'antd';
-import Sidebar from '../component/Sidebar';
-import HeaderComponent from '../component/Header';
-import FooterComponent from '../component/Footer';
-
+import Sidebar from '../../component/Sidebar';
+import HeaderComponent from '../../component/Header';
+import FooterComponent from '../../component/Footer';
 const { Content } = Layout;
 
 const HomePage = () => {

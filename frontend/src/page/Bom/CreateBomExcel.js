@@ -76,12 +76,15 @@ const CreateBomExcel = () => {
             }
         })
         .then(response => {
-            if(response.data.success= "false"){
-                console.log(response.data)
+            // Check if the response indicates a success
+            if (response.data.success) {
+                setSuccessMessage(response.data.msg); // Set success message
+            } else {
+                // Handle cases where response indicates a problem but not an error
+                setError(response.data.msg);
             }
-            setSuccessMessage(response.data.msg); // Set success message
-            // console.log('Data saved successfully', response.data);
-            setLoading(false);  // Stop loading when data is successfully saved
+
+            setLoading(false); // Stop loading when data is processed
 
             // Clear the file input
             if (fileInputRef.current) {
@@ -89,8 +92,15 @@ const CreateBomExcel = () => {
             }
         })
         .catch(error => {
+            if (error.response) {
+                // Handle error responses from the server
+                console.log("Error data", error.response.data);
+                setError(error.response.data.msg || 'An unexpected error occurred');
+            } else {
+                // Handle network errors or other issues
+                setError('An unexpected error occurred');
+            }
             console.log('Error saving data', error);
-            setError('An error occurred while saving the data.'); // Set error message
             setLoading(false);
         });
     };
@@ -112,14 +122,15 @@ const CreateBomExcel = () => {
                     <div className="App">
                         <div className='container-fluid'>
                             <div className='row pe-5'>
-                                <div class="card">
-                                    <div class="card-header">
+                                <div className="card">
+                                    <div className="card-header">
                                         Note
                                     </div>
-                                    <div class="card-body">
-                                        <blockquote class="blockquote mb-0">
-                                        <p>Code_Fg, Name_Fg, Code_Dr, Name_Dr, Code_Wip, Name_Wip, Ra_Wip, Ra_L, Remark</p>
-                                        <footer class="blockquote-footer">ต้องเรียงข้อมูลแต่ละ Column ตามนี้เท่านั้น</footer>
+                                    <div className="card-body">
+                                        <blockquote className="blockquote mb-0">
+                                            <p>Code_Fg, Name_Fg, Code_Dr, Name_Dr, Code_Wip, Name_Wip, Ra_Wip, Ra_L, Remark</p>
+                                            <footer className="blockquote-footer">ต้องเรียงข้อมูลแต่ละ Column ตามนี้เท่านั้น</footer>
+                                            <footer class="blockquote-footer">Note: ถ้า Code_Dr มีอยู่ในฐานข้อมูลอยู่แล้า ไม่สามารถบันทึกซ้ำได้ ):</footer>
                                         </blockquote>
                                     </div>
                                 </div>
@@ -128,7 +139,7 @@ const CreateBomExcel = () => {
                                 <div className='row col-xl-4 col-lg-4 col-md-6'>
                                     Excel Template
                                     <div>
-                                        <a href={template} download="Bom_template.xlsx" className="btn btn-secondary ">Download Excel Template</a>
+                                        <a href={template} download="Bom_template.xlsx" className="btn btn-secondary">Download Excel Template</a>
                                     </div>
                                 </div>
                                 <div className='row col-xl-8 col-lg-8 col-md-6'>
@@ -178,7 +189,6 @@ const CreateBomExcel = () => {
                                 <div className="modal-content">
                                     <div className="modal-header">
                                         <h5 className="modal-title">Success</h5>
-                                      
                                     </div>
                                     <div className="modal-body">
                                         <p>{successMessage}</p>

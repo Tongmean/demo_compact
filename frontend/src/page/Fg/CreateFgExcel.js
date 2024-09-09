@@ -36,7 +36,7 @@ const CreateFgExcel = () => {
 
             // Process headers (first row)
             const headers = worksheet[0];
-            if (headers.length !== 17) {
+            if (headers.length !== 16) {
                 console.error('Header does not have exactly 17 columns.');
                 alert('Check the Excel template again!');
                 return;
@@ -45,8 +45,8 @@ const CreateFgExcel = () => {
             // Process data rows
             const dataFromSecondLine = worksheet.slice(1).map(row => {
                 // Ensure each row has 9 columns
-                const processedRow = row.slice(0, 17); // Truncate to 9 columns
-                while (processedRow.length < 17) {
+                const processedRow = row.slice(0, 16); // Truncate to 9 columns
+                while (processedRow.length < 16) {
                     processedRow.push("-"); // Add "-" for missing columns
                 }
 
@@ -81,7 +81,7 @@ const CreateFgExcel = () => {
             }
         })
         .then(response => {
-            if (response.data.success = true){
+            if (response.data.success){
                 setSuccessMessage(response.data.msg); // Set success message
                 console.log('Data saved successfully', response.data.msg);
                 setLoading(false);  // Stop loading when data is successfully saved
@@ -130,6 +130,7 @@ const CreateFgExcel = () => {
                                         <blockquote class="blockquote mb-0">
                                         <p>Code_Fg, Name_Fg, Model, Part_No, OE_Part_No, Code, Chem_Grade, Pcs_Per_Set, Box_No, Weight_Box, Box_Erp_No, Rivet_No, Weight_Revit_Per_Set, Num_Rivet_Per_Set, Revit_Erp_No, Remark</p>
                                         <footer class="blockquote-footer">ต้องเรียงข้อมูลแต่ละ Column ตามนี้เท่านั้น</footer>
+                                        <footer class="blockquote-footer">Note: ถ้า Code_Fg มีอยู่ในฐานข้อมูลอยู่แล้า ไม่สามารถบันทึกซ้ำได้ ):</footer>
                                         </blockquote>
                                     </div>
                                 </div>
