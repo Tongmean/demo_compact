@@ -5,6 +5,8 @@ import HeaderComponent from '../../component/Header';
 import FooterComponent from '../../component/Footer';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../hook/useAuthContext';
+import env from "react-dotenv";
+
 import {Modal} from 'react-bootstrap';
 
 const { Content } = Layout;
@@ -57,7 +59,7 @@ const CreateDr = () => {
         };
 
         try {
-            const response = await fetch('http://localhost:3030/api/dr/create', {
+            const response = await fetch(`${env.API_URL}/api/dr/create`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${user.token}`,

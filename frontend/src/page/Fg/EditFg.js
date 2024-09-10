@@ -7,6 +7,7 @@ import FooterComponent from '../../component/Footer';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../hook/useAuthContext';
 import { Form, Button, Spinner, Row, Col, Modal as BootstrapModal } from 'react-bootstrap';
+import env from "react-dotenv";
 
 const { Content } = Layout;
 
@@ -43,7 +44,7 @@ const EditFg = () => {
     const fetchFgData = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:3030/api/fg/${id}`, {
+            const response = await fetch(`${env.API_URL}/api/fg/${id}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${user.token}`,
@@ -108,7 +109,7 @@ const EditFg = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:3030/api/fg/update/${id}`, {
+            const response = await fetch(`${env.API_URL}/api/fg/update/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -333,7 +334,7 @@ const EditFg = () => {
                                         </Form.Group>
                                     </Col>
                                 </Row>
-                                
+
                                 <Button variant="primary" type="submit" disabled={loading}>
                                     {loading ? <Spinner animation="border" size="sm" /> : 'Update FG'}
                                 </Button>

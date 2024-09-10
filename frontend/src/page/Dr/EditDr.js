@@ -7,6 +7,7 @@ import FooterComponent from '../../component/Footer';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../hook/useAuthContext';
 import { Form, Button, Spinner, Row, Col, Modal as BootstrapModal } from 'react-bootstrap';
+import env from "react-dotenv";
 
 const { Content } = Layout;
 
@@ -54,7 +55,7 @@ const EditDr = () => {
     const fetchDrData = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:3030/api/dr/${id}`, {
+            const response = await fetch(`${env.API_URL}/api/dr/${id}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${user.token}`,
@@ -130,7 +131,7 @@ const EditDr = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:3030/api/dr/update/${id}`, {
+            const response = await fetch(`${env.API_URL}/api/dr/update/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -150,7 +151,7 @@ const EditDr = () => {
                 setTimeout(() => {
                     navigate('/dr');
                 }, 1000);
-                
+
             } else {
                 setModalTitle('Update Error');
                 setModalMessage(`Failed to update DR: ${json.msg}`);

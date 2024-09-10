@@ -8,6 +8,7 @@ import { useAuthContext } from '../../hook/useAuthContext';
 import { Modal, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { convertToUTCPlus7 } from '../../utility/Moment-timezone';
+import env from "react-dotenv";
 
 const BomTable = () => {
     const currentDate = new Date();
@@ -73,12 +74,13 @@ const BomTable = () => {
 
     const [showSuccessAlert, setShowSuccessAlert] = useState(false); //Alert Dellete success
     const [successAlertMessage, setSuccessAlertMessage] = useState('');
-
+    //copy
+    const [columnApi, setColumnApi] = useState(null);
     const fetchData = async () => {
         setLoading(true);
         setError(null); // Reset error state before fetching
         try {
-            const response = await fetch('http://localhost:3030/api/bom/', {
+            const response = await fetch(`${env.API_URL}/api/bom/`, {
                 method: "GET",
                 headers: {
                     'Authorization': `Bearer ${user.token}`,
@@ -117,7 +119,7 @@ const BomTable = () => {
 
     const deleteBomData = async (id) => {
         try {
-            const response = await fetch(`http://localhost:3030/api/bom/deletebom/${id}`, {
+            const response = await fetch(`${env.API_URL}/api/bom/deletebom/${id}`, {
                 method: "DELETE",
                 headers: {
                     'Authorization': `Bearer ${user.token}`,
@@ -207,12 +209,57 @@ const BomTable = () => {
 
     const onGridReady = params => {
         setGridApi(params.api);
+        setColumnApi(params.columnApi); // Add this line to set columnApi
     };
 
     const onSelectionChanged = () => {
         const selectedRows = gridApi.getSelectedRows();
         console.log('Selected rows:', selectedRows);
+    
+        // Call the function to copy the selected rows to the clipboard
+        // copySelectedRowsToClipboard(selectedRows);
     };
+    //copy
+    const copySelectedRowsToClipboard = () => {
+        
+        const selectedRows = gridApi.getSelectedRows();
+        console.log('rows selected to copy.', selectedRows);
+        // Ensure rows is an array
+        if (!Array.isArray(selectedRows) || selectedRows.length === 0) {
+            console.log('No rows selected to copy.', selectedRows);
+            return;
+        }
+        //destructuring No, CreateAt, UpdateAt 
+        const cleanedRows = selectedRows.map(({ No, CreateAt,UpdateAt, ...rest }) => rest);
+        // Convert the rows to a tab-separated string
+        const tsvData = cleanedRows.map(row => {
+            // Object.values(row) extracts all values from the row object
+            return Object.values(row).join('\t');
+        }).join('\n');
+
+        // console.log(tsvData)
+        // Use the Clipboard API to copy the data
+        navigator.clipboard.writeText(tsvData)
+            .then(() => {
+                console.log('Copied to clipboard successfully.', );
+                setShowSuccessAlert(true);
+                setSuccessAlertMessage(`Copied to clipboard successfully.`);
+                setTimeout(() => setShowSuccessAlert(false), 1000); // Hide alert after 1.5 seconds
+
+            })
+            .catch(err => {
+                console.error('Failed to copy:', err);
+            });
+    };
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     useEffect(() => {
         fetchData();
@@ -223,6 +270,12 @@ const BomTable = () => {
             <div>
                 <button onClick={exportToExcel} style={{ marginBottom: '10px' }}>
                     Export Selected Rows to Excel
+                </button>
+                {/* <button onClick={exportToExcel} style={{ marginBottom: '10px' }}>
+                    Export Selected Rows to Excel
+                </button> */}
+                <button onClick={copySelectedRowsToClipboard} style={{ marginBottom: '10px', marginLeft: '10px' }}>
+                    Copy Selected Rows to Clipboard
                 </button>
             </div>
             {loading ? (
@@ -248,7 +301,9 @@ const BomTable = () => {
                             resizable: true,
                             sortable: true,
                             filter: true,
+                            editable: true,
                         }}
+                        
                     />
                 </div>
             )}

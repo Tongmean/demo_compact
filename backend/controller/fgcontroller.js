@@ -16,7 +16,7 @@ const getFgs = async (req, res) => {
                 res.status(200).json({
                     success: true,
                     data: result,
-                    msg: "Retrieve data from the database Unsuccessful"
+                    msg: "Retrieve data from the database successful"
                 });
             }
         });

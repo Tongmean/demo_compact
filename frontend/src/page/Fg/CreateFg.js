@@ -6,6 +6,7 @@ import FooterComponent from '../../component/Footer';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../hook/useAuthContext';
 import { Modal } from 'react-bootstrap';
+import env from "react-dotenv";
 
 const { Content } = Layout;
 
@@ -45,7 +46,7 @@ const CreateFg = () => {
         };
 
         try {
-            const response = await fetch('http://localhost:3030/api/fg/create', {
+            const response = await fetch(`${env.API_URL}/api/fg/create`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${user.token}`,

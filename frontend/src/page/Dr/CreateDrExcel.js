@@ -8,6 +8,7 @@ import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap styles
 import { useAuthContext } from '../../hook/useAuthContext';
 import template from '../../Asset/Dr_template.xlsx'; // Ensure you have the appropriate template
+import env from "react-dotenv";
 
 const { Content } = Layout;
 
@@ -75,7 +76,7 @@ const CreateDrExcel = () => {
         setError(null); // Reset error before making the request
         setSuccessMessage(null); // Reset success message before making the request
 
-        axios.post('http://localhost:3030/api/dr/createExcel', excelData, {
+        axios.post(`${env.API_URL}/api/dr/createExcel`, excelData, {
             headers: {
                 Authorization: `Bearer ${user.token}` // Attach the token in the Authorization header
             }

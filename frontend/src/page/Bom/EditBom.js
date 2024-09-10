@@ -7,6 +7,7 @@ import FooterComponent from '../../component/Footer';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../hook/useAuthContext';
 import { Form, Button, Spinner, Row, Col, Modal as BootstrapModal } from 'react-bootstrap';
+import env from "react-dotenv";
 
 const { Content } = Layout;
 
@@ -37,7 +38,7 @@ const EditBom = () => {
     const fetchBomData = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:3030/api/bom/${id}`, {
+            const response = await fetch(`${env.API_URL}/api/bom/${id}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${user.token}`,
@@ -96,7 +97,7 @@ const EditBom = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:3030/api/bom/update/${id}`, {
+            const response = await fetch(`${env.API_URL}/api/bom/update/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

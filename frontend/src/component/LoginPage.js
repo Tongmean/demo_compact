@@ -41,7 +41,7 @@ const LoginPage = () => {
                 </MDBCol>
                 <MDBCol col="12" md="6" className="d-flex justify-content-center">
                     <form onSubmit={handleSubmit} style={{ width: '80%', maxWidth: '400px' }}>
-                        <label htmlFor="exampleInputEmail1">Email address</label>
+                        <label htmlFor="exampleInputEmail1">Email</label>
                         <input
                             className="form-control"
                             type="email"

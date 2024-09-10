@@ -8,6 +8,7 @@ import { useAuthContext } from '../../hook/useAuthContext';
 import { Modal, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom'; 
 import { convertToUTCPlus7 } from '../../utility/Moment-timezone';
+import env from "react-dotenv";
 
 const WipTable = () => {
     const currentDate = new Date();
@@ -80,7 +81,7 @@ const WipTable = () => {
     const fetchData = async () => {
         setLoading(true); 
         try {
-            const response = await fetch('http://localhost:3030/api/wip', {
+            const response = await fetch(`${env.API_URL}/api/wip`, {
                 method: "GET",
                 headers: {
                     'Authorization': `Bearer ${user.token}`,
@@ -121,7 +122,7 @@ const WipTable = () => {
 
     const deleteWipData = async (id) => {
         try {
-            const response = await fetch(`http://localhost:3030/api/wip/delete/${id}`, {
+            const response = await fetch(`${env.API_URL}/api/wip/delete/${id}`, {
                 method: "DELETE",
                 headers: {
                     'Authorization': `Bearer ${user.token}`,
@@ -150,8 +151,10 @@ const WipTable = () => {
             const selectedRows = gridApi.getSelectedRows();
             if (selectedRows.length === 0) {
                 alert('No rows selected for export.');
+                console.log(selectedRows)
                 return;
             }
+            
             const customHeaders = {
                 Code_Wip: 'Code_Wip',
                 Name_Wip: 'Name_Wip',
@@ -219,6 +222,48 @@ const WipTable = () => {
         setGridApi(params.api);
     };
 
+    const onSelectionChanged = () => {
+        const selectedRows = gridApi.getSelectedRows();
+        console.log('Selected rows:', selectedRows);
+    
+        // Call the function to copy the selected rows to the clipboard
+        // copySelectedRowsToClipboard(selectedRows);
+    };
+    //copy
+    const copySelectedRowsToClipboard = () => {
+        
+        const selectedRows = gridApi.getSelectedRows();
+        console.log('rows selected to copy.', selectedRows);
+        // Ensure rows is an array
+        if (!Array.isArray(selectedRows) || selectedRows.length === 0) {
+            console.log('No rows selected to copy.', selectedRows);
+            return;
+        }
+        //destructuring No, CreateAt, UpdateAt 
+        
+        const cleanedRows = selectedRows.map(({ No, CreateAt,UpdateAt, ...rest }) => rest);
+        // Convert the rows to a tab-separated string
+        const tsvData = cleanedRows.map(row => {
+            // Object.values(row) extracts all values from the row object
+            return Object.values(row).join('\t');
+        }).join('\n');
+
+        // console.log(tsvData)
+        // Use the Clipboard API to copy the data
+        navigator.clipboard.writeText(tsvData)
+            .then(() => {
+                console.log('Copied to clipboard successfully.', );
+                setShowSuccessAlert(true);
+                setSuccessAlertMessage(`Copied to clipboard successfully.`);
+                setTimeout(() => setShowSuccessAlert(false), 1000); // Hide alert after 1.5 seconds
+
+            })
+            .catch(err => {
+                console.error('Failed to copy:', err);
+            });
+    };
+
+
     useEffect(() => {
         fetchData();
     }, []);
@@ -229,18 +274,28 @@ const WipTable = () => {
                 <button onClick={exportToExcel} style={{ marginBottom: '10px' }}>
                     Export Selected Rows to Excel
                 </button>
+                <button onClick={copySelectedRowsToClipboard} style={{ marginBottom: '10px', marginLeft: '10px' }}>
+                    Copy Selected Rows to Clipboard
+                </button>
             </div>
             {loading ? (
                 <div>Loading...</div>
             ) : (
-                <div className="ag-theme-alpine" style={{ height: 500, width: '100%' }}>
+                <div className="ag-theme-alpine" style={{  height: 'calc(100vh - 100px)', width: '100%' }}>
                     <AgGridReact
                         columnDefs={columnDefs}
                         rowData={rowData}
                         rowSelection="multiple"
                         pagination={true}
                         paginationPageSize={20}
+                        onSelectionChanged={onSelectionChanged}
                         onGridReady={onGridReady}
+                        defaultColDef={{
+                            resizable: true,
+                            sortable: true,
+                            filter: true,
+                            editable: true,
+                        }}
                     />
                 </div>
             )}

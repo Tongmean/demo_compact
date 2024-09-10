@@ -3,22 +3,21 @@ const dbconnect = require('../DbConnect');
 //Get All boms
 const getBoms = async (req,res) =>{
     try {
-        dbconnect.query("SELECT * FROM bom",(err, result) =>{
+        dbconnect.query("SELECT * FROM bom ", (err, result) => {
             if(err){
-                console.log(err);
                 res.status(500).json({
                     success: false,
-                    msg: "There Problems With retrieve Bom",
-                    data: err
+                    msg: "Retrieve Bom Unsuccessful",
+                    data: result
                 })
             }else{
                 res.status(200).json({
                     success: true,
                     msg: "Retrieve Bom Successful",
                     data: result
-                });
+                })
             }
-        });
+        })
     } catch (error) {
         console.log(err);
         res.status(500).json({

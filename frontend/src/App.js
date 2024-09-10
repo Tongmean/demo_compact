@@ -46,6 +46,8 @@ const App = () => {
         {/* Redirect to /home if authenticated; otherwise, show LoginPage */}
         
         <Route path='/login' element={isAuthenticated ? <Navigate to='/home' /> : <LoginPage />} />
+
+        <Route path='/' element={isAuthenticated ? <Navigate to='/home' /> : <LoginPage />} />
         
         {/* Protected routes */}
         {/* bom */}

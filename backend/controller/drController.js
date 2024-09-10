@@ -4,7 +4,7 @@ const getDr = async (req, res)=>{
     try {
         dbconnect.query("SELECT * From drill", (err, result)=>{
             if(err){
-                res.status(400).json({
+                res.status(500).json({
                     success: false,
                     msg: "Failed to retrieve data from the database.",
                     data: err
@@ -18,7 +18,11 @@ const getDr = async (req, res)=>{
             }
         })
     } catch (error) {
-        
+        res.status(500).json({
+            success: false,
+            msg: "Failed to retrieve data from the database.",
+            data: err
+        })
     }
 }
 //Get single Dr

@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../hook/useAuthContext';
 import { Modal } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import env from "react-dotenv";
 
 const { Content } = Layout;
 
@@ -36,7 +37,7 @@ const CreateBom = () => {
         const bom = { Code_Fg, Name_Fg, Code_Dr, Name_Dr, Code_Wip, Name_Wip, Ra_Wip, Ra_L, Remark };
 
         try {
-            const response = await fetch('http://localhost:3030/api/bom/create', {
+            const response = await fetch(`${env.API_URL}/api/bom/create`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${user.token}`,

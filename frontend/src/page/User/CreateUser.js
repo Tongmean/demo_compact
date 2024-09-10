@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../hook/useAuthContext';
 import { Modal } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import env from "react-dotenv";
 
 const { Content } = Layout;
 const { Option } = Select;
@@ -31,7 +32,7 @@ const CreateUser = () => {
         const newUser = { email, password, role };
 
         try {
-            const response = await fetch('http://localhost:3030/api/user/create', {
+            const response = await fetch(`${env.API_URL}/api/user/create`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${user.token}`,
@@ -111,7 +112,7 @@ const CreateUser = () => {
                                             >
                                                 <Option value="admin">Admin</Option>
                                                 <Option value="user">User</Option>
-                                                <Option value="creator">Creator</Option>
+                                                {/* <Option value="creator">Creator</Option> */}
                                             </Select>
                                         </Form.Item>
                                     </div>

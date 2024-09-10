@@ -8,6 +8,7 @@ import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap styles
 import { useAuthContext } from '../../hook/useAuthContext';
 import template from '../../Asset/Bom_template.xlsx';
+import env from "react-dotenv";
 
 const { Content } = Layout;
 
@@ -70,7 +71,7 @@ const CreateBomExcel = () => {
         setError(null); // Reset error before making the request
         setSuccessMessage(null); // Reset success message before making the request
 
-        axios.post('http://localhost:3030/api/bom/createExcel', excelData, {
+        axios.post(`${env.API_URL}/api/bom/createExcel`, excelData, {
             headers: {
                 Authorization: `Bearer ${user.token}` // Attach the token in the Authorization header
             }

@@ -5,6 +5,7 @@ import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { useAuthContext } from '../../hook/useAuthContext';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import env from "react-dotenv";
 
 const UserTable = () => {
     const { user } = useAuthContext();
@@ -69,7 +70,7 @@ const UserTable = () => {
         setLoading(true);
         setError(null); // Reset error state before fetching
         try {
-            const response = await fetch('http://localhost:3030/api/user', {
+            const response = await fetch(`${env.API_URL}/api/user`, {
                 method: "GET",
                 headers: {
                     'Authorization': `Bearer ${user.token}`,
@@ -106,7 +107,7 @@ const UserTable = () => {
 
     const deleteUserData = async (id) => {
         try {
-            const response = await fetch(`http://localhost:3030/api/user/delete/${id}`, {
+            const response = await fetch(`${env.API_URL}/api/user/delete/${id}`, {
                 method: "DELETE",
                 headers: {
                     'Authorization': `Bearer ${user.token}`,
@@ -129,7 +130,7 @@ const UserTable = () => {
 
     const updateUserData = async (id, updatedData) => {
         try {
-            const response = await fetch(`http://localhost:3030/api/users/update/${id}`, {
+            const response = await fetch(`${env.API_URL}/api/users/update/${id}`, {
                 method: "PUT",
                 headers: {
                     'Authorization': `Bearer ${user.token}`,

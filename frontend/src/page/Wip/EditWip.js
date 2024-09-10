@@ -7,6 +7,7 @@ import FooterComponent from '../../component/Footer';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../hook/useAuthContext';
 import { Form, Button, Spinner, Row, Col, Modal as BootstrapModal } from 'react-bootstrap';
+import env from "react-dotenv";
 
 const { Content } = Layout;
 
@@ -40,7 +41,7 @@ const EditWip = () => {
     const fetchWipData = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:3030/api/wip/${id}`, {
+            const response = await fetch(`${env.API_URL}/api/wip/${id}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${user.token}`,
@@ -102,7 +103,7 @@ const EditWip = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:3030/api/wip/update/${id}`, {
+            const response = await fetch(`${env.API_URL}/api/wip/update/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

@@ -6,6 +6,7 @@ import FooterComponent from '../../component/Footer';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../hook/useAuthContext';
 import { Modal } from 'react-bootstrap';
+import env from "react-dotenv";
 
 const { Content } = Layout;
 
@@ -42,7 +43,7 @@ const CreateWip = () => {
         };
 
         try {
-            const response = await fetch('http://localhost:3030/api/wip/create', {
+            const response = await fetch(`${env.API_URL}/api/wip/create`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${user.token}`,
@@ -63,7 +64,7 @@ const CreateWip = () => {
             setTimeout(() => {
                 setShowModal(false);
                 navigate('/wip');
-                
+
             }, 1500);
 
         } catch (error) {
