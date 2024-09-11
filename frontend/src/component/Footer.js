@@ -13,7 +13,7 @@ const FooterComponent = () => {
         boxShadow: '0 -2px 8px rgba(0, 0, 0, 0.1)',
       }}
     >
-      Ant Design ©{new Date().getFullYear()} Created by Compact
+      ©{new Date().getFullYear()} Created by Compact
     </Footer>
   );
 };

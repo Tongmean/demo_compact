@@ -33,11 +33,15 @@ const LoginPage = () => {
         <MDBContainer fluid className="p-3 my-5 h-custom">
             <MDBRow className="d-flex justify-content-center align-items-center h-100">
                 <MDBCol col="12" md="6">
+            
                     <img
                         src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
                         className="img-fluid"
                         alt="Login illustration"
                     />
+                    <div className='text-center'>
+                        <h5>ระบบจัดการข้อมูลผลิตภัณฑ์</h5>
+                    </div>
                 </MDBCol>
                 <MDBCol col="12" md="6" className="d-flex justify-content-center">
                     <form onSubmit={handleSubmit} style={{ width: '80%', maxWidth: '400px' }}>

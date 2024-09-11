@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 
 
-const {joinTable} = require('../controller/dashboard')
+const {joinTable, joinTableDash} = require('../controller/dashboard')
 
 router.get('/', joinTable);
+router.get('/jointabledash', joinTableDash);
 
 
 
