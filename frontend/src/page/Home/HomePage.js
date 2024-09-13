@@ -3,7 +3,7 @@ import { Layout } from 'antd';
 import Sidebar from '../../component/Sidebar';
 import HeaderComponent from '../../component/Header';
 import FooterComponent from '../../component/Footer';
-import HomeTable from './HomeTable';
+// import HomeTable from './HomeTable';
 import { Link } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 const { Content } = Layout;
@@ -50,7 +50,8 @@ const HomePage = () => {
 
               </div>
             </div>
-            <HomeTable/>
+
+            {/* <HomeTable/> */}
           </div>
         </Content>
         <FooterComponent />

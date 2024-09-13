@@ -98,7 +98,7 @@ const CreateUser = () => {
                                         </Form.Item>
                                         <Form.Item label="Password">
                                             <Input
-                                                type="password"
+                                                type="text"
                                                 required
                                                 value={password}
                                                 onChange={(e) => setPassword(e.target.value)}

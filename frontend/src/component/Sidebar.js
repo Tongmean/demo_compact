@@ -27,7 +27,7 @@ const items = [
     { key: '10', label: <Link to="/createbomexcel">Excel Insert</Link> },
     { key: '11', label: <Link to="/createbom">From Insert</Link> }
   ]},
-  { key: 'sub5', icon: <DashboardOutlined />, label: <Link to="/dashboard">Dashboard</Link> },
+  { key: 'sub5', icon: <DashboardOutlined />, label: <Link to="/dashboard">Product-Data</Link> },
 
   { key: '91', icon: <UserOutlined />, label: 'User Management' ,children: [
     { key: '100', label: <Link to="/user">User</Link> },

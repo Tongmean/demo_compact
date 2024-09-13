@@ -31,12 +31,12 @@ const Dashboard = () => {
             <div className="card mb-2">
               <h5 className="card-header">Note:</h5>
               <div className="card-body">
-                <h5 className="card-title">ระบบแบ่งตารางข้อมูลเป็น 4 ตาราง</h5>
-                <p className="card-text">ซึ่งประกอบไปด้วย: BOM, Fg, Dr, Wip</p>
-                <p className="card-text">BOM: เป็นข้อมูลการจับคู่ระหวัง Fg, Dr, Wip และสัตส่วนเพื่อให้ได้ 1 Fg. สำหรับช่อง Ra_Wip: สัตส่วน Dr เพื่อให้ได้ 1 Fg เนื่องจาก 1 Fg อาจจะ 2 Dr. ส่วน Ra_l: สัตส่วน Wip ที่เอาไปผลิต Dr.</p>
-                <p className="card-text">Fg: เป็นข้อมูลข้อมูลที่ใช้สำหรับบรรจุสินค้าซึ่ง Code_Fg ไม่สามารถซ้ำกันได้</p>
-                <p className="card-text">Dr: เป็นข้อมูลข้อมูลที่ใช้สำหรับผลิตหน่วยฝน-เจาะ ซึ่ง Code_Dr ไม่สามารถซ้ำกันได้</p>
-                <p className="card-text">Wip: เป็นข้อมูลข้อมูลที่ใช้สำหรับผลิตสำหรับหน่วยพิมพ์เย็น-พิมพ์ร้อน ซึ่ง Code_Wip สามารถซ้ำกันได้เนื่องจากก้อน 1 Wip อาจจะสามารถใช้แม่พิม์ได้มากกว่า 1 ตัว. </p>
+                <h5 className="card-title">ตารางชุดข้อมูลผลิตภัณฑ์</h5>
+                <p className="card-text">ซึ่งสร้างมาจากการ Join ตารางโดยตางราง Bom เป็นข้อมูลการจับคู่ระหวัง Fg, Dr, Wip ว่า 1 Fg ประกอบไปด้วย Dr อะไรบ้างแล้ว 1 Dr สร้างมาจาก Wip ตัวไหนบ้าง </p> 
+                <p className="card-text">ซึ่ง Ra_Wip = ชิ้นต่อชุด * Ra_Wip เป็นส่วนประกอบ Dr เพื่อบรรจุเป็น Fg</p> 
+                <p className="card-text">ซึ่ง Ra_L = Ra_Wip/Ra_L เป็นการใช้ Wip เพื่อไปผลิตเป็น Dr</p> 
+                <p className="card-text">***ข้อมูลที่อยู่ในตารางนี้ มีเฉพาะข้อมูลที่สามารถจับคู่กันได้เท่านั้น (:</p> 
+
                 <Button as={Link} to="/wip" className="btn btn-primary">
                   Go Wip
                 </Button>

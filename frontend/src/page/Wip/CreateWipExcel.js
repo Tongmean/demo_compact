@@ -99,7 +99,7 @@ const CreateWipExcel = () => {
         })
         .catch(error => {
             console.log('Error saving data', error);
-            setError('An error occurred while saving the data.'); // Set error message
+            setError('An error occurred while saving the data.',); // Set error message
             setLoading(false);
         });
     };
