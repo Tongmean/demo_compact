@@ -47,7 +47,7 @@ app.use('/api/dash', dashRoutes)
 
 //Config Port using dotenv
 require('dotenv').config();
-const port = process.env.PORT || 8000;
+const port = process.env.PORT;
 //listen port
 app.listen(port, (req, res) => {
 
