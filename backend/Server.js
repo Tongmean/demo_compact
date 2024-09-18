@@ -19,6 +19,7 @@ app.use(cors())
 app.use(express.json()); // Upcoming req to Json
 app.use(bodyParser.json());
 //Connect Db
+const dbconnect = require('../Backend/DbConnect');
 //Import Router Bom
 const bomsrouter = require('../Backend/routes/bomRoutes');
 //Import Router user
@@ -46,7 +47,7 @@ app.use('/api/dash', dashRoutes)
 
 //Config Port using dotenv
 require('dotenv').config();
-const port = process.env.PORT;
+const port =  8000;
 //listen port
 app.listen(port, (req, res) => {
 
