@@ -4,6 +4,14 @@ const express = require('express');
 const app = express();
 //Call cors
 const cors = require('cors')
+
+// const corsOptions = {
+//     origin: 'http://192.168.5.92:3000', // Replace with your client's URL
+//     methods: 'GET, POST, PUT, DELETE, OPTIONS',
+//     allowedHeaders: 'Content-Type, Authorization'
+// };
+
+// app.use(cors(corsOptions));
 //Call body-parser
 const bodyParser = require('body-parser');
 //Middleware
@@ -42,5 +50,6 @@ require('dotenv').config();
 const port = process.env.PORT || 8000;
 //listen port
 app.listen(port, (req, res) => {
+
     console.log('Your server run on port', port)
 })

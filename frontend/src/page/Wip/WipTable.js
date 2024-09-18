@@ -26,17 +26,16 @@ const WipTable = () => {
         },
         { headerName: 'Code_Wip', field: 'Code_Wip', filter: 'agTextColumnFilter' },
         { headerName: 'Name_Wip', field: 'Name_Wip', filter: 'agTextColumnFilter' },
-        { headerName: 'Code_Mold', field: 'Code_Mold', filter: 'agTextColumnFilter' },
-        { headerName: 'Dimension', field: 'Dimension', filter: 'agTextColumnFilter' },
-        { headerName: 'Chem_Grade', field: 'Chem_Grade', filter: 'agTextColumnFilter' },
-        { headerName: 'Weight_Per_Pcs', field: 'Weight_Per_Pcs', filter: 'agTextColumnFilter' },
-        { headerName: 'Pcs_Per_Mold', field: 'Pcs_Per_Mold', filter: 'agTextColumnFilter' },
-        { headerName: 'Pcs_Per_Set', field: 'Pcs_Per_Set', filter: 'agTextColumnFilter' },
+        { headerName: 'รหัสแม่พิมพ์', field: 'Code_Mold', filter: 'agTextColumnFilter' },
+        { headerName: 'ขนาดผ้า', field: 'Dimension', filter: 'agTextColumnFilter' },
+        { headerName: 'เกรดเคมี', field: 'Chem_Grade', filter: 'agTextColumnFilter' },
+        { headerName: 'น้ำหนักต่อชิ้น', field: 'Weight_Per_Pcs', filter: 'agTextColumnFilter' },
+        { headerName: 'ชิ้นต่อพิมพ์', field: 'Pcs_Per_Mold', filter: 'agTextColumnFilter' },
+        { headerName: 'ชิ้นต่อชุด', field: 'Pcs_Per_Set', filter: 'agTextColumnFilter' },
         // { headerName: 'Type_Brake', field: 'Type_Brake', filter: 'agTextColumnFilter' },
         // { headerName: 'Type_Mold', field: 'Type_Mold', filter: 'agTextColumnFilter' },
         // { headerName: 'Time_Per_Mold', field: 'Time_Per_Mold', filter: 'agTextColumnFilter' },
         // { headerName: 'Mold_Per_8_Hour', field: 'Mold_Per_8_Hour', filter: 'agTextColumnFilter' },
-        { headerName: 'Remark', field: 'Remark', filter: 'agTextColumnFilter' },
         {
             headerName: 'Actions',
             field: 'actions',
@@ -49,22 +48,27 @@ const WipTable = () => {
                     >
                         Detail
                     </button>
-                    <button
-                        className="btn btn-secondary btn-sm"
-                        onClick={() => handleShowEdit(params.data)}
-                        style={{ marginRight: '5px' }}
-                    >
-                        Edit
-                    </button>
-                    <button
-                        className="btn btn-danger btn-sm"
-                        onClick={() => handleShowDelete(params.data)}
-                    >
-                        Delete
-                    </button>
+                    {user.user.role === "admin" && (
+                        <>
+                            <button
+                                className="btn btn-secondary btn-sm"
+                                onClick={() => handleShowEdit(params.data)}
+                                style={{ marginRight: '5px' }}
+                            >
+                                Edit
+                            </button>
+                            <button
+                                className="btn btn-danger btn-sm"
+                                onClick={() => handleShowDelete(params.data)}
+                            >
+                                Delete
+                            </button>
+                        </>
+                    )}
                 </div>
             ),
         }
+        
     ];
 
     const [rowData, setRowData] = useState();

@@ -91,11 +91,11 @@ const UserTable = () => {
                 password: item.password,
                 role: item.role,
                 CreateAt: item.CreateAt,
-                UpdateAt: item.UpdateAt,
+                UpdateAt: item.Update_At,
             }));
             
             setRowData(mappedData);
-
+            console.log(rowData)
         } catch (error) {
             setError(error.message);
             console.log("Error fetching data from API:", error.message);

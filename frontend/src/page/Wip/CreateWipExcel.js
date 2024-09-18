@@ -127,7 +127,7 @@ const CreateWipExcel = () => {
                                     </div>
                                     <div className="card-body">
                                         <blockquote className="blockquote mb-0">
-                                        <p>Code_Wip, Name_Wip, Code_Mold, Dimension, Chem_Grade, Weight_Per_Pcs, Pcs_Per_Mold, Pcs_Per_Set, Type_Brake, Type_Mold, Time_Per_Mold, Mold_Per_8_Hour, Remark</p>
+                                        <p>Code_Wip, Name_Wip, รหัสแม่พิมพ์, ขนาด(กว้าง*หนา-ยาว), เกรดเคมี, น้ำหนักต่อชิ้น, ชิ้นต่อพิมพ์, ชิ้นต่อชุด, ลักษณะผ้าเบรก, ลักษณะแม่พิมพ์, เวลาต่อพิมพ์, พิมพ์ต่อ8ชั่วโมง, หมายเหตุ</p>
                                         <footer className="blockquote-footer">ต้องเรียงข้อมูลแต่ละ Column ตามนี้เท่านั้น</footer>
                                         </blockquote>
                                     </div>

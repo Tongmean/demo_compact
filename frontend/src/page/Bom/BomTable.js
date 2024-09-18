@@ -45,22 +45,27 @@ const BomTable = () => {
                     >
                         Detail
                     </button>
-                    <button
-                        className="btn btn-secondary btn-sm"
-                        onClick={() => handleShowEdit(params.data)}
-                        style={{ marginRight: '5px' }}
-                    >
-                        Edit
-                    </button>
-                    <button
-                        className="btn btn-danger btn-sm"
-                        onClick={() => handleShowDelete(params.data)}
-                    >
-                        Delete
-                    </button>
+                    {user.user.role === "admin" && (
+                        <>
+                            <button
+                                className="btn btn-secondary btn-sm"
+                                onClick={() => handleShowEdit(params.data)}
+                                style={{ marginRight: '5px' }}
+                            >
+                                Edit
+                            </button>
+                            <button
+                                className="btn btn-danger btn-sm"
+                                onClick={() => handleShowDelete(params.data)}
+                            >
+                                Delete
+                            </button>
+                        </>
+                    )}
                 </div>
             ),
         }
+        
     ];
 
     const [rowData, setRowData] = useState([]);
@@ -210,6 +215,8 @@ const BomTable = () => {
     const onGridReady = params => {
         setGridApi(params.api);
         setColumnApi(params.columnApi); // Add this line to set columnApi
+        // params.api.sizeColumnsToFit(); // Auto-size columns to fit the grid container
+
     };
 
     const onSelectionChanged = () => {

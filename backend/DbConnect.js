@@ -1,26 +1,21 @@
-// const mongoose = require('mongoose')
-// const dbconnect = mongoose.connect(process.env.MONG_URI)
-//     .then(()=>{
-//         console.log('Conect db seccessfully')
-//     })
-//     .catch((error)=>{
-//         console.log(error)
-// })
+const { Pool } = require('pg');
 
-// module.exports = dbconnect;
-
-const mysql = require('mysql')
-const dbconnect = mysql.createConnection({
-  user:"root",
-  host: "localhost",
-  database: "demo_1"
+// Create a new pool with connection details
+const dbconnect = new Pool({
+  user: 'postgres',       // Your PostgreSQL username
+  host: 'localhost',            // Database host (e.g., localhost)
+  database: 'bom',    // Your PostgreSQL database name
+  password: '15tongmean',    // Your PostgreSQL password
+  port: 5432,                   // Default PostgreSQL port
 });
-  
-dbconnect.connect((err) => {
-    if (err) {
-      console.log("Database Connection Failed !!!", err);
-    } else {
-      console.log("connected to Database");
-    }
-})
+dbconnect.connect((err, client, release) => {
+  if (err) {
+    console.error('Error acquiring client', err.stack);
+  } else {
+    console.log('Connection to PostgreSQL successful!');
+    release();  // Release the client back to the pool
+  }
+});
+
+
 module.exports = dbconnect;

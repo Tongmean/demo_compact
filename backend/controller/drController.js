@@ -1,107 +1,140 @@
 const dbconnect = require('../DbConnect');
 
-const getDr = async (req, res)=>{
+const getDr = async (req, res) => {
     try {
-        dbconnect.query("SELECT * From drill", (err, result)=>{
-            if(err){
+        dbconnect.query('SELECT * FROM "drill"', (err, result) => {
+            if (err) {
                 res.status(500).json({
                     success: false,
                     msg: "Failed to retrieve data from the database.",
                     data: err
-                })
-            }else{
+                });
+            } else {
                 res.status(200).json({
                     success: true,
-                    msg: "Successful retrieve data from the database.",
-                    data: result
-                })
+                    msg: "Successfully retrieved data from the database.",
+                    data: result.rows // PostgreSQL stores the result in the `rows` array
+                });
             }
-        })
+        });
     } catch (error) {
         res.status(500).json({
             success: false,
             msg: "Failed to retrieve data from the database.",
-            data: err
-        })
+            data: error // Changed err to error to properly reference the caught error
+        });
     }
-}
+};
+
 //Get single Dr
-const getSingleDr = async(req, res) =>{
-    const id = req.params.id
+const getSingleDr = async (req, res) => {
+    const id = req.params.id;
     try {
-        dbconnect.query("SELECT * FROM drill WHERE id = ?", id, (err, result)=>{
-            if(err){
+        dbconnect.query('SELECT * FROM "drill" WHERE "id" = $1', [id], (err, result) => {
+            if (err) {
                 res.status(400).json({
                     msg: `Unsuccessful retrieve data from the database by ${id}`,
                     success: false,
                     data: err
-                })
-            }else{
+                });
+            } else {
                 res.status(200).json({
                     msg: `Successful retrieve data from the database by ${id}`,
                     success: true,
-                    data: result
-                })
+                    data: result.rows // Use result.rows in PostgreSQL
+                });
             }
-        })
+        });
     } catch (error) {
         res.status(400).json({
             msg: `Unsuccessful retrieve data from the database by ${id}`,
             success: false,
             data: error
-        })
+        });
     }
-}
+};
 
 //Post Dr
 
-const postDr = async (req, res) =>{
-    const {Code_Dr, Name_Dr, Name_Wip, Name_Fg_1, Demension, Type_Brake, Chem_Grade, Status_Dr,No_Grind, Num_Hole, No_Jig_Drill, No_Drill,No_Reamer, Code, Remark, Color, Color_Spray, Grind_Back, Grind_Front, Grind_Detail, Drill, Baat, Ji_Hou, Fon_Hou, Tha_Khob, Cut,Form } = req.body;
+const postDr = async (req, res) => {
+    const { 
+        Code_Dr, Name_Dr, Name_Wip, Name_Fg_1, Demension, 
+        Type_Brake, Chem_Grade, Status_Dr, No_Grind, Num_Hole, 
+        No_Jig_Drill, No_Drill, No_Reamer, Code, Remark, 
+        Color, Color_Spray, Grind_Back, Grind_Front, Grind_Detail, 
+        Drill, Baat, Ji_Hou, Fon_Hou, Tha_Khob, Cut, Form 
+    } = req.body;
 
     try {
-        const checkSqlCommand = "SELECT * FROM drill WHERE Code_Dr = ?";
-        dbconnect.query(checkSqlCommand, [Code_Dr], (err, result)=>{
-            if(err){
-                console.log("Check Fail", err);
+        // Check if Code_Dr already exists
+        const checkSqlCommand = 'SELECT * FROM "drill" WHERE "Code_Dr" = $1';
+        dbconnect.query(checkSqlCommand, [Code_Dr], (err, result) => {
+            if (err) {
+                console.log('Check Fail', err);
                 return res.status(400).json({
-                    msg:"Check duplicate Code Dr faill",
+                    msg: 'Check duplicate Code_Dr failed',
                     data: err,
                     success: false
-                })
+                });
             }
-            if(result.length > 0){
-                console.log("Code_Dr already Exit:", result)
+            if (result.rows.length > 0) {
+                console.log('Code_Dr already exists:', result.rows);
                 return res.status(400).json({
                     success: false,
-                    msg: `Code_Dr: ${result[0].Code_Dr} already exist.`
-                })
-            }else{
-                const sqlCommand = "INSERT INTO drill (Code_Dr, Name_Dr, Name_Wip, Name_Fg_1, Demension, Type_Brake, Chem_Grade, Status_Dr,No_Grind, Num_Hole, No_Jig_Drill, No_Drill,No_Reamer, Code, Remark, Color, Color_Spray, Grind_Back, Grind_Front, Grind_Detail, Drill, Baat, Ji_Hou, Fon_Hou, Tha_Khob, Cut,Form) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ? )";
-                dbconnect.query(sqlCommand, [Code_Dr, Name_Dr, Name_Wip, Name_Fg_1, Demension, Type_Brake, Chem_Grade, Status_Dr,No_Grind, Num_Hole, No_Jig_Drill, No_Drill,No_Reamer, Code, Remark, Color, Color_Spray, Grind_Back, Grind_Front, Grind_Detail, Drill, Baat, Ji_Hou, Fon_Hou, Tha_Khob, Cut,Form], (err, result)=>{
-                    if(err){
+                    msg: `Code_Dr: ${result.rows[0].Code_Dr} already exists.`
+                });
+            } else {
+                // Insert new record
+                const sqlCommand = `
+                    INSERT INTO "drill" (
+                        "Code_Dr", "Name_Dr", "Name_Wip", "Name_Fg_1", "Demension", 
+                        "Type_Brake", "Chem_Grade", "Status_Dr", "No_Grind", "Num_Hole", 
+                        "No_Jig_Drill", "No_Drill", "No_Reamer", "Code", "Remark", 
+                        "Color", "Color_Spray", "Grind_Back", "Grind_Front", "Grind_Detail", 
+                        "Drill", "Baat", "Ji_Hou", "Fon_Hou", "Tha_Khob", "Cut", "Form"
+                    ) 
+                    VALUES (
+                        $1, $2, $3, $4, $5, 
+                        $6, $7, $8, $9, $10, 
+                        $11, $12, $13, $14, $15, 
+                        $16, $17, $18, $19, $20, 
+                        $21, $22, $23, $24, $25, $26, $27
+                    )
+                `;
+                dbconnect.query(sqlCommand, [
+                    Code_Dr, Name_Dr, Name_Wip, Name_Fg_1, Demension, 
+                    Type_Brake, Chem_Grade, Status_Dr, No_Grind, Num_Hole, 
+                    No_Jig_Drill, No_Drill, No_Reamer, Code, Remark, 
+                    Color, Color_Spray, Grind_Back, Grind_Front, Grind_Detail, 
+                    Drill, Baat, Ji_Hou, Fon_Hou, Tha_Khob, Cut, Form
+                ], (err, result) => {
+                    if (err) {
+                        console.log(err)
                         res.status(400).json({
                             success: false,
-                            msg: "Insert Code_dr Unsuccessful",
+                            msg: 'Insert Code_Dr Unsuccessful',
                             data: err
-                        })
-                    }else{
+                        });
+                    } else {
                         res.status(200).json({
                             success: true,
-                            msg:`Insert Successful Code_dr:${Code_Dr} Successful`,
+                            msg: `Insert Successful Code_Dr: ${Code_Dr}`,
                             data: result
-                        })
+                        });
                     }
-                })
+                });
             }
-        })
+        });
     } catch (error) {
         res.status(400).json({
             success: false,
-            msg: "Insert Code_dr Unsuccessful due to server error !!",
-            data: err
-        })
+            msg: 'Insert Code_Dr Unsuccessful due to server error !!',
+            data: error
+        });
     }
-}
+};
+
+
 
 const postDrExcel = async (req, res) => {
     // Retrieve data from the request body
@@ -115,7 +148,7 @@ const postDrExcel = async (req, res) => {
         const codes = data.map(row => row[0]);
 
         // Query the database to check if these Code_Dr values already exist
-        const checkQuery = `SELECT Code_Dr FROM drill WHERE Code_Dr IN (?)`;
+        const checkQuery = `SELECT "Code_Dr" FROM "drill" WHERE "Code_Dr" = ANY($1)`;
         dbconnect.query(checkQuery, [codes], (err, existingRows) => {
             if (err) {
                 // Return an error response if the query fails
@@ -125,14 +158,14 @@ const postDrExcel = async (req, res) => {
                     data: err
                 });
             }
-            
+
             // Extract the existing Code_Dr values from the query result
-            const existingCodes = existingRows.map(row => row.Code_Dr);
+            const existingCodes = existingRows.rows.map(row => row.Code_Dr);
 
             // Separate the data into new records (not in the existingCodes) and existing records
             const newData = data.filter(row => !existingCodes.includes(row[0]));
             const existingData = data.filter(row => existingCodes.includes(row[0]));
-            
+
             if (newData.length > 0) {
                 // Convert newData into an array of objects with named keys for SQL insertion
                 const newDataObjects = newData.map(row => ({
@@ -165,7 +198,7 @@ const postDrExcel = async (req, res) => {
                     Form: row[26]
                 }));
 
-                // Prepare the values for insertion by mapping each object to an array of values
+                // Prepare the values for insertion
                 const values = newDataObjects.map(obj => [
                     obj.Code_Dr,
                     obj.Name_Dr,
@@ -196,14 +229,27 @@ const postDrExcel = async (req, res) => {
                     obj.Form
                 ]);
 
+                // Create placeholders for all rows (e.g., $1, $2, ..., $n)
+                const placeholders = values.map((_, i) => `(${
+                    Array.from({ length: 27 }, (_, j) => `$${i * 27 + j + 1}`).join(', ')
+                })`).join(', ');
+
                 // Insert new records into the database
-                const sqlCommand = `INSERT INTO drill (Code_Dr, Name_Dr, Name_Wip, Name_Fg_1, Demension, Type_Brake, Chem_Grade, Status_Dr, No_Grind, Num_Hole, No_Jig_Drill, No_Drill, No_Reamer, Code, Remark, Color, Color_Spray, Grind_Back, Grind_Front, Grind_Detail, Drill, Baat, Ji_Hou, Fon_Hou, Tha_Khob, Cut, Form) VALUES ?`;
-                dbconnect.query(sqlCommand, [values], (err, result) => {
+                const sqlCommand = `INSERT INTO "drill" (
+                    "Code_Dr", "Name_Dr", "Name_Wip", "Name_Fg_1", "Demension", "Type_Brake", "Chem_Grade", "Status_Dr",
+                    "No_Grind", "Num_Hole", "No_Jig_Drill", "No_Drill", "No_Reamer", "Code", "Remark", "Color", "Color_Spray",
+                    "Grind_Back", "Grind_Front", "Grind_Detail", "Drill", "Baat", "Ji_Hou", "Fon_Hou", "Tha_Khob", "Cut", "Form"
+                ) VALUES ${placeholders}`;
+
+                const flattenedValues = values.flat();
+
+                dbconnect.query(sqlCommand, flattenedValues, (err, result) => {
                     if (err) {
                         // Return an error response if the insertion fails
+                        console.log(err)
                         return res.status(400).json({
                             success: false,
-                            msg: `There was an error inserting Code_Dr: ${obj.Code_Dr}`,
+                            msg: `There was an error inserting records`,
                             data: err
                         });
                     }
@@ -237,32 +283,34 @@ const postDrExcel = async (req, res) => {
 
 
 
-const deleteDr = async (req, res) =>{
-    const id = req.params.id
+
+const deleteDr = async (req, res) => {
+    const id = req.params.id;
     try {
-        dbconnect.query("DELETE FROM drill WHERE id = ?", id, (err, result)=>{
-            if(err){
+        dbconnect.query('DELETE FROM "drill" WHERE "id" = $1', [id], (err, result) => {
+            if (err) {
                 res.status(400).json({
                     success: false,
                     msg: "There Error Accur",
                     data: err
-                })
-            }else{
+                });
+            } else {
                 res.status(200).json({
                     success: true,
-                    msg: `Code_Dr:id: ${id} Delete Successful.`,
+                    msg: `Code_Dr:id: ${id} Delete Successfull.`,
                     data: result
-                })
+                });
             }
-        })
+        });
     } catch (error) {
         res.status(400).json({
             success: false,
             msg: "There Error Accur",
-            data: err
-        })
+            data: error
+        });
     }
-}
+};
+
 
 
 //update dr
@@ -298,30 +346,36 @@ const updateDr = async (req, res) => {
     const Form = req.body.Form;
 
     try {
-        dbconnect.query(
-            "UPDATE drill SET Code_Dr = ?, Name_Dr = ?, Name_Wip = ?, Name_Fg_1 = ?, Demension = ?, Type_Brake = ?, Chem_Grade = ?, Status_Dr = ?, No_Grind = ?, Num_Hole = ?, No_Jig_Drill = ?, No_Drill = ?, No_Reamer = ?, Code = ?, Remark = ?, Color = ?, Color_Spray = ?, Grind_Back = ?, Grind_Front = ?, Grind_Detail = ?, Drill = ?, Baat = ?, Ji_Hou = ?, Fon_Hou = ?, Tha_Khob = ?, Cut = ?, Form = ? WHERE id = ?",
-            [
-                Code_Dr, Name_Dr, Name_Wip, Name_Fg_1, Demension, Type_Brake, Chem_Grade, Status_Dr,
-                No_Grind, Num_Hole, No_Jig_Drill, No_Drill, No_Reamer, Code, Remark, Color, Color_Spray,
-                Grind_Back, Grind_Front, Grind_Detail, Drill, Baat, Ji_Hou, Fon_Hou, Tha_Khob, Cut, Form, id
-            ],
-            (err, result) => {
-                if (err) {
-                    console.log(err);
-                    res.status(500).json({
-                        success: false,
-                        msg: `There was a problem while updating DR ${id}`,
-                        data: err
-                    });
-                } else {
-                    res.status(200).json({
-                        success: true,
-                        msg: `Code_Dr Id: ${id} update successful`,
-                        data: result
-                    });
-                }
+        const query = `
+            UPDATE "drill" SET
+                "Code_Dr" = $1, "Name_Dr" = $2, "Name_Wip" = $3, "Name_Fg_1" = $4, "Demension" = $5,
+                "Type_Brake" = $6, "Chem_Grade" = $7, "Status_Dr" = $8, "No_Grind" = $9, "Num_Hole" = $10,
+                "No_Jig_Drill" = $11, "No_Drill" = $12, "No_Reamer" = $13, "Code" = $14, "Remark" = $15,
+                "Color" = $16, "Color_Spray" = $17, "Grind_Back" = $18, "Grind_Front" = $19, "Grind_Detail" = $20,
+                "Drill" = $21, "Baat" = $22, "Ji_Hou" = $23, "Fon_Hou" = $24, "Tha_Khob" = $25, "Cut" = $26,
+                "Form" = $27 WHERE "id" = $28
+        `;
+
+        dbconnect.query(query, [
+            Code_Dr, Name_Dr, Name_Wip, Name_Fg_1, Demension, Type_Brake, Chem_Grade, Status_Dr,
+            No_Grind, Num_Hole, No_Jig_Drill, No_Drill, No_Reamer, Code, Remark, Color, Color_Spray,
+            Grind_Back, Grind_Front, Grind_Detail, Drill, Baat, Ji_Hou, Fon_Hou, Tha_Khob, Cut, Form, id
+        ], (err, result) => {
+            if (err) {
+                console.log(err);
+                res.status(500).json({
+                    success: false,
+                    msg: `There was a problem while updating DR ${id}`,
+                    data: err
+                });
+            } else {
+                res.status(200).json({
+                    success: true,
+                    msg: `Code_Dr Id: ${id} update successful`,
+                    data: result
+                });
             }
-        );
+        });
     } catch (error) {
         res.status(500).json({
             success: false,
@@ -330,6 +384,7 @@ const updateDr = async (req, res) => {
         });
     }
 };
+
 
 
 

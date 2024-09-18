@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layout, Form, Input, Button } from 'antd';
+import { Layout, Form, Input, Button, Select  } from 'antd';
 import Sidebar from '../../component/Sidebar';
 import HeaderComponent from '../../component/Header';
 import FooterComponent from '../../component/Footer';
@@ -7,8 +7,10 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../hook/useAuthContext';
 import { Modal } from 'react-bootstrap';
 import env from "react-dotenv";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const { Content } = Layout;
+const { Option } = Select;
 
 const CreateWip = () => {
     const [collapsed, setCollapsed] = useState(false);
@@ -115,7 +117,7 @@ const CreateWip = () => {
                                                 onChange={(e) => setName_Wip(e.target.value)}
                                             />
                                         </Form.Item>
-                                        <Form.Item label="Code Mold">
+                                        <Form.Item label="รหัสแม่พิมพ์">
                                             <Input
                                                 type="text"
                                                 required
@@ -123,7 +125,7 @@ const CreateWip = () => {
                                                 onChange={(e) => setCode_Mold(e.target.value)}
                                             />
                                         </Form.Item>
-                                        <Form.Item label="Dimension">
+                                        <Form.Item label="ขนาด(กว้าง*หนา-ยาว)">
                                             <Input
                                                 type="text"
                                                 required
@@ -131,7 +133,7 @@ const CreateWip = () => {
                                                 onChange={(e) => setDimension(e.target.value)}
                                             />
                                         </Form.Item>
-                                        <Form.Item label="Chemical Grade">
+                                        <Form.Item label="เกรดเคมี">
                                             <Input
                                                 type="text"
                                                 required
@@ -139,7 +141,7 @@ const CreateWip = () => {
                                                 onChange={(e) => setChem_Grade(e.target.value)}
                                             />
                                         </Form.Item>
-                                        <Form.Item label="Weight Per Pcs">
+                                        <Form.Item label="น้ำหนักต่อชิ้น">
                                             <Input
                                                 type="text"
                                                 required
@@ -147,7 +149,7 @@ const CreateWip = () => {
                                                 onChange={(e) => setWeight_Per_Pcs(e.target.value)}
                                             />
                                         </Form.Item>
-                                        <Form.Item label="Pcs Per Mold">
+                                        <Form.Item label="ชิ้นต่อพิมพ์">
                                             <Input
                                                 type="text"
                                                 required
@@ -157,7 +159,7 @@ const CreateWip = () => {
                                         </Form.Item>
                                     </div>
                                     <div className='col-xl-6 col-lg-6 col-md-12'>
-                                        <Form.Item label="Pcs Per Set">
+                                        <Form.Item label="ชิ้นต่อชุด">
                                             <Input
                                                 type="text"
                                                 required
@@ -165,23 +167,53 @@ const CreateWip = () => {
                                                 onChange={(e) => setPcs_Per_Set(e.target.value)}
                                             />
                                         </Form.Item>
-                                        <Form.Item label="Type Brake">
+
+                                        {/* <Form.Item label="ลักษณะผ้าเบรก">
                                             <Input
                                                 type="text"
                                                 required
                                                 value={Type_Brake}
                                                 onChange={(e) => setType_Brake(e.target.value)}
                                             />
+                                        </Form.Item> */}
+
+                                        <Form.Item label="ลักษณะผ้าเบรก">
+                                            <Select
+                                                required
+                                                value={Type_Brake}
+                                                onChange={(value) => setType_Brake(value)}
+                                            >
+                                                <Option value="-">-</Option>
+                                                <Option value="ผ้าสั้น">ผ้าสั้น</Option>
+                                                <Option value="ผ้ายาว">ผ้ายาว</Option>
+                                                <Option value="ผ้าเล็ก">ผ้าเล็ก</Option>
+                                            </Select>
                                         </Form.Item>
-                                        <Form.Item label="Type Mold">
+
+
+                                        <Form.Item label="ลักษณะแม่พิมพ์">
+                                            <Select
+                                                required
+                                                value={Type_Mold}
+                                                onChange={(value) => setType_Mold(value)}
+                                            >
+                                                <Option value="-">-</Option>
+                                                <Option value="โค้ง">โค้ง</Option>
+                                                <Option value="แบน">แบน</Option>
+                                            </Select>
+                                        </Form.Item>
+                                        
+
+                                        {/* <Form.Item label="ลักษณะแม่พิมพ์">
                                             <Input
                                                 type="text"
                                                 required
                                                 value={Type_Mold}
                                                 onChange={(e) => setType_Mold(e.target.value)}
                                             />
-                                        </Form.Item>
-                                        <Form.Item label="Time Per Mold">
+                                        </Form.Item> */}
+                                        
+                                        <Form.Item label="เวลาต่อพิมพ์">
                                             <Input
                                                 type="text"
                                                 required
@@ -189,7 +221,7 @@ const CreateWip = () => {
                                                 onChange={(e) => setTime_Per_Mold(e.target.value)}
                                             />
                                         </Form.Item>
-                                        <Form.Item label="Mold Per 8 Hour">
+                                        <Form.Item label="พิมพ์ต่อ8ชั่วโมง">
                                             <Input
                                                 type="text"
                                                 required
@@ -197,7 +229,7 @@ const CreateWip = () => {
                                                 onChange={(e) => setMold_Per_8_Hour(e.target.value)}
                                             />
                                         </Form.Item>
-                                        <Form.Item label="Remark">
+                                        <Form.Item label="หมายเหตุ">
                                             <Input
                                                 type="text"
                                                 required

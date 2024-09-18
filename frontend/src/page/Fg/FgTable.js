@@ -48,22 +48,27 @@ const FgTable = () => {
                     >
                         Detail
                     </button>
-                    <button
-                        className="btn btn-secondary btn-sm"
-                        onClick={() => handleShowEdit(params.data)}
-                        style={{ marginRight: '5px' }}
-                    >
-                        Edit
-                    </button>
-                    <button
-                        className="btn btn-danger btn-sm"
-                        onClick={() => handleShowDelete(params.data)}
-                    >
-                        Delete
-                    </button>
+                    {user.user.role === "admin" && (
+                        <>
+                            <button
+                                className="btn btn-secondary btn-sm"
+                                onClick={() => handleShowEdit(params.data)}
+                                style={{ marginRight: '5px' }}
+                            >
+                                Edit
+                            </button>
+                            <button
+                                className="btn btn-danger btn-sm"
+                                onClick={() => handleShowDelete(params.data)}
+                            >
+                                Delete
+                            </button>
+                        </>
+                    )}
                 </div>
             ),
         }
+        
     ];
 
     // Define the initial row data (sample data)

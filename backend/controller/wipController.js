@@ -1,58 +1,61 @@
 const dbconnect = require('../DbConnect');
 
 //Get all Wip
-const getWip = async (req, res) =>{
+const getWip = async (req, res) => {
     try {
-        dbconnect.query("SELECT * FROM wip", (err, result)=>{
-            if(err){
+        dbconnect.query('SELECT * FROM "wip"', (err, result) => {
+            if (err) {
                 res.status(400).json({
                     success: false,
                     msg: "There sth Error with Retrieve Wip Database.",
                     data: err
-                })
-            }else{
+                });
+            } else {
                 res.status(200).json({
                     success: true,
                     msg: "Query wip successful",
-                    data: result
-                })
+                    data: result.rows // PostgreSQL stores result data in 'rows'
+                });
             }
-        })
+        });
     } catch (error) {
         res.status(400).json({
             success: false,
             msg: "There sth Error with Retrieve Wip Database.",
             data: error
-        })
+        });
     }
-}
+};
+
 //get single wip
 const getSingleWip = async (req, res) => {
     const id = req.params.id;
     try {
-        dbconnect.query("SELECT * FROM wip where id = ?", id, (err, result)=>{
-            if(err){
+        const query = 'SELECT * FROM "wip" WHERE "id" = $1';  // Use parameterized query for PostgreSQL
+        dbconnect.query(query, [id], (err, result) => {
+            if (err) {
                 res.status(400).json({
                     success: false,
-                    msg: "There sth Error with Retrieve Wip Database.",
+                    msg: "There is an error with retrieving the Wip data from the database.",
                     data: err
-                })
-            }else{
+                });
+            } else {
                 res.status(200).json({
                     success: true,
-                    msg: "Query wip successful",
-                    data: result
-                })
+                    msg: `Query wip id: ${id} successful`,
+                    data: result.rows  // PostgreSQL returns rows in result.rows
+                });
             }
-        })
+        });
     } catch (error) {
         res.status(400).json({
             success: false,
-            msg: "There sth Error with Retrieve Wip Database.",
+            msg: "There is an error with retrieving the Wip data from the database.",
             data: error
-        })
+        });
     }
-}
+};
+
 
 //post wip
 const postWip = async (req, res) => {
@@ -60,20 +63,20 @@ const postWip = async (req, res) => {
 
     // Define the query to check for duplicates
     const checkSqlCommand = `
-        SELECT * FROM wip 
-        WHERE Code_Wip = ? 
-          AND Name_Wip = ? 
-          AND Code_Mold = ? 
-          AND Dimension = ? 
-          AND Chem_Grade = ? 
-          AND Weight_Per_Pcs = ? 
-          AND Pcs_Per_Mold = ? 
-          AND Pcs_Per_Set = ? 
-          AND Type_Brake = ? 
-          AND Type_Mold = ? 
-          AND Time_Per_Mold = ? 
-          AND Mold_Per_8_Hour = ? 
-          AND Remark = ?
+        SELECT * FROM "wip"
+        WHERE "Code_Wip" = $1 
+          AND "Name_Wip" = $2 
+          AND "Code_Mold" = $3 
+          AND "Dimension" = $4 
+          AND "Chem_Grade" = $5 
+          AND "Weight_Per_Pcs" = $6 
+          AND "Pcs_Per_Mold" = $7 
+          AND "Pcs_Per_Set" = $8 
+          AND "Type_Brake" = $9 
+          AND "Type_Mold" = $10 
+          AND "Time_Per_Mold" = $11 
+          AND "Mold_Per_8_Hour" = $12 
+          AND "Remark" = $13
     `;
 
     try {
@@ -87,20 +90,20 @@ const postWip = async (req, res) => {
                 });
             }
 
-            if (result.length > 0) {
+            if (result.rows.length > 0) {
                 // Record already exists
                 return res.status(400).json({
                     success: false,
                     msg: "Record with these values already exists.",
-                    data: result
+                    data: result.rows
                 });
             }
 
             // Record doesn't exist, proceed with insertion
             const insertSqlCommand = `
-                INSERT INTO wip 
-                (Code_Wip, Name_Wip, Code_Mold, Dimension, Chem_Grade, Weight_Per_Pcs, Pcs_Per_Mold, Pcs_Per_Set, Type_Brake, Type_Mold, Time_Per_Mold, Mold_Per_8_Hour, Remark) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO "wip" 
+                ("Code_Wip", "Name_Wip", "Code_Mold", "Dimension", "Chem_Grade", "Weight_Per_Pcs", "Pcs_Per_Mold", "Pcs_Per_Set", "Type_Brake", "Type_Mold", "Time_Per_Mold", "Mold_Per_8_Hour", "Remark") 
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
             `;
             dbconnect.query(insertSqlCommand, [Code_Wip, Name_Wip, Code_Mold, Dimension, Chem_Grade, Weight_Per_Pcs, Pcs_Per_Mold, Pcs_Per_Set, Type_Brake, Type_Mold, Time_Per_Mold, Mold_Per_8_Hour, Remark], (insertErr, insertResult) => {
                 if (insertErr) {
@@ -113,7 +116,7 @@ const postWip = async (req, res) => {
 
                 return res.status(200).json({
                     success: true,
-                    msg: "Wip record saved successfully.",
+                    msg: `Wip: ${Code_Wip} record saved successfully.`,
                     data: insertResult
                 });
             });
@@ -128,206 +131,194 @@ const postWip = async (req, res) => {
 };
 
 
-// const postWipExcel = async (req, res) =>{
-//     //get value form request(Http)
-//     let data = req.body;  // Array 
-//     //Check if colum blank add "-"
-//     data = data.map(row => row.map(value => value === "" || value === null ? "-" : value));
-//     // console.log(data)
-//     const sqlCommand = "INSERT INTO wip(Code_Wip,Name_Wip,Code_Mold,Dimension,Chem_Grade,Weight_Per_Pcs,Pcs_Per_Mold,Pcs_Per_Set,Type_Brake,Type_Mold,Time_Per_Mold,Mold_Per_8_Hour, Remark) VALUES ?";
-//     try {
-//         dbconnect.query(sqlCommand, [data], (err, result)=>{
-//             if(err){
-//                 res.status(400).json({
-//                     success: false,
-//                     msg: "There sth Error with post Wip Database.",
-//                     data: err
-//                 })
-//             }else{
-//                 res.status(200).json({
-//                     success: true,
-//                     msg: 'Code_Wip was insert successful',
-//                     data: result
-//                 })
-//             }
-//         })
-//     } catch (error) {
-//         res.status(400).json({
-//             success: false,
-//             msg: "There sth Error with post Wip Database.",
-//             data: error
-//         })
-//     }
-// };
 
 
-//Update Wip
+
+const postWipExcel = async (req, res) => {
+    try {
+        // Get value from request (Http)
+        let data = req.body;  // Array of objects
+
+        // Define which columns are of type double precision. Adjust indices as needed.
+        data = data.map(row => row.map(value => value === "" || value === null ? "-" : value));
 
 
-const postWipExcel = (req, res) => {
-    // Get value from request (Http)
-    let data = req.body;  // Array of objects
+        
+        let duplicateCount = 0;
+        let insertedCount = 0;
+        const nonDuplicateData = [];
 
-    // Check if column is blank and add "-"
-    data = data.map(row => row.map(value => value === "" || value === null ? "-" : value));
+        // Function to check if a record already exists in the database
+        const checkDuplicate = async (row) => {
+            const [Code_Wip, Name_Wip, Code_Mold, Dimension, Chem_Grade, Weight_Per_Pcs, Pcs_Per_Mold, Pcs_Per_Set, Type_Brake, Type_Mold, Time_Per_Mold, Mold_Per_8_Hour, Remark] = row;
 
-    let duplicateCount = 0;
-    let insertedCount = 0;
-    const nonDuplicateData = [];
+            const checkDuplicateSql = `
+                SELECT COUNT(*) AS count
+                FROM "wip"
+                WHERE "Code_Wip" = $1
+                  AND "Name_Wip" = $2
+                  AND "Code_Mold" = $3
+                  AND "Dimension" = $4
+                  AND "Chem_Grade" = $5
+                  AND "Weight_Per_Pcs" = $6
+                  AND "Pcs_Per_Mold" = $7
+                  AND "Pcs_Per_Set" = $8
+                  AND "Type_Brake" = $9
+                  AND "Type_Mold" = $10
+                  AND "Time_Per_Mold" = $11
+                  AND "Mold_Per_8_Hour" = $12
+                  AND "Remark" = $13
+            `;
 
-    const checkDuplicate = (row, callback) => {
-        const [Code_Wip, Name_Wip, Code_Mold, Dimension, Chem_Grade, Weight_Per_Pcs, Pcs_Per_Mold, Pcs_Per_Set, Type_Brake, Type_Mold, Time_Per_Mold, Mold_Per_8_Hour, Remark] = row;
+            try {
+                console.log('data',data);
+                
+                const result = await dbconnect.query(checkDuplicateSql, [
+                    Code_Wip, Name_Wip, Code_Mold, Dimension, Chem_Grade, Weight_Per_Pcs,
+                    Pcs_Per_Mold, Pcs_Per_Set, Type_Brake, Type_Mold, Time_Per_Mold, Mold_Per_8_Hour, Remark
+                ]);
 
-        const checkDuplicateSql = `
-            SELECT COUNT(*) as count 
-            FROM wip 
-            WHERE Code_Wip = ? 
-              AND Name_Wip = ? 
-              AND Code_Mold = ? 
-              AND Dimension = ? 
-              AND Chem_Grade = ? 
-              AND Weight_Per_Pcs = ? 
-              AND Pcs_Per_Mold = ? 
-              AND Pcs_Per_Set = ? 
-              AND Type_Brake = ? 
-              AND Type_Mold = ? 
-              AND Time_Per_Mold = ? 
-              AND Mold_Per_8_Hour = ? 
-              AND Remark = ?
-        `;
-
-        dbconnect.query(checkDuplicateSql, [
-            Code_Wip, Name_Wip, Code_Mold, Dimension, Chem_Grade, Weight_Per_Pcs,
-            Pcs_Per_Mold, Pcs_Per_Set, Type_Brake, Type_Mold, Time_Per_Mold, Mold_Per_8_Hour, Remark
-        ], (err, results) => {
-            if (err) {
-                return callback(err);
+                if (result.rows[0].count === '0') {
+                    nonDuplicateData.push(row);  // Only push if no duplicate found
+                } else {
+                    duplicateCount++;  // Increment duplicate count
+                }
+            } catch (err) {
+                console.log(err.message)
+                throw new Error(`Error while checking duplicates: ${err.message}`);
+                
             }
-            if (results[0].count === 0) {
-                nonDuplicateData.push(row);  // Only push if no duplicate found
-            } else {
-                duplicateCount++;  // Increment duplicate count
+        };
+
+        // Function to insert non-duplicate records into the database
+        const insertNonDuplicateRecords = async () => {
+            if (nonDuplicateData.length === 0) {
+                return res.status(200).json({
+                    success: true,
+                    insertedCount: insertedCount,
+                    duplicateCount: duplicateCount,
+                    msg: `0 records were inserted successfully. ${duplicateCount} records were duplicates.`
+                });
             }
-            callback();  // Continue with the next row
-        });
-    };
 
-    const insertNonDuplicateRecords = () => {
-        const sqlCommand = "INSERT INTO wip(Code_Wip, Name_Wip, Code_Mold, Dimension, Chem_Grade, Weight_Per_Pcs, Pcs_Per_Mold, Pcs_Per_Set, Type_Brake, Type_Mold, Time_Per_Mold, Mold_Per_8_Hour, Remark) VALUES ?";
+            const sqlCommand = `
+                INSERT INTO "wip"("Code_Wip", "Name_Wip", "Code_Mold", "Dimension", "Chem_Grade", "Weight_Per_Pcs", "Pcs_Per_Mold", "Pcs_Per_Set", "Type_Brake", "Type_Mold", "Time_Per_Mold", "Mold_Per_8_Hour", "Remark") 
+                VALUES ${nonDuplicateData.map(row => `(${row.map(value => value === null ? 'NULL' : `'${value}'`).join(", ")})`).join(", ")}
+            `;
 
-        dbconnect.query(sqlCommand, [nonDuplicateData], (err, result) => {
-            if (err) {
+            try {
+                const result = await dbconnect.query(sqlCommand);
+                insertedCount = nonDuplicateData.length;  // Update inserted count
+                return res.status(200).json({
+                    success: true,
+                    insertedCount: insertedCount,
+                    duplicateCount: duplicateCount,
+                    msg: `${insertedCount} records were inserted successfully. ${duplicateCount} records were duplicates.`,
+                    data: result
+                });
+            } catch (err) {
                 return res.status(400).json({
                     success: false,
                     msg: "There was an error posting WIP data to the database.",
                     data: err
                 });
-            } else {
-                insertedCount = nonDuplicateData.length;  // Update inserted count
-                return res.status(200).json({
-                    success: true,
-                    msg: 'Records were inserted successfully.',
-                    insertedCount: insertedCount,
-                    duplicateCount: duplicateCount,
-                    message: `${insertedCount} records were inserted successfully. ${duplicateCount} records were duplicates.`,
-                    data: result
-                });
             }
-        });
-    };
+        };
 
-    // Check duplicates and then insert non-duplicate records
-    let remainingChecks = data.length;
+        // Check duplicates and then insert non-duplicate records
+        for (const row of data) {
+            await checkDuplicate(row);
+        }
 
-    data.forEach(row => {
-        checkDuplicate(row, (err) => {
-            if (err) {
-                return res.status(400).json({
-                    success: false,
-                    msg: "Error while checking duplicates.",
-                    data: err
-                });
-            }
-            remainingChecks--;
-            if (remainingChecks === 0) {
-                if (nonDuplicateData.length === 0) {
-                    return res.status(200).json({
-                        success: true,
-                        msg: 'No new records to insert, all records are duplicates.',
-                        insertedCount: insertedCount,
-                        duplicateCount: duplicateCount,
-                        message: `0 records were inserted successfully. ${duplicateCount} records were duplicates.`
-                    });
-                } else {
-                    insertNonDuplicateRecords();
-                }
-            }
+        await insertNonDuplicateRecords();
+
+    } catch (err) {
+        return res.status(500).json({
+            success: false,
+            msg: "An unexpected error occurred.",
+            data: err.message
         });
-    });
+    }
 };
 
 
 
 
-const updateWip = async (req, res) =>{
+
+
+
+
+
+
+const updateWip = async (req, res) => {
     const id = req.params.id;
-    const {Code_Wip,Name_Wip,Code_Mold,Dimension,Chem_Grade,Weight_Per_Pcs,Pcs_Per_Mold,Pcs_Per_Set,Type_Brake,Type_Mold,Time_Per_Mold,Mold_Per_8_Hour, Remark} = req.body;
-    const sqlCommand = "UPDATE wip SET Code_Wip =? ,Name_Wip=? ,Code_Mold=? ,Dimension=? ,Chem_Grade=? ,Weight_Per_Pcs=? ,Pcs_Per_Mold=? ,Pcs_Per_Set=?,Type_Brake=? ,Type_Mold=? ,Time_Per_Mold=? ,Mold_Per_8_Hour=? , Remark=?  WHERE id = ?";
-    const value = [Code_Wip,Name_Wip,Code_Mold,Dimension,Chem_Grade,Weight_Per_Pcs,Pcs_Per_Mold,Pcs_Per_Set,Type_Brake,Type_Mold,Time_Per_Mold,Mold_Per_8_Hour, Remark, id];
+    const { Code_Wip, Name_Wip, Code_Mold, Dimension, Chem_Grade, Weight_Per_Pcs, Pcs_Per_Mold, Pcs_Per_Set, Type_Brake, Type_Mold, Time_Per_Mold, Mold_Per_8_Hour, Remark } = req.body;
+
+    // Using double quotes for PostgreSQL field names
+    const sqlCommand = `UPDATE "wip" 
+                        SET "Code_Wip" = $1, "Name_Wip" = $2, "Code_Mold" = $3, "Dimension" = $4, "Chem_Grade" = $5, "Weight_Per_Pcs" = $6, 
+                            "Pcs_Per_Mold" = $7, "Pcs_Per_Set" = $8, "Type_Brake" = $9, "Type_Mold" = $10, "Time_Per_Mold" = $11, 
+                            "Mold_Per_8_Hour" = $12, "Remark" = $13 
+                        WHERE "id" = $14`;
+
+    const values = [Code_Wip, Name_Wip, Code_Mold, Dimension, Chem_Grade, Weight_Per_Pcs, Pcs_Per_Mold, Pcs_Per_Set, Type_Brake, Type_Mold, Time_Per_Mold, Mold_Per_8_Hour, Remark, id];
+
     try {
-        dbconnect.query(sqlCommand, value, (err, result)=>{
-            if(err){
+        dbconnect.query(sqlCommand, values, (err, result) => {
+            if (err) {
                 console.log("err", err);
                 res.status(500).json({
-                    msg: "There was error while Query Database",
+                    msg: "There was an error while querying the database",
                     success: false,
                     data: err
-                })
-            }else{
+                });
+            } else {
                 res.status(200).json({
-                    msg: `Wip Id: ${id} & Code_Wip: ${Code_Wip} was update successful`,
+                    msg: `Wip Id: ${id} & Code_Wip: ${Code_Wip} was updated successfully`,
                     success: true,
                     data: result
-                })
+                });
             }
-        })
+        });
     } catch (error) {
         res.status(500).json({
-            msg: "There was error with connection",
+            msg: "There was an error with the connection",
             success: false,
             data: error
-        })
+        });
     }
 }
 
 
+
 //Dellete Wip
-const deleteWip = async (req, res) =>{
+const deleteWip = async (req, res) => {
     const id = req.params.id;
     try {
-        dbconnect.query("DELETE FROM wip WHERE id = ?", id ,(err, result)=>{
-            if(err){
+        dbconnect.query('DELETE FROM "wip" WHERE "id" = $1', [id], (err, result) => {
+            if (err) {
                 res.status(400).json({
                     msg: "There are some Problem",
                     data: err,
                     success: false
-                })
-            }else{
+                });
+            } else {
                 res.status(200).json({
                     success: true,
-                    msg: `Delete record ${id} successfull`,
+                    msg: `Delete record ${id} successfully`,
                     data: result
-                })
+                });
             }
-        })
+        });
     } catch (error) {
         res.status(400).json({
             msg: "There are some Problem with connection",
             data: error,
             success: false
-        })
+        });
     }
 }
+
 module.exports ={
     getWip,
     getSingleWip,

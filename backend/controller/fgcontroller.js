@@ -4,7 +4,7 @@ const dbconnect = require('../DbConnect');
 // Get all fg
 const getFgs = async (req, res) => {
     try {
-        dbconnect.query("SELECT * FROM Fg", (err, result) => {
+        dbconnect.query('SELECT * FROM "fg"', (err, result) => {
             if (err) {
                 console.error("Database query error:", err);
                 res.status(500).json({
@@ -15,7 +15,7 @@ const getFgs = async (req, res) => {
             } else {
                 res.status(200).json({
                     success: true,
-                    data: result,
+                    data: result.rows, // PostgreSQL returns results in 'rows'
                     msg: "Retrieve data from the database successful"
                 });
             }
@@ -29,24 +29,26 @@ const getFgs = async (req, res) => {
         });
     }
 };
+
 //Get single Fg
-const getSigleFg = async (req, res) =>{
+const getSigleFg = async (req, res) => {
     const id = req.params.id;
     try {
-        dbconnect.query("SELECT * FROM FG WHERE id = ?", id,(err, result)=>{
-            if(err){
-                console.log("An Error Accur",err)
+        dbconnect.query('SELECT * FROM "fg" WHERE "id" = $1', [id], (err, result) => {
+            if (err) {
+                console.log("An Error Occurred", err);
                 res.status(500).json({
                     success: false,
-                    msg:"An unexpected error occurred.",
-                })
-            }else{
+                    msg: "An unexpected error occurred.",
+                });
+            } else {
                 res.status(200).json({
                     success: true,
-                    data: result
-                })
+                    msg:`Retrieve Code_Fg id: ${id} Successful`,
+                    data: result.rows, // PostgreSQL uses 'rows' to return query results
+                });
             }
-        })
+        });
     } catch (error) {
         console.error("Unexpected error:", error);
         res.status(500).json({
@@ -55,14 +57,17 @@ const getSigleFg = async (req, res) =>{
         });
     }
 }
+
 //create fg
 const postFg = async (req, res) => {
-    const {Code_Fg, Name_Fg, Model, Part_No, OE_Part_No, Code, Chem_Grade, Pcs_Per_Set, Box_No, Weight_Box, 
-        Box_Erp_No, Rivet_No, Weight_Revit_Per_Set, Num_Revit_Per_Set, Revit_Erp_No, Remark} = req.body;
+    const {
+        Code_Fg, Name_Fg, Model, Part_No, OE_Part_No, Code, Chem_Grade, Pcs_Per_Set, Box_No, Weight_Box, 
+        Box_Erp_No, Rivet_No, Weight_Revit_Per_Set, Num_Revit_Per_Set, Revit_Erp_No, Remark
+    } = req.body;
 
     try {
         // First, check if the Code_Fg already exists in the database
-        const checkSqlCommand = "SELECT * FROM Fg WHERE Code_Fg = ?";
+        const checkSqlCommand = 'SELECT * FROM "fg" WHERE "Code_Fg" = $1';
         
         dbconnect.query(checkSqlCommand, [Code_Fg], (err, result) => {
             if (err) {
@@ -73,7 +78,7 @@ const postFg = async (req, res) => {
                 });
             }
 
-            if (result.length > 0) {
+            if (result.rows.length > 0) {
                 // Code_Fg already exists, return an error response
                 return res.status(400).json({
                     success: false,
@@ -81,11 +86,18 @@ const postFg = async (req, res) => {
                 });
             } else {
                 // Proceed with inserting new record since Code_Fg does not exist
-                const sqlCommand = "INSERT INTO Fg (Code_Fg, Name_Fg, Model, Part_No, OE_Part_No, Code, Chem_Grade, Pcs_Per_Set, Box_No, Weight_Box, Box_Erp_No, Rivet_No, Weight_Revit_Per_Set, Num_Revit_Per_Set, Revit_Erp_No, Remark) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                const sqlCommand = `
+                    INSERT INTO "fg" ("Code_Fg", "Name_Fg", "Model", "Part_No", "OE_Part_No", "Code", "Chem_Grade", "Pcs_Per_Set", "Box_No", "Weight_Box", 
+                    "Box_Erp_No", "Rivet_No", "Weight_Revit_Per_Set", "Num_Revit_Per_Set", "Revit_Erp_No", "Remark") 
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+                `;
 
-                dbconnect.query(sqlCommand, [Code_Fg, Name_Fg, Model, Part_No, OE_Part_No, Code, Chem_Grade, Pcs_Per_Set, Box_No, Weight_Box, Box_Erp_No, Rivet_No, Weight_Revit_Per_Set, Num_Revit_Per_Set, Revit_Erp_No, Remark], (err, result) => {
+                dbconnect.query(sqlCommand, [
+                    Code_Fg, Name_Fg, Model, Part_No, OE_Part_No, Code, Chem_Grade, Pcs_Per_Set, Box_No, Weight_Box, 
+                    Box_Erp_No, Rivet_No, Weight_Revit_Per_Set, Num_Revit_Per_Set, Revit_Erp_No, Remark
+                ], (err, result) => {
                     if (err) {
-                        console.log("Error occurred:", err);
+                        console.error("Error occurred:", err);
                         return res.status(500).json({
                             success: false,
                             msg: "Database error occurred while saving Fg"
@@ -95,7 +107,7 @@ const postFg = async (req, res) => {
                     res.status(200).json({
                         success: true,
                         data: result,
-                        msg: `Code_Fg: ${Code_Fg} was created Successful.`
+                        msg: `Code_Fg: ${Code_Fg} was created successfully.`
                     });
                 });
             }
@@ -109,6 +121,7 @@ const postFg = async (req, res) => {
     }
 };
 
+
 //postfgexcel
 const postfgexcel = async (req, res) => {
     // Retrieve data from the request body
@@ -118,29 +131,29 @@ const postfgexcel = async (req, res) => {
     data = data.map(row => row.map(value => value === "" || value === null ? "-" : value));
 
     try {
-        // Extract Code_Fg values from the data (assuming it's the first column)
+        // Extract "Code_Fg" values from the data (assuming it's the first column)
         const codes = data.map(row => row[0]);
 
-        // Query the database to check if these Code_Fg values already exist
-        const checkQuery = `SELECT Code_Fg FROM Fg WHERE Code_Fg IN (?)`;
-        dbconnect.query(checkQuery, [codes], (err, existingRows) => {
+        // Query the database to check if these "Code_Fg" values already exist
+        const checkQuery = `SELECT "Code_Fg" FROM "fg" WHERE "Code_Fg" = ANY($1)`;
+        dbconnect.query(checkQuery, [codes], (err, result) => {
             if (err) {
                 // Return an error response if the query fails
                 return res.status(400).json({
                     success: false,
-                    msg: "There error with check Code_Fg duplicate",
+                    msg: "There was an error with checking Code_Fg for duplicates",
                     data: err
-
                 });
             }
-            
-            // Extract the existing Code_Fg values from the query result
+
+            // Extract the existing "Code_Fg" values from the query result
+            const existingRows = result.rows;
             const existingCodes = existingRows.map(row => row.Code_Fg);
 
             // Separate the data into new records (not in the existingCodes) and existing records
             const newData = data.filter(row => !existingCodes.includes(row[0]));
             const existingData = data.filter(row => existingCodes.includes(row[0]));
-            
+
             if (newData.length > 0) {
                 // Convert newData into an array of objects with named keys for SQL insertion
                 const newDataObjects = newData.map(row => ({
@@ -162,35 +175,52 @@ const postfgexcel = async (req, res) => {
                     Remark: row[15]
                 }));
 
-                // Prepare the values for insertion by mapping each object to an array of values
-                const values = newDataObjects.map(obj => [
-                    obj.Code_Fg,
-                    obj.Name_Fg,
-                    obj.Model,
-                    obj.Part_No,
-                    obj.OE_Part_No,
-                    obj.Code,
-                    obj.Chem_Grade,
-                    obj.Pcs_Per_Set,
-                    obj.Box_No,
-                    obj.Weight_Box,
-                    obj.Box_Erp_No,
-                    obj.Rivet_No,
-                    obj.Weight_Revit_Per_Set,
-                    obj.Num_Revit_Per_Set,
-                    obj.Revit_Erp_No,
-                    obj.Remark
-                ]);
+                // Create a values array and a parameterized query for multiple inserts
+                const values = [];
+                const valuePlaceholders = [];
 
-                // Insert new records into the database
-                const sqlCommand = `INSERT INTO Fg (Code_Fg, Name_Fg, Model, Part_No, OE_Part_No, Code, Chem_Grade, Pcs_Per_Set, Box_No, Weight_Box, Box_Erp_No, Rivet_No, Weight_Revit_Per_Set, Num_Revit_Per_Set, Revit_Erp_No, Remark) VALUES ?`;
-                dbconnect.query(sqlCommand, [values], (err, result) => {
+                newDataObjects.forEach((obj, index) => {
+                    // Each row needs its own set of placeholders ($1, $2, ..., $16) but with index offset
+                    const start = index * 16 + 1;
+                    const placeholders = Array.from({ length: 16 }, (_, i) => `$${start + i}`).join(", ");
+                    valuePlaceholders.push(`(${placeholders})`);
+
+                    // Add the row values to the values array
+                    values.push(
+                        obj.Code_Fg,
+                        obj.Name_Fg,
+                        obj.Model,
+                        obj.Part_No,
+                        obj.OE_Part_No,
+                        obj.Code,
+                        obj.Chem_Grade,
+                        obj.Pcs_Per_Set,
+                        obj.Box_No,
+                        obj.Weight_Box,
+                        obj.Box_Erp_No,
+                        obj.Rivet_No,
+                        obj.Weight_Revit_Per_Set,
+                        obj.Num_Revit_Per_Set,
+                        obj.Revit_Erp_No,
+                        obj.Remark
+                    );
+                });
+
+                // Prepare the INSERT query with dynamic placeholders
+                const sqlCommand = `
+                    INSERT INTO "fg" 
+                    ("Code_Fg", "Name_Fg", "Model", "Part_No", "OE_Part_No", "Code", "Chem_Grade", "Pcs_Per_Set", "Box_No", "Weight_Box", "Box_Erp_No", "Rivet_No", "Weight_Revit_Per_Set", "Num_Revit_Per_Set", "Revit_Erp_No", "Remark") 
+                    VALUES ${valuePlaceholders.join(", ")}
+                `;
+
+                dbconnect.query(sqlCommand, values, (err, result) => {
                     if (err) {
-                        // Return an error response if the insertion fails
+                        // Update error message to include the specific Code_Fg
+                        const failedCode = newDataObjects.find(obj => obj.Code_Fg === err.detail)?.Code_Fg || "unknown";
                         return res.status(400).json({
                             success: false,
-                            msg: `There error with Insert Code_Fg: ${Code_Fg}`,
-                            data: result
+                            msg: `There was an error with inserting Code_Fg: ${failedCode}`,
+                            data: err
                         });
                     }
 
@@ -214,72 +244,94 @@ const postfgexcel = async (req, res) => {
         // Return a response if there is an exception during processing
         res.status(400).json({
             success: false,
-            msg:"There Got Problem with Post Excel",
+            msg: "There was a problem with posting Excel data",
             data: error
         });
     }
 };
+
+
+
 //Update Fg
-const updateFg = async(req, res) =>{
+const updateFg = async (req, res) => {
     const id = req.params.id;
-    const {Code_Fg, Name_Fg, Model, Part_No, OE_Part_No, Code, Chem_Grade, Pcs_Per_Set, Box_No, Weight_Box, Box_Erp_No, Rivet_No, Weight_Revit_Per_Set, Num_Revit_Per_Set, Revit_Erp_No, Remark} = req.body;
-    const sqlCommand = "UPDATE fg SET Code_Fg = ?, Name_Fg = ?, Model =?, Part_No=?, OE_Part_No=?, Code=?, Chem_Grade=?, Pcs_Per_Set=?, Box_No=?, Weight_Box=?, Box_Erp_No =?, Rivet_No=?, Weight_Revit_Per_Set=?, Num_Revit_Per_Set=?, Revit_Erp_No=?, Remark=? WHERE id = ? ";
-    const value = [Code_Fg, Name_Fg, Model, Part_No, OE_Part_No, Code, Chem_Grade, Pcs_Per_Set, Box_No, Weight_Box, Box_Erp_No, Rivet_No, Weight_Revit_Per_Set, Num_Revit_Per_Set, Revit_Erp_No, Remark, id];
+    const {
+        Code_Fg, Name_Fg, Model, Part_No, OE_Part_No, Code, Chem_Grade,
+        Pcs_Per_Set, Box_No, Weight_Box, Box_Erp_No, Rivet_No, 
+        Weight_Revit_Per_Set, Num_Revit_Per_Set, Revit_Erp_No, Remark
+    } = req.body;
+
+    const sqlCommand = `
+        UPDATE "fg"
+        SET "Code_Fg" = $1, "Name_Fg" = $2, "Model" = $3, "Part_No" = $4,
+            "OE_Part_No" = $5, "Code" = $6, "Chem_Grade" = $7, "Pcs_Per_Set" = $8,
+            "Box_No" = $9, "Weight_Box" = $10, "Box_Erp_No" = $11, "Rivet_No" = $12,
+            "Weight_Revit_Per_Set" = $13, "Num_Revit_Per_Set" = $14, "Revit_Erp_No" = $15,
+            "Remark" = $16
+        WHERE "id" = $17
+    `;
+    const values = [
+        Code_Fg, Name_Fg, Model, Part_No, OE_Part_No, Code, Chem_Grade,
+        Pcs_Per_Set, Box_No, Weight_Box, Box_Erp_No, Rivet_No, 
+        Weight_Revit_Per_Set, Num_Revit_Per_Set, Revit_Erp_No, Remark, id
+    ];
 
     try {
-        dbconnect.query(sqlCommand, value, (err, result)=>{
-            if(err){
-                console.log(err)
+        dbconnect.query(sqlCommand, values, (err, result) => {
+            if (err) {
+                console.log(err);
                 res.status(500).json({
-                    msg: `There was problems while update Code_Fg: ${Code_Fg}`,
+                    msg: `There was a problem updating Code_Fg: ${Code_Fg}`,
                     data: err,
                     success: false
-                })
-            }else{
+                });
+            } else {
                 res.status(200).json({
-                    msg: `Code_Fg: ${Code_Fg} was update successful`,
-                    data: result
-                })
+                    msg: `Code_Fg: ${Code_Fg} was updated successfully`,
+                    data: result,
+                    success: true
+                });
             }
-        })
+        });
     } catch (error) {
         res.status(500).json({
-            msg: "Connection Interupt by internet",
-            data: err,
+            msg: "Connection interrupted by internet",
+            data: error,
             success: false
-        })
+        });
     }
+};
 
-}
 
 //Delete Fg
-const deleteFg = async (req, res) =>{
+const deleteFg = async (req, res) => {
     const id = req.params.id;
     try {
-        dbconnect.query("DELETE FROM Fg WHERE id = ?", id, (err, result)=>{
-            if(err){
-                console.log("Delete Error Accur", err);
+        dbconnect.query('DELETE FROM "fg" WHERE "id" = $1', [id], (err, result) => {
+            if (err) {
+                console.log("Delete Error Occurred", err);
                 res.status(500).json({
                     msg: 'An unexpected error occurred',
                     success: false,
                     data: result
-                })
-            }else{
+                });
+            } else {
                 res.status(200).json({
                     success: true,
                     msg: `Record ${id} was deleted`,
                     data: result
-                })
+                });
             }
-        })
+        });
     } catch (error) {
-        console.error('Error in postFg:', error);
-        res.status(500).json({ 
+        console.error('Error in deleteFg:', error);
+        res.status(500).json({
             msg: 'An unexpected error occurred',
             success: false
         });
     }
 }
+
 module.exports = {
     getFgs,
     getSigleFg,

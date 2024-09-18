@@ -28,9 +28,12 @@ const DashTable = () => {
         { headerName: 'Code_Wip', field: 'Code_Wip', filter: 'agTextColumnFilter' },
         { headerName: 'Name_Wip', field: 'Name_Wip', filter: 'agTextColumnFilter' },
         { headerName: 'Ra_L', field: 'R_L_Modify', filter: 'agTextColumnFilter' },
+        { headerName: 'Remark', field: 'Remark', filter: 'agTextColumnFilter' },
     ];
 
     const [rowData, setRowData] = useState([]);
+    //set-map
+    const [mappedData, setMappedData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [gridApi, setGridApi] = useState(null);
@@ -60,19 +63,22 @@ const DashTable = () => {
 
             const apiData = (await response.json()).data;
 
+
             const mappedData = apiData.map(item => ({
+                //Bom
                 No: item.id,
                 Code_Fg: item.Code_Fg,
-                Name_Fg: item.Name_Fg,
+                Name_Fg_Bom: item.Name_Fg_Bom,
                 Code_Dr: item.Code_Dr,
-                Name_Dr: item.Name_Dr,
+                Name_Dr_Bom: item.Name_Dr_Bom,
                 Code_Wip: item.Code_Wip,
-                Name_Wip: item.Name_Wip,
-                R_Wip: item.Ra_Wip,
-                R_L: item.Ra_L,
+                Name_Wip_Bom: item.Name_Wip_Bom,
+                Ra_Wip: item.Ra_Wip,
+                Ra_L: item.Ra_L,
                 R_Wip_Modify: item.Ra_Wip_Modify,
                 R_L_Modify: item.Ra_L_Modify,
                 Pcs_Per_Set_FG: item.Pcs_Per_Set_Fg,
+                Remark_Bom: item.Remark_Bom,
                 //Fg
                 Code_Fg: item.Code_Fg,
                 Name_Fg: item.Name_Fg,
@@ -89,14 +95,14 @@ const DashTable = () => {
                 Weight_Revit_Per_Set: item.Weight_Revit_Per_Set,
                 Num_Revit_Per_Set: item.Num_Revit_Per_Set,
                 Revit_Erp_No: item.Revit_Erp_No,
-                Remark: item.Remark,
+                Remark_Fg: item.Remark_Fg,
                 //dr
                 Code_Dr: item.Code_Dr,
                 Name_Dr: item.Name_Dr,
                 Name_Wip: item.Name_Wip,
                 Name_Fg_1: item.Name_Fg_1,
                 Demension: item.Demension,
-                Type_Brake: item.Type_Brake,
+                Type_Brake_Dr: item.Type_Brake_Dr,
                 Chem_Grade: item.Chem_Grade,
                 Status_Dr: item.Status_Dr,
                 No_Grind: item.No_Grind,
@@ -105,7 +111,7 @@ const DashTable = () => {
                 No_Drill: item.No_Drill,
                 No_Reamer: item.No_Reamer,
                 Code_Drill: item.Code_Drill,
-                Remark: item.Remark,
+                Remark_Dr: item.Remark_Dr,
                 Color: item.Color,
                 Color_Spray: item.Color_Spray,
                 Grind_Back: item.Grind_Back,
@@ -131,10 +137,42 @@ const DashTable = () => {
                 Type_Mold: item.Type_Mold,
                 Time_Per_Mold: item.Time_Per_Mold,
                 Mold_Per_8_Hour: item.Mold_Per_8_Hour,
-                Remark: item.Remark,
+                Remark_Wip: item.Remark_Wip,
 
             }));
-            setRowData(mappedData);
+            setMappedData(mappedData);
+            console.log('mappedData', mappedData)
+            //Row data not Duplicate
+            const rowData = apiData.map(item => ({
+                No: item.id,
+                Code_Fg: item.Code_Fg,
+                Name_Fg: item.Name_Fg_Bom,
+                Code_Dr: item.Code_Dr,
+                Name_Dr: item.Name_Dr_Bom,
+                Code_Wip: item.Code_Wip,
+                Name_Wip: item.Name_Wip_Bom,
+                R_Wip: item.Ra_Wip,
+                R_L: item.Ra_L,
+                R_Wip_Modify: item.Ra_Wip_Modify,
+                R_L_Modify: item.Ra_L_Modify,
+                Pcs_Per_Set_FG: item.Pcs_Per_Set_Fg,
+                Remark: item.Remark_Bom,
+            }));
+            console.log('rowData',rowData)
+            //Record remove Duplicate
+            function removeDuplicates(data) {
+                const seen = new Set();
+                return data.filter(item => {
+                    const key = JSON.stringify(item);
+                    return seen.has(key) ? false : seen.add(key);
+                });
+            }
+
+            // Remove duplicates from each mappedData array
+            const rowDataRemoveDuplicate = removeDuplicates(rowData);
+
+            setRowData(rowDataRemoveDuplicate);
+
         } catch (error) {
             setError(error.message);
             console.log("Error fetching data from API:", error.msg);
@@ -196,7 +234,15 @@ const DashTable = () => {
                 Revit_Erp_No: 'Revit_Erp_No',
                 Remark: 'Remark'
             }
-            const mappedDataFg = selectedRows.map(item =>({
+            //Filter
+            // Create a Set of Code_Fg values for quick lookup
+            const codeFgSet = new Set(selectedRows.map(row => row.Code_Fg));
+            console.log('codeFgSet', codeFgSet)
+            // Filter mappedData to include only items where code_Fg is in the Set
+            const filteredDataFg = mappedData.filter(data => codeFgSet.has(data.Code_Fg));
+            console.log('filteredDataFg', filteredDataFg)
+
+            const mappedDataFg = filteredDataFg.map(item =>({
                 Code_Fg: item.Code_Fg,
                 Name_Fg: item.Name_Fg,
                 Model: item.Model,
@@ -212,7 +258,7 @@ const DashTable = () => {
                 Weight_Revit_Per_Set:item.Weight_Revit_Per_Set,
                 Num_Revit_Per_Set: item.Num_Revit_Per_Set,
                 Revit_Erp_No: item.Revit_Erp_No,
-                Remark: item.Remark,
+                Remark: item.Remark_Fg,
             }))
             //Dr
             const customHeadersDr = {
@@ -245,13 +291,21 @@ const DashTable = () => {
                 Form: 'Form',
             };
 
-            const mappedDataDr = selectedRows.map(row => ({
+            //Filter
+            // Create a Set of Code_Fg values for quick lookup
+            const codeDrSet = new Set(selectedRows.map(row => row.Code_Dr));
+            console.log('codeFgSet', codeDrSet)
+            // Filter mappedData to include only items where code_Fg is in the Set
+            const filteredDataDr = mappedData.filter(data => codeDrSet.has(data.Code_Dr));
+            console.log('filteredDataDr', filteredDataDr)
+
+            const mappedDataDr = filteredDataDr.map(row => ({
                 Code_Dr: row.Code_Dr,
                 Name_Dr: row.Name_Dr,
                 Name_Wip: row.Name_Wip,
                 Name_Fg_1: row.Name_Fg_1,
                 Demension: row.Demension,
-                Type_Brake: row.Type_Brake,
+                Type_Brake: row.Type_Brake_Dr,
                 Chem_Grade: row.Chem_Grade,
                 Status_Dr: row.Status_Dr,
                 No_Grind: row.No_Grind,
@@ -261,7 +315,7 @@ const DashTable = () => {
                 No_Reamer: row.No_Reamer,
                 Code: row.Code_Drill,
                 // Code: row.Code_fg,
-                Remark: row.Remark,
+                Remark: row.Remark_Dr,
                 Color: row.Color,
                 Color_Spray: row.Color_Spray,
                 Grind_Back: row.Grind_Back,
@@ -291,7 +345,17 @@ const DashTable = () => {
                 Mold_Per_8_Hour: 'Mold_Per_8_Hour',
                 Remark: 'Remark'
             };
-            const mappedDataWip = selectedRows.map(item => ({
+
+            //Filter
+            // Create a Set of Code_Fg values for quick lookup
+            const codeWipSet = new Set(selectedRows.map(row => row.Code_Wip));
+            console.log('codeWipSet', codeWipSet)
+            // Filter mappedData to include only items where code_Fg is in the Set
+            const filteredDataWip = mappedData.filter(data => codeWipSet.has(data.Code_Wip));
+            console.log('filteredDataWip', filteredDataWip)
+
+
+            const mappedDataWip = filteredDataWip.map(item => ({
                 Code_Wip: item.Code_Wip,
                 Name_Wip: item.Name_Wip,
                 Code_Mold: item.Code_Mold,
@@ -304,7 +368,7 @@ const DashTable = () => {
                 Type_Mold: item.Type_Mold,
                 Time_Per_Mold: item.Time_Per_Mold,
                 Mold_Per_8_Hour: item.Mold_Per_8_Hour,
-                Remark: item.Remark,
+                Remark: item.Remark_Wip,
             }));
 
             console.log("Dr",mappedDataDr)
@@ -326,6 +390,12 @@ const DashTable = () => {
             const uniqueDataFg = removeDuplicates(mappedDataFg);
             const uniqueDataDr = removeDuplicates(mappedDataDr);
             const uniqueDataWip = removeDuplicates(mappedDataWip);
+
+            
+            console.log("uniqueDataBom",uniqueDataBom)
+            console.log("uniqueDataFg",uniqueDataFg)
+            console.log("uniqueDataDr",uniqueDataDr)
+            console.log("uniqueDataWip",uniqueDataWip)
 
             // Create worksheets with unique data
             const worksheetBom = XLSX.utils.json_to_sheet(uniqueDataBom, { header: Object.values(customHeadersBom) });

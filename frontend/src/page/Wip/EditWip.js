@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Layout } from 'antd';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Sidebar from '../../component/Sidebar';
 import HeaderComponent from '../../component/Header';
 import FooterComponent from '../../component/Footer';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../hook/useAuthContext';
+import { Layout  } from 'antd';
 import { Form, Button, Spinner, Row, Col, Modal as BootstrapModal } from 'react-bootstrap';
 import env from "react-dotenv";
 
@@ -49,6 +49,8 @@ const EditWip = () => {
             });
 
             const json = await response.json();
+
+            console.log(json)
             if (response.ok) {
                 const result = json.data;
 
@@ -83,6 +85,7 @@ const EditWip = () => {
             setModalTitle('Fetch Error');
             setModalMessage(`Error fetching WIP data: ${error.message}`);
             setModalVisible(true);
+            console.log(error.message)
         } finally {
             setLoading(false);
         }
@@ -129,6 +132,7 @@ const EditWip = () => {
                 setModalVisible(true);
             }
         } catch (error) {
+            console.log(error.message)
             setModalTitle('Update Error');
             setModalMessage(`Error updating WIP: ${error.message}`);
             setModalVisible(true);
@@ -185,8 +189,8 @@ const EditWip = () => {
                                             />
                                         </Form.Group>
 
-                                        <Form.Group controlId="Code_Mold">
-                                            <Form.Label>Code Mold</Form.Label>
+                                        <Form.Group controlId="รหัสแม่พิม์">
+                                            <Form.Label>รหัสแม่พิม์</Form.Label>
                                             <Form.Control
                                                 type="text"
                                                 name="Code_Mold"
@@ -195,8 +199,8 @@ const EditWip = () => {
                                             />
                                         </Form.Group>
 
-                                        <Form.Group controlId="Dimension">
-                                            <Form.Label>Dimension</Form.Label>
+                                        <Form.Group controlId="ขนาด(กว้าง*หนา-ยาว)">
+                                            <Form.Label>ขนาด(กว้าง*หนา-ยาว)</Form.Label>
                                             <Form.Control
                                                 type="text"
                                                 name="Dimension"
@@ -205,8 +209,8 @@ const EditWip = () => {
                                             />
                                         </Form.Group>
 
-                                        <Form.Group controlId="Chem_Grade">
-                                            <Form.Label>Chemical Grade</Form.Label>
+                                        <Form.Group controlId="เกรดเคมี">
+                                            <Form.Label>เกรดเคมี</Form.Label>
                                             <Form.Control
                                                 type="text"
                                                 name="Chem_Grade"
@@ -215,8 +219,8 @@ const EditWip = () => {
                                             />
                                         </Form.Group>
 
-                                        <Form.Group controlId="Weight_Per_Pcs">
-                                            <Form.Label>Weight Per Piece</Form.Label>
+                                        <Form.Group controlId="น้ำหนักต่อชิ้น">
+                                            <Form.Label>น้ำหนักต่อชิ้น</Form.Label>
                                             <Form.Control
                                                 type="text"
                                                 name="Weight_Per_Pcs"
@@ -225,8 +229,8 @@ const EditWip = () => {
                                             />
                                         </Form.Group>
 
-                                        <Form.Group controlId="Pcs_Per_Mold">
-                                            <Form.Label>Pieces Per Mold</Form.Label>
+                                        <Form.Group controlId="ชิ้นต่อพิมพ์">
+                                            <Form.Label>ชิ้นต่อพิมพ์</Form.Label>
                                             <Form.Control
                                                 type="text"
                                                 name="Pcs_Per_Mold"
@@ -235,8 +239,8 @@ const EditWip = () => {
                                             />
                                         </Form.Group>
 
-                                        <Form.Group controlId="Pcs_Per_Set">
-                                            <Form.Label>Pieces Per Set</Form.Label>
+                                        <Form.Group controlId="ชิ้นต่อชุด">
+                                            <Form.Label>ชิ้นต่อชุด</Form.Label>
                                             <Form.Control
                                                 type="text"
                                                 name="Pcs_Per_Set"
@@ -245,7 +249,8 @@ const EditWip = () => {
                                             />
                                         </Form.Group>
 
-                                        <Form.Group controlId="Type_Brake">
+
+                                        {/* <Form.Group controlId="Type_Brake">
                                             <Form.Label>Type Brake</Form.Label>
                                             <Form.Control
                                                 type="text"
@@ -253,11 +258,42 @@ const EditWip = () => {
                                                 value={formData.Type_Brake}
                                                 onChange={handleChange}
                                             />
-                                        </Form.Group>
+                                        </Form.Group> */}
+
+                                        <Form.Group controlId="ลักษณะผ้า">
+                                            <Form.Label>ลักษณะผ้า</Form.Label>
+                                            <select
+                                                name="Type_Brake"
+                                                value={formData.Type_Brake}
+                                                onChange={handleChange}
+                                                className="form-select"
+                                            >
+                                                <option value={formData.Type_Brake}>{formData.Type_Brake}</option>
+                                                <option value="-">-</option>
+                                                <option value="ผ้าสั้น">ผ้าสั้น</option>
+                                                <option value="ผ้ายาว">ผ้ายาว</option>
+                                                <option value="ผ้าเล็ก">ผ้าเล็ก</option>
+                                            </select>
+                                        </Form.Group>        
                                     </Col>
 
                                     <Col md={6}>
-                                        <Form.Group controlId="Type_Mold">
+                                        <Form.Group controlId="ลักษณะแม่พิมพ์">
+                                            <Form.Label>ลักษณะแม่พิมพ์</Form.Label>
+                                            <select
+                                                value={formData.Type_Mold}
+                                                onChange={handleChange}
+                                                className="form-select"
+                                                type="text"
+                                                name="Type_Mold"
+                                            >
+                                                <option value={formData.Type_Mold}>{formData.Type_Mold}</option>
+                                                <option value="-">-</option>
+                                                <option value="แบน">แบน</option>
+                                                <option value="โค้ง">โค้ง</option>
+                                            </select>
+                                        </Form.Group>    
+                                        {/* <Form.Group controlId="Type_Mold">
                                             <Form.Label>Type Mold</Form.Label>
                                             <Form.Control
                                                 type="text"
@@ -265,10 +301,10 @@ const EditWip = () => {
                                                 value={formData.Type_Mold}
                                                 onChange={handleChange}
                                             />
-                                        </Form.Group>
+                                        </Form.Group> */}
 
-                                        <Form.Group controlId="Time_Per_Mold">
-                                            <Form.Label>Time Per Mold</Form.Label>
+                                        <Form.Group controlId="เวลาต่อพิมพ์">
+                                            <Form.Label>เวลาต่อพิมพ์</Form.Label>
                                             <Form.Control
                                                 type="text"
                                                 name="Time_Per_Mold"
@@ -277,8 +313,8 @@ const EditWip = () => {
                                             />
                                         </Form.Group>
 
-                                        <Form.Group controlId="Mold_Per_8_Hour">
-                                            <Form.Label>Mold Per 8 Hour</Form.Label>
+                                        <Form.Group controlId="พิมพ์ต่อ 8 ชัวโมง">
+                                            <Form.Label>พิมพ์ต่อ 8 ชัวโมง</Form.Label>
                                             <Form.Control
                                                 type="text"
                                                 name="Mold_Per_8_Hour"
@@ -288,7 +324,7 @@ const EditWip = () => {
                                         </Form.Group>
 
                                         <Form.Group controlId="Remark">
-                                            <Form.Label>Remark</Form.Label>
+                                            <Form.Label>หมายเหตุ</Form.Label>
                                             <Form.Control
                                                 as="textarea"
                                                 name="Remark"
