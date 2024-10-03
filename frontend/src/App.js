@@ -257,10 +257,8 @@ const App = () => {
 
               <Route path='/dashboard' element={isAuthenticated ? < Dashboard /> : <Navigate to='/login' />} />
               
-              {/* Optional: Add a route for a 404 page */}
-              {/* <Route path='*' element={<NotFoundPage />} /> */}
+
             </Routes>
-        
           </Content>
           <FooterComponent />
         </Layout>
