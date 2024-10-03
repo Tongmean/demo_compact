@@ -1,19 +1,15 @@
 import React, { useState } from 'react';
-import { Layout, Form, Input, Button, Select  } from 'antd';
-import Sidebar from '../../component/Sidebar';
-import HeaderComponent from '../../component/Header';
-import FooterComponent from '../../component/Footer';
+import { Form, Input, Button, Select  } from 'antd';
+
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../hook/useAuthContext';
 import { Modal } from 'react-bootstrap';
 import env from "react-dotenv";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const { Content } = Layout;
 const { Option } = Select;
 
 const CreateWip = () => {
-    const [collapsed, setCollapsed] = useState(false);
     const [Code_Wip, setCode_Wip] = useState('');
     const [Name_Wip, setName_Wip] = useState('');
     const [Code_Mold, setCode_Mold] = useState('');
@@ -82,197 +78,182 @@ const CreateWip = () => {
     };
 
     return (
-        <Layout style={{ minHeight: '100vh' }}>
-            <Sidebar collapsed={collapsed} onCollapse={setCollapsed} />
-            <Layout>
-                <HeaderComponent />
-                <Content
-                    style={{
-                        margin: '24px 16px 0',
-                        padding: '24px',
-                        background: '#ffffff',
-                        borderRadius: '4px',
-                        boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
-                    }}
-                >
-                    <div>
-                        <h2>Create New WIP</h2>
-                        <Form onSubmitCapture={handleSubmit} layout="vertical">
-                            <div className='container-fluid'>
-                                <div className='row'>
-                                    <div className='col-xl-6 col-lg-6 col-md-12'>
-                                        <Form.Item label="Code Wip">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Code_Wip}
-                                                onChange={(e) => setCode_Wip(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Name Wip">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Name_Wip}
-                                                onChange={(e) => setName_Wip(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="รหัสแม่พิมพ์">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Code_Mold}
-                                                onChange={(e) => setCode_Mold(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="ขนาด(กว้าง*หนา-ยาว)">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Dimension}
-                                                onChange={(e) => setDimension(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="เกรดเคมี">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Chem_Grade}
-                                                onChange={(e) => setChem_Grade(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="น้ำหนักต่อชิ้น">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Weight_Per_Pcs}
-                                                onChange={(e) => setWeight_Per_Pcs(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="ชิ้นต่อพิมพ์">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Pcs_Per_Mold}
-                                                onChange={(e) => setPcs_Per_Mold(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                    </div>
-                                    <div className='col-xl-6 col-lg-6 col-md-12'>
-                                        <Form.Item label="ชิ้นต่อชุด">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Pcs_Per_Set}
-                                                onChange={(e) => setPcs_Per_Set(e.target.value)}
-                                            />
-                                        </Form.Item>
+            <div>
+                <div>
+                    <h2>Create New WIP</h2>
+                    <Form onSubmitCapture={handleSubmit} layout="vertical">
+                        <div className='container-fluid'>
+                            <div className='row'>
+                                <div className='col-xl-6 col-lg-6 col-md-12'>
+                                    <Form.Item label="Code Wip">
+                                        <Input
+                                            type="text"
+                                            required
+                                            value={Code_Wip}
+                                            onChange={(e) => setCode_Wip(e.target.value)}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="Name Wip">
+                                        <Input
+                                            type="text"
+                                            required
+                                            value={Name_Wip}
+                                            onChange={(e) => setName_Wip(e.target.value)}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="รหัสแม่พิมพ์">
+                                        <Input
+                                            type="text"
+                                            required
+                                            value={Code_Mold}
+                                            onChange={(e) => setCode_Mold(e.target.value)}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="ขนาด(กว้าง*หนา-ยาว)">
+                                        <Input
+                                            type="text"
+                                            required
+                                            value={Dimension}
+                                            onChange={(e) => setDimension(e.target.value)}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="เกรดเคมี">
+                                        <Input
+                                            type="text"
+                                            required
+                                            value={Chem_Grade}
+                                            onChange={(e) => setChem_Grade(e.target.value)}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="น้ำหนักต่อชิ้น">
+                                        <Input
+                                            type="text"
+                                            required
+                                            value={Weight_Per_Pcs}
+                                            onChange={(e) => setWeight_Per_Pcs(e.target.value)}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="ชิ้นต่อพิมพ์">
+                                        <Input
+                                            type="text"
+                                            required
+                                            value={Pcs_Per_Mold}
+                                            onChange={(e) => setPcs_Per_Mold(e.target.value)}
+                                        />
+                                    </Form.Item>
+                                </div>
+                                <div className='col-xl-6 col-lg-6 col-md-12'>
+                                    <Form.Item label="ชิ้นต่อชุด">
+                                        <Input
+                                            type="text"
+                                            required
+                                            value={Pcs_Per_Set}
+                                            onChange={(e) => setPcs_Per_Set(e.target.value)}
+                                        />
+                                    </Form.Item>
 
-                                        {/* <Form.Item label="ลักษณะผ้าเบรก">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Type_Brake}
-                                                onChange={(e) => setType_Brake(e.target.value)}
-                                            />
-                                        </Form.Item> */}
+                                    {/* <Form.Item label="ลักษณะผ้าเบรก">
+                                        <Input
+                                            type="text"
+                                            required
+                                            value={Type_Brake}
+                                            onChange={(e) => setType_Brake(e.target.value)}
+                                        />
+                                    </Form.Item> */}
 
-                                        <Form.Item label="ลักษณะผ้าเบรก">
-                                            <Select
-                                                required
-                                                value={Type_Brake}
-                                                onChange={(value) => setType_Brake(value)}
-                                            >
-                                                <Option value="-">-</Option>
-                                                <Option value="ผ้าสั้น">ผ้าสั้น</Option>
-                                                <Option value="ผ้ายาว">ผ้ายาว</Option>
-                                                <Option value="ผ้าเล็ก">ผ้าเล็ก</Option>
-                                            </Select>
-                                        </Form.Item>
+                                    <Form.Item label="ลักษณะผ้าเบรก">
+                                        <Select
+                                            required
+                                            value={Type_Brake}
+                                            onChange={(value) => setType_Brake(value)}
+                                        >
+                                            <Option value="-">-</Option>
+                                            <Option value="ผ้าสั้น">ผ้าสั้น</Option>
+                                            <Option value="ผ้ายาว">ผ้ายาว</Option>
+                                            <Option value="ผ้าเล็ก">ผ้าเล็ก</Option>
+                                        </Select>
+                                    </Form.Item>
 
 
-                                        <Form.Item label="ลักษณะแม่พิมพ์">
-                                            <Select
-                                                required
-                                                value={Type_Mold}
-                                                onChange={(value) => setType_Mold(value)}
-                                            >
-                                                <Option value="-">-</Option>
-                                                <Option value="โค้ง">โค้ง</Option>
-                                                <Option value="แบน">แบน</Option>
-                                            </Select>
-                                        </Form.Item>
-                                        
+                                    <Form.Item label="ลักษณะแม่พิมพ์">
+                                        <Select
+                                            required
+                                            value={Type_Mold}
+                                            onChange={(value) => setType_Mold(value)}
+                                        >
+                                            <Option value="-">-</Option>
+                                            <Option value="พิมพ์ครึ่งวงกลม">พิมพ์ครึ่งวงกลม</Option>
+                                            <Option value="แบน">แบน</Option>
+                                        </Select>
+                                    </Form.Item>
+                                    
 
-                                        {/* <Form.Item label="ลักษณะแม่พิมพ์">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Type_Mold}
-                                                onChange={(e) => setType_Mold(e.target.value)}
-                                            />
-                                        </Form.Item> */}
-                                        
-                                        <Form.Item label="เวลาต่อพิมพ์">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Time_Per_Mold}
-                                                onChange={(e) => setTime_Per_Mold(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="พิมพ์ต่อ8ชั่วโมง">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Mold_Per_8_Hour}
-                                                onChange={(e) => setMold_Per_8_Hour(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="หมายเหตุ">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Remark}
-                                                onChange={(e) => setRemark(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                    </div>
-                                    <div className='col-12'>
-                                        <Form.Item>
-                                            <Button type="" className='me-2' onClick={handleOnClick}>
-                                                Back
-                                            </Button>
-                                            <Button
-                                                type="primary"
-                                                htmlType="submit"
-                                                disabled={isPending}
-                                            >
-                                                {isPending ? 'Saving...' : 'Save Data'}
-                                            </Button>
-                                        </Form.Item>
-                                    </div>
+                                    {/* <Form.Item label="ลักษณะแม่พิมพ์">
+                                        <Input
+                                            type="text"
+                                            required
+                                            value={Type_Mold}
+                                            onChange={(e) => setType_Mold(e.target.value)}
+                                        />
+                                    </Form.Item> */}
+                                    
+                                    <Form.Item label="เวลาต่อพิมพ์">
+                                        <Input
+                                            type="text"
+                                            required
+                                            value={Time_Per_Mold}
+                                            onChange={(e) => setTime_Per_Mold(e.target.value)}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="พิมพ์ต่อ8ชั่วโมง">
+                                        <Input
+                                            type="text"
+                                            required
+                                            value={Mold_Per_8_Hour}
+                                            onChange={(e) => setMold_Per_8_Hour(e.target.value)}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="หมายเหตุ">
+                                        <Input
+                                            type="text"
+                                            required
+                                            value={Remark}
+                                            onChange={(e) => setRemark(e.target.value)}
+                                        />
+                                    </Form.Item>
+                                </div>
+                                <div className='col-12'>
+                                    <Form.Item>
+                                        <Button type="" className='me-2' onClick={handleOnClick}>
+                                            Back
+                                        </Button>
+                                        <Button
+                                            type="primary"
+                                            htmlType="submit"
+                                            disabled={isPending}
+                                        >
+                                            {isPending ? 'Saving...' : 'Save Data'}
+                                        </Button>
+                                    </Form.Item>
                                 </div>
                             </div>
-                        </Form>
-                    </div>
-                </Content>
-                <FooterComponent />
-            </Layout>
+                        </div>
+                    </Form>
+                </div>
 
-            {/* Modal for showing success/error messages */}
-            <Modal show={showModal} onHide={handleCloseModal}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Message</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>{modalContent}</Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleCloseModal}>
-                        Close
-                    </Button>
-                </Modal.Footer>
-            </Modal>
-        </Layout>
+                {/* Modal for showing success/error messages */}
+                <Modal show={showModal} onHide={handleCloseModal}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Message</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>{modalContent}</Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={handleCloseModal}>
+                            Close
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+            </div>
     );
 };
 

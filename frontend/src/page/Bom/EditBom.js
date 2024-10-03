@@ -1,18 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Layout } from 'antd';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Sidebar from '../../component/Sidebar';
-import HeaderComponent from '../../component/Header';
-import FooterComponent from '../../component/Footer';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../hook/useAuthContext';
 import { Form, Button, Spinner, Row, Col, Modal as BootstrapModal } from 'react-bootstrap';
 import env from "react-dotenv";
 
-const { Content } = Layout;
 
 const EditBom = () => {
-    const [collapsed, setCollapsed] = useState(false);
     const { id } = useParams();
     const navigate = useNavigate();
     const { user } = useAuthContext();
@@ -135,137 +129,122 @@ const EditBom = () => {
     };
 
     return (
-        <Layout style={{ minHeight: '100vh' }}>
-            <Sidebar collapsed={collapsed} onCollapse={setCollapsed} />
-            <Layout>
-                <HeaderComponent />
-                <Content
-                    style={{
-                        margin: '24px 16px',
-                        padding: '24px',
-                        background: '#ffffff',
-                        borderRadius: '4px',
-                        boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
-                    }}
-                >
-                    <div>
-                        <h2>Edit BOM</h2>
-                        {loading ? (
-                            <Spinner animation="border" variant="primary" />
-                        ) : (
-                            <Form onSubmit={handleSubmit}>
-                                <Row>
-                                    <Col md={6}>
-                                        <Form.Group controlId="Code_Fg">
-                                            <Form.Label>Code Fg</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Code_Fg"
-                                                value={formData.Code_Fg}
-                                                onChange={handleChange}
-                                                required
-                                            />
-                                        </Form.Group>
+        <div>
+            <div>
+                <h2>Edit BOM</h2>
+                {loading ? (
+                    <Spinner animation="border" variant="primary" />
+                ) : (
+                    <Form onSubmit={handleSubmit}>
+                        <Row>
+                            <Col md={6}>
+                                <Form.Group controlId="Code_Fg">
+                                    <Form.Label>Code Fg</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="Code_Fg"
+                                        value={formData.Code_Fg}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </Form.Group>
 
-                                        <Form.Group controlId="Name_Fg">
-                                            <Form.Label>Name Fg</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Name_Fg"
-                                                value={formData.Name_Fg}
-                                                onChange={handleChange}
-                                                required
-                                            />
-                                        </Form.Group>
+                                <Form.Group controlId="Name_Fg">
+                                    <Form.Label>Name Fg</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="Name_Fg"
+                                        value={formData.Name_Fg}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </Form.Group>
 
-                                        <Form.Group controlId="Code_Dr">
-                                            <Form.Label>Code Dr</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Code_Dr"
-                                                value={formData.Code_Dr}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
+                                <Form.Group controlId="Code_Dr">
+                                    <Form.Label>Code Dr</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="Code_Dr"
+                                        value={formData.Code_Dr}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
 
-                                        <Form.Group controlId="Name_Dr">
-                                            <Form.Label>Name Dr</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Name_Dr"
-                                                value={formData.Name_Dr}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
+                                <Form.Group controlId="Name_Dr">
+                                    <Form.Label>Name Dr</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="Name_Dr"
+                                        value={formData.Name_Dr}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
 
-                                        <Form.Group controlId="Code_Wip">
-                                            <Form.Label>Code Wip</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Code_Wip"
-                                                value={formData.Code_Wip}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
+                                <Form.Group controlId="Code_Wip">
+                                    <Form.Label>Code Wip</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="Code_Wip"
+                                        value={formData.Code_Wip}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
 
-                                        <Form.Group controlId="Ra_Wip">
-                                            <Form.Label>R Wip</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Ra_Wip"
-                                                value={formData.Ra_Wip}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
-                                    </Col>
+                                <Form.Group controlId="Ra_Wip">
+                                    <Form.Label>R Wip</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="Ra_Wip"
+                                        value={formData.Ra_Wip}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
+                            </Col>
 
-                                    <Col md={6}>
-                                        <Form.Group controlId="Name_Wip">
-                                            <Form.Label>Name Wip</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Name_Wip"
-                                                value={formData.Name_Wip}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
+                            <Col md={6}>
+                                <Form.Group controlId="Name_Wip">
+                                    <Form.Label>Name Wip</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="Name_Wip"
+                                        value={formData.Name_Wip}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
 
-                                        <Form.Group controlId="Ra_L">
-                                            <Form.Label>R L</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Ra_L"
-                                                value={formData.Ra_L}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
+                                <Form.Group controlId="Ra_L">
+                                    <Form.Label>R L</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="Ra_L"
+                                        value={formData.Ra_L}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
 
-                                        <Form.Group controlId="Remark">
-                                            <Form.Label>Remark</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Remark"
-                                                value={formData.Remark}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
-                                    </Col>
-                                </Row>
+                                <Form.Group controlId="Remark">
+                                    <Form.Label>Remark</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="Remark"
+                                        value={formData.Remark}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
+                            </Col>
+                        </Row>
 
-                                <div className='mt-2'>
-                                    <Button className='btn-secondary' variant="primary" onClick={handleOnClick}>
-                                        Back
-                                    </Button>
-                                    <Button className='ms-2' variant="primary" type="submit" disabled={loading}>
-                                        {loading ? 'Saving...' : 'Update'}
-                                    </Button>
-                                </div>
-                            </Form>
-                        )}
-                    </div>
-                </Content>
-                <FooterComponent />
-            </Layout>
+                        <div className='mt-2'>
+                            <Button className='btn-secondary' variant="primary" onClick={handleOnClick}>
+                                Back
+                            </Button>
+                            <Button className='ms-2' variant="primary" type="submit" disabled={loading}>
+                                {loading ? 'Saving...' : 'Update'}
+                            </Button>
+                        </div>
+                    </Form>
+                )}
+            </div>
 
             {/* Bootstrap Modal for messages */}
             <BootstrapModal show={modalVisible} onHide={() => setModalVisible(false)}>
@@ -279,7 +258,7 @@ const EditBom = () => {
                     </Button>
                 </BootstrapModal.Footer>
             </BootstrapModal>
-        </Layout>
+        </div>
     );
 };
 

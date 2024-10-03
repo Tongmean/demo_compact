@@ -1,10 +1,11 @@
 // Connect DB
 const dbconnect = require('../DbConnect');
+const { logUpdate } = require('../utility/historylog');
 
 // Get all fg
 const getFgs = async (req, res) => {
     try {
-        dbconnect.query('SELECT * FROM "fg"', (err, result) => {
+        dbconnect.query(`SELECT * FROM "fg" WHERE "Status" IN ('Active', 'Update') ORDER BY "Code_Fg" ASC `, (err, result) => {
             if (err) {
                 console.error("Database query error:", err);
                 res.status(500).json({
@@ -64,7 +65,11 @@ const postFg = async (req, res) => {
         Code_Fg, Name_Fg, Model, Part_No, OE_Part_No, Code, Chem_Grade, Pcs_Per_Set, Box_No, Weight_Box, 
         Box_Erp_No, Rivet_No, Weight_Revit_Per_Set, Num_Revit_Per_Set, Revit_Erp_No, Remark
     } = req.body;
-
+    const Status = "Active";
+    // Access the user email from requireAuth middleware
+    const userEmail = req.user.email; // This email comes from requireAuth
+    const CreateBy = userEmail;
+    console.log('userEmail:', userEmail)
     try {
         // First, check if the Code_Fg already exists in the database
         const checkSqlCommand = 'SELECT * FROM "fg" WHERE "Code_Fg" = $1';
@@ -88,13 +93,13 @@ const postFg = async (req, res) => {
                 // Proceed with inserting new record since Code_Fg does not exist
                 const sqlCommand = `
                     INSERT INTO "fg" ("Code_Fg", "Name_Fg", "Model", "Part_No", "OE_Part_No", "Code", "Chem_Grade", "Pcs_Per_Set", "Box_No", "Weight_Box", 
-                    "Box_Erp_No", "Rivet_No", "Weight_Revit_Per_Set", "Num_Revit_Per_Set", "Revit_Erp_No", "Remark") 
-                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+                    "Box_Erp_No", "Rivet_No", "Weight_Revit_Per_Set", "Num_Revit_Per_Set", "Revit_Erp_No", "Remark", "Status", "CreateBy") 
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
                 `;
 
                 dbconnect.query(sqlCommand, [
                     Code_Fg, Name_Fg, Model, Part_No, OE_Part_No, Code, Chem_Grade, Pcs_Per_Set, Box_No, Weight_Box, 
-                    Box_Erp_No, Rivet_No, Weight_Revit_Per_Set, Num_Revit_Per_Set, Revit_Erp_No, Remark
+                    Box_Erp_No, Rivet_No, Weight_Revit_Per_Set, Num_Revit_Per_Set, Revit_Erp_No, Remark, Status, CreateBy
                 ], (err, result) => {
                     if (err) {
                         console.error("Error occurred:", err);
@@ -129,7 +134,11 @@ const postfgexcel = async (req, res) => {
 
     // Ensure no fields are empty; replace empty or null values with "-"
     data = data.map(row => row.map(value => value === "" || value === null ? "-" : value));
+    // Access the user email from requireAuth middleware
+    const userEmail = req.user.email; // This email comes from requireAuth
+    const CreateBy = userEmail;
 
+    console.log('userEmail:', userEmail)
     try {
         // Extract "Code_Fg" values from the data (assuming it's the first column)
         const codes = data.map(row => row[0]);
@@ -172,7 +181,9 @@ const postfgexcel = async (req, res) => {
                     Weight_Revit_Per_Set: row[12],
                     Num_Revit_Per_Set: row[13],
                     Revit_Erp_No: row[14],
-                    Remark: row[15]
+                    Remark: row[15],
+                    Status: "Active", // Add Status with default value 'Active'
+                    CreateBy: CreateBy // Add CreateBy as the userEmail
                 }));
 
                 // Create a values array and a parameterized query for multiple inserts
@@ -180,9 +191,9 @@ const postfgexcel = async (req, res) => {
                 const valuePlaceholders = [];
 
                 newDataObjects.forEach((obj, index) => {
-                    // Each row needs its own set of placeholders ($1, $2, ..., $16) but with index offset
-                    const start = index * 16 + 1;
-                    const placeholders = Array.from({ length: 16 }, (_, i) => `$${start + i}`).join(", ");
+                    // Each row needs its own set of placeholders ($1, $2, ..., $18) but with index offset
+                    const start = index * 18 + 1; // Adjust placeholder count to 18
+                    const placeholders = Array.from({ length: 18 }, (_, i) => `$${start + i}`).join(", ");
                     valuePlaceholders.push(`(${placeholders})`);
 
                     // Add the row values to the values array
@@ -202,14 +213,16 @@ const postfgexcel = async (req, res) => {
                         obj.Weight_Revit_Per_Set,
                         obj.Num_Revit_Per_Set,
                         obj.Revit_Erp_No,
-                        obj.Remark
+                        obj.Remark,
+                        obj.Status, // Include Status in the values array
+                        obj.CreateBy // Include CreateBy in the values array
                     );
                 });
 
                 // Prepare the INSERT query with dynamic placeholders
                 const sqlCommand = `
                     INSERT INTO "fg" 
-                    ("Code_Fg", "Name_Fg", "Model", "Part_No", "OE_Part_No", "Code", "Chem_Grade", "Pcs_Per_Set", "Box_No", "Weight_Box", "Box_Erp_No", "Rivet_No", "Weight_Revit_Per_Set", "Num_Revit_Per_Set", "Revit_Erp_No", "Remark") 
+                    ("Code_Fg", "Name_Fg", "Model", "Part_No", "OE_Part_No", "Code", "Chem_Grade", "Pcs_Per_Set", "Box_No", "Weight_Box", "Box_Erp_No", "Rivet_No", "Weight_Revit_Per_Set", "Num_Revit_Per_Set", "Revit_Erp_No", "Remark", "Status", "CreateBy") 
                     VALUES ${valuePlaceholders.join(", ")}
                 `;
 
@@ -252,9 +265,15 @@ const postfgexcel = async (req, res) => {
 
 
 
+
+
 //Update Fg
 const updateFg = async (req, res) => {
+    const userEmail = req.user.email; // This email comes from requireAuth
+    console.log('userEmail:', userEmail);
+    const UpdateBy = userEmail;
     const id = req.params.id;
+    const Status = "Update";
     const {
         Code_Fg, Name_Fg, Model, Part_No, OE_Part_No, Code, Chem_Grade,
         Pcs_Per_Set, Box_No, Weight_Box, Box_Erp_No, Rivet_No, 
@@ -267,16 +286,21 @@ const updateFg = async (req, res) => {
             "OE_Part_No" = $5, "Code" = $6, "Chem_Grade" = $7, "Pcs_Per_Set" = $8,
             "Box_No" = $9, "Weight_Box" = $10, "Box_Erp_No" = $11, "Rivet_No" = $12,
             "Weight_Revit_Per_Set" = $13, "Num_Revit_Per_Set" = $14, "Revit_Erp_No" = $15,
-            "Remark" = $16
-        WHERE "id" = $17
+            "Remark" = $16, "Status" = $17
+        WHERE "id" = $18
     `;
     const values = [
         Code_Fg, Name_Fg, Model, Part_No, OE_Part_No, Code, Chem_Grade,
         Pcs_Per_Set, Box_No, Weight_Box, Box_Erp_No, Rivet_No, 
-        Weight_Revit_Per_Set, Num_Revit_Per_Set, Revit_Erp_No, Remark, id
+        Weight_Revit_Per_Set, Num_Revit_Per_Set, Revit_Erp_No, Remark,Status , id
     ];
 
     try {
+        //Query Current record before update
+        const selectedQuery = `SELECT * FROM "fg" WHERE "id" = $1`;
+        const selectedResult = await dbconnect.query(selectedQuery, [id]);
+
+        //update status
         dbconnect.query(sqlCommand, values, (err, result) => {
             if (err) {
                 console.log(err);
@@ -286,6 +310,22 @@ const updateFg = async (req, res) => {
                     success: false
                 });
             } else {
+                if (selectedResult.rows.length > 0) {
+                    const oldValues = selectedResult.rows[0];
+                    
+                    // Log changes
+                    for (const column of ["Code_Fg", "Name_Fg", "Model", "Part_No", "OE_Part_No", "Code", "Chem_Grade", "Pcs_Per_Set", "Box_No", "Weight_Box", "Box_Erp_No", "Rivet_No", "Weight_Revit_Per_Set", "Num_Revit_Per_Set", "Revit_Erp_No", "Remark"]) {
+                        const oldValue = oldValues[column];
+                        const newValue = req.body[column];
+                        console.log('oldValues', oldValue);
+                        console.log('newValue', newValue)
+
+                        if (oldValue !== newValue) {
+                            logUpdate('fg', column, id , oldValue, newValue, UpdateBy);
+
+                        }
+                    }
+                }
                 res.status(200).json({
                     msg: `Code_Fg: ${Code_Fg} was updated successfully`,
                     data: result,
@@ -306,8 +346,17 @@ const updateFg = async (req, res) => {
 //Delete Fg
 const deleteFg = async (req, res) => {
     const id = req.params.id;
+    const Status = "Delete";
+
+    const userEmail = req.user.email; // This email comes from requireAuth
+    console.log('userEmail:', userEmail);
+    const UpdateBy = userEmail;
     try {
-        dbconnect.query('DELETE FROM "fg" WHERE "id" = $1', [id], (err, result) => {
+        //Query Current Record
+        const selectedQuery = `SELECT * FROM "fg" WHERE "id" = $1`;
+        const selectedResult = await dbconnect.query(selectedQuery, [id]);
+        //Update Status
+        dbconnect.query('UPDATE "fg" SET "Status" = $1 WHERE "id" = $2', [Status, id], (err, result) => {
             if (err) {
                 console.log("Delete Error Occurred", err);
                 res.status(500).json({
@@ -316,6 +365,22 @@ const deleteFg = async (req, res) => {
                     data: result
                 });
             } else {
+                if (selectedResult.rows.length > 0) {
+                    const oldValues = selectedResult.rows[0];
+                    
+                    // Log changes
+                    for (const column of ["Status"]) {
+                        const oldValue = oldValues[column];
+                        const newValue = Status;
+                        console.log('oldValues', oldValue);
+                        console.log('newValue', newValue)
+
+                        if (oldValue !== newValue) {
+                            logUpdate('fg', column, id , oldValue, newValue, UpdateBy);
+
+                        }
+                    }
+                }
                 res.status(200).json({
                     success: true,
                     msg: `Record ${id} was deleted`,

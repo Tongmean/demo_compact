@@ -31,6 +31,7 @@ const joinTableDash = async (req, res) => {
             
             "fg"."Code" AS "Code_fg", 
             "drill"."Type_Brake" AS "Type_Brake_Dr",
+            "wip"."Pcs_Per_Set" AS "Pcs_Per_Set_Wip",
 
 
             "bom".*, 
@@ -41,6 +42,10 @@ const joinTableDash = async (req, res) => {
             JOIN "wip" ON "bom"."Code_Wip" = "wip"."Code_Wip" 
             JOIN "drill" ON "bom"."Code_Dr" = "drill"."Code_Dr" 
             JOIN "fg" ON "bom"."Code_Fg" = "fg"."Code_Fg" 
+            WHERE "bom"."Status" != 'Delete'
+                AND "wip"."Status" != 'Delete'
+                AND "drill"."Status" != 'Delete'
+                AND "fg"."Status" != 'Delete'
             ORDER BY "fg"."Code_Fg"
     `;
     

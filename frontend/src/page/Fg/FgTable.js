@@ -7,8 +7,8 @@ import * as XLSX from 'xlsx';
 import { useAuthContext } from '../../hook/useAuthContext';
 import { Modal, Button } from 'react-bootstrap'; // Import Bootstrap components
 import { useNavigate } from 'react-router-dom'; // Import useNavigate hook
-import { convertToUTCPlus7 } from '../../utility/Moment-timezone';
 import env from "react-dotenv";
+import ModalComponent from './ModalComponent'
 
 const FgTable = () => {
     const currentDate = new Date();
@@ -29,13 +29,13 @@ const FgTable = () => {
         { headerName: 'Name_Fg', field: 'Name_Fg', filter: 'agTextColumnFilter' },
         // { headerName: 'Model', field: 'Model', filter: 'agTextColumnFilter' },
         // { headerName: 'Part_No', field: 'Part_No', filter: 'agTextColumnFilter' },
-        { headerName: 'Code', field: 'Code', filter: 'agTextColumnFilter' },
-        { headerName: 'Chem_Grade', field: 'Chem_Grade', filter: 'agTextColumnFilter' },
-        { headerName: 'Pcs_Per_Set', field: 'Pcs_Per_Set', filter: 'agTextColumnFilter' },
-        { headerName: 'Box_No', field: 'Box_No', filter: 'agTextColumnFilter' },
-        { headerName: 'Rivet_No', field: 'Rivet_No', filter: 'agTextColumnFilter' },
-        { headerName: 'Num_Revit_Per_Set', field: 'Num_Revit_Per_Set', filter: 'agTextColumnFilter' },
-        { headerName: 'Remark', field: 'Remark', filter: 'agTextColumnFilter' },
+        { headerName: 'โค้ดการขาย', field: 'Code', filter: 'agTextColumnFilter' },
+        { headerName: 'เกรดเคมี', field: 'Chem_Grade', filter: 'agTextColumnFilter' },
+        { headerName: 'ชิ้นต่อชุด', field: 'Pcs_Per_Set', filter: 'agTextColumnFilter' },
+        { headerName: 'เบอร์กล่อง', field: 'Box_No', filter: 'agTextColumnFilter' },
+        { headerName: 'เบอร์รีเวท', field: 'Rivet_No', filter: 'agTextColumnFilter' },
+        { headerName: 'จำนวนรีเวทต่อชุด', field: 'Num_Revit_Per_Set', filter: 'agTextColumnFilter' },
+        { headerName: 'หมายเหตุ', field: 'Remark', filter: 'agTextColumnFilter' },
         {
             headerName: 'Actions',
             field: 'actions',
@@ -114,6 +114,7 @@ const FgTable = () => {
                     Num_Revit_Per_Set: item.Num_Revit_Per_Set,
                     Revit_Erp_No: item.Revit_Erp_No,
                     Remark: item.Remark,
+                    CreateBy: item.CreateBy,
                     CreateAt: item.CreateAt,
                     UpdateAt: item.UpdateAt,
                 }));
@@ -273,18 +274,39 @@ const FgTable = () => {
         }).join('\n');
 
         // console.log(tsvData)
-        // Use the Clipboard API to copy the data
-        navigator.clipboard.writeText(tsvData)
-            .then(() => {
-                console.log('Copied to clipboard successfully.', );
-                setShowSuccessAlert(true);
-                setSuccessAlertMessage(`Copied to clipboard successfully.`);
-                setTimeout(() => setShowSuccessAlert(false), 1000); // Hide alert after 1.5 seconds
+        // // Use the Clipboard API to copy the data
+        // navigator.clipboard.writeText(tsvData)
+        //     .then(() => {
+        //         console.log('Copied to clipboard successfully.', );
+        //         setShowSuccessAlert(true);
+        //         setSuccessAlertMessage(`Copied to clipboard successfully.`);
+        //         setTimeout(() => setShowSuccessAlert(false), 1000); // Hide alert after 1.5 seconds
 
-            })
-            .catch(err => {
-                console.error('Failed to copy:', err);
-            });
+        //     })
+        //     .catch(err => {
+        //         console.error('Failed to copy:', err);
+        //     });
+
+            //Alternative method for copy
+            function copyToClipboard(text) {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    console.log('Copied to clipboard successfully.');
+                    setShowSuccessAlert(true);
+                    setSuccessAlertMessage(`Copied to clipboard successfully.`);
+                    setTimeout(() => setShowSuccessAlert(false), 1000); // Hide alert after 1.5 seconds
+                } catch (err) {
+                    console.error('Failed to copy:', err);
+                }
+                document.body.removeChild(textarea);
+            }
+            
+            // Usage
+            copyToClipboard(tsvData);
     };
 
     useEffect(() => {
@@ -324,7 +346,7 @@ const FgTable = () => {
             )}
 
             {/* Modal for showing row details */}
-            <Modal show={showModal} onHide={() => setShowModal(false)}>
+            {/* <Modal show={showModal} onHide={() => setShowModal(false)}>
                 <Modal.Header closeButton>
                     <Modal.Title>Detail Information</Modal.Title>
                 </Modal.Header>
@@ -346,7 +368,7 @@ const FgTable = () => {
                             <p><strong>Rivet_No:</strong> {modalData.Rivet_No}</p>
 
                             <p><strong>Weight_Revit_Per_Set:</strong> {modalData.Weight_Revit_Per_Set}</p>
-                            <p><strong>Num_Rivet_Per_Set:</strong> {modalData.Num_Rivet_Per_Set}</p>
+                            <p><strong>Num_Rivet_Per_Set:</strong> {modalData.Num_Revit_Per_Set}</p>
                             <p><strong>Revit_Erp_No:</strong> {modalData.Revit_Erp_No}</p>
                             <p><strong>Remark:</strong> {modalData.Remark}</p>
                             <p><strong>Create At:</strong> {convertToUTCPlus7(modalData.CreateAt)}</p>
@@ -361,7 +383,75 @@ const FgTable = () => {
                         Close
                     </Button>
                 </Modal.Footer>
-            </Modal>
+            </Modal>  */}
+
+            
+            {/* Modify Modal detail */}
+            {/* <Modal show={showModal} onHide={() => setShowModal(false)} centered size='xl'>
+                <Modal.Header closeButton>
+                    <Modal.Title>Detail Information</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {modalData && (
+                        <div className="row">
+                            {[
+                                { label: 'No:', value: modalData.No },
+                                { label: 'Code_Fg:', value: modalData.Code_Fg },
+                                { label: 'Name_Fg:', value: modalData.Name_Fg },
+                                { label: 'Model:', value: modalData.Model },
+                                { label: 'Part_No:', value: modalData.Part_No },
+                                { label: 'OE_Part_No:', value: modalData.OE_Part_No },
+                                { label: 'Code:', value: modalData.Code },
+                                { label: 'Chem_Grade:', value: modalData.Chem_Grade },
+                                { label: 'Pcs_Per_Set:', value: modalData.Pcs_Per_Set },
+                                { label: 'Box_No:', value: modalData.Box_No },
+                                { label: 'Weight_Box:', value: modalData.Weight_Box },
+                                { label: 'Box_Erp_No:', value: modalData.Box_Erp_No },
+                                { label: 'Rivet_No:', value: modalData.Rivet_No },
+                                { label: 'Weight_Revit_Per_Set:', value: modalData.Weight_Revit_Per_Set },
+                                { label: 'Num_Rivet_Per_Set:', value: modalData.Num_Revit_Per_Set },
+                                { label: 'Revit_Erp_No:', value: modalData.Revit_Erp_No },
+                                { label: 'Remark:', value: modalData.Remark },
+                                { label: 'Create At:', value: convertToUTCPlus7(modalData.CreateAt) },
+                                { label: 'Update At:', value: convertToUTCPlus7(modalData.UpdateAt) },
+                            ].reduce((acc, field, index) => {
+                                const rowIndex = Math.floor(index / 3);
+                                if (!acc[rowIndex]) {
+                                    acc[rowIndex] = [];
+                                }
+                                acc[rowIndex].push(field);
+                                return acc;
+                            }, []).map((rowFields, rowIndex) => (
+                                <div key={rowIndex} className="row mb-3">
+                                    {rowFields.map((field, fieldIndex) => (
+                                        <div key={fieldIndex} className="col-md-4">
+                                            <div className="p-2 border border-primary rounded bg-light">
+                                                <h6 className="text-primary mb-1">{field.label}</h6>
+                                                <p className="m-0">{field.value || '-'}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowModal(false)}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal> */}
+            {modalData && (
+                <ModalComponent
+                    showModal={showModal}
+                    setShowModal={setShowModal}
+                    modalData={modalData}
+                    Api_URL={`${env.API_URL}/api/historylog/fg/${modalData.No}`}
+                />
+            )}
+
+
 
             {/* Modal for confirming delete */}
             <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>

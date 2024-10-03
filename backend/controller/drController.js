@@ -1,8 +1,9 @@
 const dbconnect = require('../DbConnect');
+const { logUpdate } = require('../utility/historylog');
 
 const getDr = async (req, res) => {
     try {
-        dbconnect.query('SELECT * FROM "drill"', (err, result) => {
+        dbconnect.query(`SELECT * FROM "drill" WHERE "Status" IN ('Active', 'Update') ORDER BY "Code_Dr" ASC `, (err, result) => {
             if (err) {
                 res.status(500).json({
                     success: false,
@@ -13,7 +14,8 @@ const getDr = async (req, res) => {
                 res.status(200).json({
                     success: true,
                     msg: "Successfully retrieved data from the database.",
-                    data: result.rows // PostgreSQL stores the result in the `rows` array
+                    data: result.rows, // PostgreSQL stores the result in the `rows` array
+                    count: result.rows.length
                 });
             }
         });
@@ -64,7 +66,11 @@ const postDr = async (req, res) => {
         Color, Color_Spray, Grind_Back, Grind_Front, Grind_Detail, 
         Drill, Baat, Ji_Hou, Fon_Hou, Tha_Khob, Cut, Form 
     } = req.body;
-
+    const Status = "Active";
+    // Access the user email from requireAuth middleware
+    const userEmail = req.user.email; // This email comes from requireAuth
+    const CreateBy = userEmail; // This email comes from requireAuth
+    console.log('userEmail:', userEmail)
     try {
         // Check if Code_Dr already exists
         const checkSqlCommand = 'SELECT * FROM "drill" WHERE "Code_Dr" = $1';
@@ -91,14 +97,14 @@ const postDr = async (req, res) => {
                         "Type_Brake", "Chem_Grade", "Status_Dr", "No_Grind", "Num_Hole", 
                         "No_Jig_Drill", "No_Drill", "No_Reamer", "Code", "Remark", 
                         "Color", "Color_Spray", "Grind_Back", "Grind_Front", "Grind_Detail", 
-                        "Drill", "Baat", "Ji_Hou", "Fon_Hou", "Tha_Khob", "Cut", "Form"
+                        "Drill", "Baat", "Ji_Hou", "Fon_Hou", "Tha_Khob", "Cut", "Form","Status", "CreateBy"
                     ) 
                     VALUES (
                         $1, $2, $3, $4, $5, 
                         $6, $7, $8, $9, $10, 
                         $11, $12, $13, $14, $15, 
                         $16, $17, $18, $19, $20, 
-                        $21, $22, $23, $24, $25, $26, $27
+                        $21, $22, $23, $24, $25, $26, $27, $28, $29
                     )
                 `;
                 dbconnect.query(sqlCommand, [
@@ -106,7 +112,7 @@ const postDr = async (req, res) => {
                     Type_Brake, Chem_Grade, Status_Dr, No_Grind, Num_Hole, 
                     No_Jig_Drill, No_Drill, No_Reamer, Code, Remark, 
                     Color, Color_Spray, Grind_Back, Grind_Front, Grind_Detail, 
-                    Drill, Baat, Ji_Hou, Fon_Hou, Tha_Khob, Cut, Form
+                    Drill, Baat, Ji_Hou, Fon_Hou, Tha_Khob, Cut, Form, Status, CreateBy
                 ], (err, result) => {
                     if (err) {
                         console.log(err)
@@ -142,6 +148,10 @@ const postDrExcel = async (req, res) => {
 
     // Ensure no fields are empty; replace empty or null values with "-"
     data = data.map(row => row.map(value => value === "" || value === null ? "-" : value));
+    
+    // Access the user email from requireAuth middleware
+    const userEmail = req.user.email; // This email comes from requireAuth
+    console.log('userEmail:', userEmail);
 
     try {
         // Extract Code_Dr values from the data (assuming it's the first column)
@@ -195,10 +205,12 @@ const postDrExcel = async (req, res) => {
                     Fon_Hou: row[23],
                     Tha_Khob: row[24],
                     Cut: row[25],
-                    Form: row[26]
+                    Form: row[26],
+                    Status: "Active", // Add the Status field with the value 'Active'
+                    CreateBy: userEmail // Add the CreateBy field with the value of userEmail
                 }));
 
-                // Prepare the values for insertion
+                // Prepare the values for insertion, including CreateBy
                 const values = newDataObjects.map(obj => [
                     obj.Code_Dr,
                     obj.Name_Dr,
@@ -226,19 +238,21 @@ const postDrExcel = async (req, res) => {
                     obj.Fon_Hou,
                     obj.Tha_Khob,
                     obj.Cut,
-                    obj.Form
+                    obj.Form,
+                    obj.Status, // Include the Status field in the values array
+                    obj.CreateBy // Include the CreateBy field in the values array
                 ]);
 
                 // Create placeholders for all rows (e.g., $1, $2, ..., $n)
                 const placeholders = values.map((_, i) => `(${
-                    Array.from({ length: 27 }, (_, j) => `$${i * 27 + j + 1}`).join(', ')
+                    Array.from({ length: 29 }, (_, j) => `$${i * 29 + j + 1}`).join(', ')
                 })`).join(', ');
 
                 // Insert new records into the database
                 const sqlCommand = `INSERT INTO "drill" (
                     "Code_Dr", "Name_Dr", "Name_Wip", "Name_Fg_1", "Demension", "Type_Brake", "Chem_Grade", "Status_Dr",
                     "No_Grind", "Num_Hole", "No_Jig_Drill", "No_Drill", "No_Reamer", "Code", "Remark", "Color", "Color_Spray",
-                    "Grind_Back", "Grind_Front", "Grind_Detail", "Drill", "Baat", "Ji_Hou", "Fon_Hou", "Tha_Khob", "Cut", "Form"
+                    "Grind_Back", "Grind_Front", "Grind_Detail", "Drill", "Baat", "Ji_Hou", "Fon_Hou", "Tha_Khob", "Cut", "Form", "Status", "CreateBy"
                 ) VALUES ${placeholders}`;
 
                 const flattenedValues = values.flat();
@@ -246,7 +260,7 @@ const postDrExcel = async (req, res) => {
                 dbconnect.query(sqlCommand, flattenedValues, (err, result) => {
                     if (err) {
                         // Return an error response if the insertion fails
-                        console.log(err)
+                        console.log(err);
                         return res.status(400).json({
                             success: false,
                             msg: `There was an error inserting records`,
@@ -284,10 +298,23 @@ const postDrExcel = async (req, res) => {
 
 
 
+
 const deleteDr = async (req, res) => {
     const id = req.params.id;
+    const Status = "Delete";
+
+
+    const userEmail = req.user.email; // This email comes from requireAuth
+    console.log('userEmail:', userEmail);
+    const UpdateBy = userEmail;
     try {
-        dbconnect.query('DELETE FROM "drill" WHERE "id" = $1', [id], (err, result) => {
+        //Query Current record before update
+        const selectedQuery = `SELECT * FROM "wip" WHERE "id" = $1`;
+        const selectedResult = await dbconnect.query(selectedQuery, [id]);
+
+
+        //Update Status -> Delete
+        dbconnect.query('UPDATE "drill" SET "Status" = $1 WHERE "id" = $2', [Status, id], (err, result) => {
             if (err) {
                 res.status(400).json({
                     success: false,
@@ -295,6 +322,22 @@ const deleteDr = async (req, res) => {
                     data: err
                 });
             } else {
+                if (selectedResult.rows.length > 0) {
+                    const oldValues = selectedResult.rows[0];
+                    
+                    // Log changes
+                    for (const column of ["Status"]) {
+                        const oldValue = oldValues[column];
+                        const newValue = Status;
+                        console.log('oldValues', oldValue);
+                        console.log('newValue', newValue)
+
+                        if (oldValue !== newValue) {
+                            logUpdate('drill', column, id , oldValue, newValue, UpdateBy);
+
+                        }
+                    }
+                }
                 res.status(200).json({
                     success: true,
                     msg: `Code_Dr:id: ${id} Delete Successfull.`,
@@ -344,8 +387,19 @@ const updateDr = async (req, res) => {
     const Tha_Khob = req.body.Tha_Khob;
     const Cut = req.body.Cut;
     const Form = req.body.Form;
+    //Status
+    const Status = "Update";
+    const userEmail = req.user.email; // This email comes from requireAuth
+    console.log('userEmail:', userEmail);
+    const UpdateBy = userEmail;
 
     try {
+        //Query Current Value Before update
+        //Query Current record before update
+        const selectedQuery = `SELECT * FROM "drill" WHERE "id" = $1`;
+        const selectedResult = await dbconnect.query(selectedQuery, [id]);
+
+        //Query update
         const query = `
             UPDATE "drill" SET
                 "Code_Dr" = $1, "Name_Dr" = $2, "Name_Wip" = $3, "Name_Fg_1" = $4, "Demension" = $5,
@@ -353,13 +407,13 @@ const updateDr = async (req, res) => {
                 "No_Jig_Drill" = $11, "No_Drill" = $12, "No_Reamer" = $13, "Code" = $14, "Remark" = $15,
                 "Color" = $16, "Color_Spray" = $17, "Grind_Back" = $18, "Grind_Front" = $19, "Grind_Detail" = $20,
                 "Drill" = $21, "Baat" = $22, "Ji_Hou" = $23, "Fon_Hou" = $24, "Tha_Khob" = $25, "Cut" = $26,
-                "Form" = $27 WHERE "id" = $28
+                "Form" = $27, "Status" = $28 WHERE "id" = $29
         `;
 
         dbconnect.query(query, [
             Code_Dr, Name_Dr, Name_Wip, Name_Fg_1, Demension, Type_Brake, Chem_Grade, Status_Dr,
             No_Grind, Num_Hole, No_Jig_Drill, No_Drill, No_Reamer, Code, Remark, Color, Color_Spray,
-            Grind_Back, Grind_Front, Grind_Detail, Drill, Baat, Ji_Hou, Fon_Hou, Tha_Khob, Cut, Form, id
+            Grind_Back, Grind_Front, Grind_Detail, Drill, Baat, Ji_Hou, Fon_Hou, Tha_Khob, Cut, Form, Status, id
         ], (err, result) => {
             if (err) {
                 console.log(err);
@@ -369,6 +423,22 @@ const updateDr = async (req, res) => {
                     data: err
                 });
             } else {
+                if (selectedResult.rows.length > 0) {
+                    const oldValues = selectedResult.rows[0];
+                    
+                    // Log changes
+                    for (const column of ["Code_Dr", "Name_Dr", "Name_Wip", "Name_Fg_1", "Demension", "Type_Brake", "Chem_Grade", "Status_Dr", "No_Grind", "Num_Hole", "No_Jig_Drill", "No_Drill", "No_Reamer", "Code", "Remark", "Color", "Color_Spray", "Grind_Back", "Grind_Front", "Grind_Detail", "Drill", "Baat", "Ji_Hou", "Fon_Hou", "Tha_Khob", "Cut", "Form"]) {
+                        const oldValue = oldValues[column];
+                        const newValue = req.body[column];
+                        console.log('oldValues', oldValue);
+                        console.log('newValue', newValue)
+
+                        if (oldValue !== newValue) {
+                            logUpdate('drill', column, id , oldValue, newValue, UpdateBy);
+
+                        }
+                    }
+                }
                 res.status(200).json({
                     success: true,
                     msg: `Code_Dr Id: ${id} update successful`,

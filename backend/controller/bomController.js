@@ -1,9 +1,10 @@
 //Connect DB
 const dbconnect = require('../DbConnect');
+const { logUpdate } = require('../utility/historylog');
 //Get All boms
 const getBoms = async (req, res) => {
     try {
-        dbconnect.query('SELECT * FROM bom;', (err, result) => { // Wrapped bom table in double quotes
+        dbconnect.query(`SELECT * FROM "bom" WHERE "Status" IN ('Active', 'Update') ORDER BY "Code_Fg" ASC `, (err, result) => { // Wrapped bom table in double quotes
             if (err) {
                 res.status(500).json({
                     success: false,
@@ -61,7 +62,11 @@ const getSigleBom = async (req,res) =>{
 // Post json to database
 const postBom = async (req, res) => {
     const { Code_Fg, Name_Fg, Code_Dr, Name_Dr, Code_Wip, Name_Wip, Ra_Wip, Ra_L, Remark } = req.body;
-
+    const Status = "Active";
+        // Access the user email from requireAuth middleware
+    const userEmail = req.user.email; // This email comes from requireAuth
+    const CreateBy = userEmail;
+    console.log('userEmail:', userEmail)
     try {
         // First, check if the Code_Dr already exists in the database
         const checkSqlCommand = 'SELECT * FROM "bom" WHERE "Code_Dr" = $1';
@@ -85,9 +90,9 @@ const postBom = async (req, res) => {
                 });
             } else {
                 // Proceed with inserting new record since Code_Dr does not exist
-                const sqlCommand = 'INSERT INTO "bom" ("Code_Fg", "Name_Fg", "Code_Dr", "Name_Dr", "Code_Wip", "Name_Wip", "Ra_Wip", "Ra_L", "Remark") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *';
+                const sqlCommand = 'INSERT INTO "bom" ("Code_Fg", "Name_Fg", "Code_Dr", "Name_Dr", "Code_Wip", "Name_Wip", "Ra_Wip", "Ra_L", "Remark", "Status", "CreateBy") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *';
 
-                dbconnect.query(sqlCommand, [Code_Fg, Name_Fg, Code_Dr, Name_Dr, Code_Wip, Name_Wip, Ra_Wip, Ra_L, Remark], (err, result) => {
+                dbconnect.query(sqlCommand, [Code_Fg, Name_Fg, Code_Dr, Name_Dr, Code_Wip, Name_Wip, Ra_Wip, Ra_L, Remark, Status, CreateBy], (err, result) => {
                     if (err) {
                         console.log("Error occurred:", err);
                         return res.status(500).json({
@@ -217,6 +222,10 @@ const postBomExcel = async (req, res) => {
     // Ensure no fields are empty; replace empty or null values with "-"
     data = data.map(row => row.map(value => value === "" || value === null ? "-" : value));
 
+    // Access the user email from requireAuth middleware
+    const userEmail = req.user.email; // This email comes from requireAuth
+    console.log('userEmail:', userEmail);
+
     try {
         // Extract Code_Dr values from the data (assuming it's the third column)
         const codeDrArray = data.map(row => row[2]);
@@ -243,13 +252,15 @@ const postBomExcel = async (req, res) => {
                 row[5], // Name_Wip
                 row[6], // Ra_Wip
                 row[7], // Ra_L
-                row[8]  // Remark
+                row[8], // Remark
+                "Active", // Status (set to "Active")
+                userEmail // CreateBy (user email)
             ]);
 
             // Create SQL command with placeholders
             const sqlCommand = `
-                INSERT INTO "bom" ("Code_Fg", "Name_Fg", "Code_Dr", "Name_Dr", "Code_Wip", "Name_Wip", "Ra_Wip", "Ra_L", "Remark")
-                VALUES ${values.map((_, i) => `($${i * 9 + 1}, $${i * 9 + 2}, $${i * 9 + 3}, $${i * 9 + 4}, $${i * 9 + 5}, $${i * 9 + 6}, $${i * 9 + 7}, $${i * 9 + 8}, $${i * 9 + 9})`).join(', ')}
+                INSERT INTO "bom" ("Code_Fg", "Name_Fg", "Code_Dr", "Name_Dr", "Code_Wip", "Name_Wip", "Ra_Wip", "Ra_L", "Remark", "Status", "CreateBy")
+                VALUES ${values.map((_, i) => `($${i * 11 + 1}, $${i * 11 + 2}, $${i * 11 + 3}, $${i * 11 + 4}, $${i * 11 + 5}, $${i * 11 + 6}, $${i * 11 + 7}, $${i * 11 + 8}, $${i * 11 + 9}, $${i * 11 + 10}, $${i * 11 + 11})`).join(', ')}
             `;
 
             // Flatten values array for query parameters
@@ -281,6 +292,7 @@ const postBomExcel = async (req, res) => {
         console.log(error);
     }
 };
+
 
 
 
@@ -339,16 +351,24 @@ const updatebom = async (req, res) => {
     const Ra_Wip = req.body.Ra_Wip;
     const Ra_L = req.body.Ra_L;
     const Remark = req.body.Remark;
+    const Status = "Update";
+    //Get Profile information
+    const userEmail = req.user.email; // This email comes from requireAuth
+    console.log('userEmail:', userEmail);
+    const UpdateBy = userEmail;
 
     try {
         const query = `
             UPDATE "bom"
-            SET "Code_Fg" = $1, "Name_Fg" = $2, "Code_Dr" = $3, "Name_Dr" = $4, "Code_Wip" = $5, "Name_Wip" = $6, "Ra_Wip" = $7, "Ra_L" = $8, "Remark" = $9
-            WHERE "id" = $10
+            SET "Code_Fg" = $1, "Name_Fg" = $2, "Code_Dr" = $3, "Name_Dr" = $4, "Code_Wip" = $5, "Name_Wip" = $6, "Ra_Wip" = $7, "Ra_L" = $8, "Remark" = $9, "Status" = $10
+            WHERE "id" = $11
         `;
 
-        const values = [Code_Fg, Name_Fg, Code_Dr, Name_Dr, Code_Wip, Name_Wip, Ra_Wip, Ra_L, Remark, id];
-
+        const values = [Code_Fg, Name_Fg, Code_Dr, Name_Dr, Code_Wip, Name_Wip, Ra_Wip, Ra_L, Remark, Status, id];
+        //Get current value before update
+        const selectedQuery = `SELECT * FROM "bom" WHERE "id" = $1`;
+        const selectedResult = await dbconnect.query(selectedQuery, [id]);
+        //update query
         dbconnect.query(query, values, (err, result) => {
             if (err) {
                 console.log(err);
@@ -358,9 +378,26 @@ const updatebom = async (req, res) => {
                     data: err
                 });
             } else {
+                if (selectedResult.rows.length > 0) {
+                    const oldValues = selectedResult.rows[0];
+                    
+                    // Log changes
+                    for (const column of ["Code_Fg", "Name_Fg", "Code_Dr", "Name_Dr", "Code_Wip", "Name_Wip", "Ra_Wip", "Ra_L", "Remark"]) {
+                        const oldValue = oldValues[column];
+                        const newValue = req.body[column];
+                        console.log('oldValues', oldValue);
+                        console.log('newValue', newValue)
+
+                        if (oldValue !== newValue) {
+                            logUpdate('bom', column, id , oldValue, newValue, UpdateBy);
+
+                        }
+                    }
+                }
                 res.status(200).json({
                     success: true,
-                    msg: `BOM Id: ${id} update successful`
+                    msg: `BOM Id: ${id} update successful`,
+                    data: result
                 });
             }
         });
@@ -407,12 +444,18 @@ const updatebom = async (req, res) => {
 //Dellete postgresql
 const deletebom = async (req, res) => {
     const id = req.params.id;
+    const Status = "Delete";
+    const userEmail = req.user.email; // This email comes from requireAuth
+    console.log('userEmail:', userEmail);
+    const UpdateBy = userEmail;
+
     try {
-        // Replace with PostgreSQL query
-        const query = 'DELETE FROM "bom" WHERE "id" = $1 RETURNING *';
+        //Query currrent value before update
+        const selectedQuery = `SELECT * FROM "bom" WHERE "id" = $1`;
+        const selectedResult = await dbconnect.query(selectedQuery, [id]);
         
-        // Execute the query
-        dbconnect.query(query, [id], (err, result) => {
+        // Execute the query to update
+        dbconnect.query('UPDATE "bom" SET "Status" = $1 WHERE "id" = $2', [Status, id], (err, result) => {
             if (err) {
                 res.status(400).json({
                     success: false,
@@ -420,6 +463,22 @@ const deletebom = async (req, res) => {
                     msg: `There was a problem while deleting BOM ${id}`,
                 });
             } else {
+                if (selectedResult.rows.length > 0) {
+                    const oldValues = selectedResult.rows[0];
+                    
+                    // Log changes
+                    for (const column of ["Status"]) {
+                        const oldValue = oldValues[column];
+                        const newValue = Status;
+                        console.log('oldValues', oldValue);
+                        console.log('newValue', newValue)
+
+                        if (oldValue !== newValue) {
+                            logUpdate('bom', column, id , oldValue, newValue, UpdateBy);
+
+                        }
+                    }
+                }
                 res.status(200).json({
                     msg: `BOM id:${id} deleted successfully`,
                     data: result.rows,

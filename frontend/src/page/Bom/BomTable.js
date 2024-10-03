@@ -7,8 +7,8 @@ import * as XLSX from 'xlsx';
 import { useAuthContext } from '../../hook/useAuthContext';
 import { Modal, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { convertToUTCPlus7 } from '../../utility/Moment-timezone';
 import env from "react-dotenv";
+import ModalComponent from './ModalComponent'
 
 const BomTable = () => {
     const currentDate = new Date();
@@ -109,6 +109,7 @@ const BomTable = () => {
                 R_Wip: item.Ra_Wip,
                 R_L: item.Ra_L,
                 Remark: item.Remark,
+                CreateBy: item.CreateBy,
                 CreateAt: item.CreateAt,
                 UpdateAt: item.UpdateAt,
             }));
@@ -243,20 +244,26 @@ const BomTable = () => {
             // Object.values(row) extracts all values from the row object
             return Object.values(row).join('\t');
         }).join('\n');
-
-        // console.log(tsvData)
-        // Use the Clipboard API to copy the data
-        navigator.clipboard.writeText(tsvData)
-            .then(() => {
-                console.log('Copied to clipboard successfully.', );
+        //Alternative method for copy
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                console.log('Copied to clipboard successfully.');
                 setShowSuccessAlert(true);
                 setSuccessAlertMessage(`Copied to clipboard successfully.`);
                 setTimeout(() => setShowSuccessAlert(false), 1000); // Hide alert after 1.5 seconds
-
-            })
-            .catch(err => {
+            } catch (err) {
                 console.error('Failed to copy:', err);
-            });
+            }
+            document.body.removeChild(textarea);
+        }
+        
+        // Usage
+        copyToClipboard(tsvData);
     };
     
     
@@ -316,26 +323,45 @@ const BomTable = () => {
             )}
     
             {/* Detail Modal */}
-            <Modal show={showModal} onHide={() => setShowModal(false)}>
+            {/* <Modal show={showModal} onHide={() => setShowModal(false)} centered size='xl'>
                 <Modal.Header closeButton>
                     <Modal.Title>Detail Information</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     {modalData && (
-                        <div>
-                            <p><strong>No:</strong> {modalData.No}</p>
-                            <p><strong>Code_Fg:</strong> {modalData.Code_Fg}</p>
-                            <p><strong>Name_Fg:</strong> {modalData.Name_Fg}</p>
-                            <p><strong>Code_Dr:</strong> {modalData.Code_Dr}</p>
-                            <p><strong>Name_Dr:</strong> {modalData.Name_Dr}</p>
-                            <p><strong>Code_Wip:</strong> {modalData.Code_Wip}</p>
-                            <p><strong>Name_Wip:</strong> {modalData.Name_Wip}</p>
-                            <p><strong>Ra_Wip:</strong> {modalData.R_Wip}</p>
-                            <p><strong>Ra_L:</strong> {modalData.R_L}</p>
-                            <p><strong>Remark:</strong> {modalData.Remark}</p>
-                            <p><strong>Create At:</strong> {convertToUTCPlus7(modalData.CreateAt)}</p>
-                            <p><strong>Update At:</strong> {convertToUTCPlus7(modalData.UpdateAt)}</p>
-                            {/* Add more fields as needed */}
+                        <div className="row">
+                            {[
+                                { label: 'No:', value: modalData.No },
+                                { label: 'Code_Fg:', value: modalData.Code_Fg },
+                                { label: 'Name_Fg:', value: modalData.Name_Fg },
+                                { label: 'Code_Dr:', value: modalData.Code_Dr },
+                                { label: 'Name_Dr:', value: modalData.Name_Dr },
+                                { label: 'Code_Wip:', value: modalData.Code_Wip },
+                                { label: 'Name_Wip:', value: modalData.Name_Wip },
+                                { label: 'Ra_Wip:', value: modalData.R_Wip },
+                                { label: 'Ra_L:', value: modalData.R_L },
+                                { label: 'Remark:', value: modalData.Remark },
+                                { label: 'Create At:', value: convertToUTCPlus7(modalData.CreateAt) },
+                                { label: 'Update At:', value: convertToUTCPlus7(modalData.UpdateAt) },
+                            ].reduce((acc, field, index) => {
+                                const rowIndex = Math.floor(index / 3);
+                                if (!acc[rowIndex]) {
+                                    acc[rowIndex] = [];
+                                }
+                                acc[rowIndex].push(field);
+                                return acc;
+                            }, []).map((rowFields, rowIndex) => (
+                                <div key={rowIndex} className="row mb-3">
+                                    {rowFields.map((field, fieldIndex) => (
+                                        <div key={fieldIndex} className="col-md-4">
+                                            <div className="p-2 border border-primary rounded bg-light">
+                                                <h6 className="text-primary mb-1">{field.label}</h6>
+                                                <p className="m-0">{field.value || '-'}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ))}
                         </div>
                     )}
                 </Modal.Body>
@@ -344,8 +370,22 @@ const BomTable = () => {
                         Close
                     </Button>
                 </Modal.Footer>
-            </Modal>
-    
+            </Modal> */}
+            {modalData && (
+                <ModalComponent
+                    showModal={showModal}
+                    setShowModal={setShowModal}
+                    modalData={modalData}
+                    Api_URL={`${env.API_URL}/api/historylog/bom/${modalData.No}`}
+                />
+            )}
+
+
+
+
+
+
+
             {/* Delete Confirmation Modal */}
             <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
                 <Modal.Header closeButton>

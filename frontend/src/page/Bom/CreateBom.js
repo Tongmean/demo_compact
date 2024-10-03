@@ -1,18 +1,13 @@
 import React, { useState } from 'react';
-import { Layout, Form, Input, Button } from 'antd';
-import Sidebar from '../../component/Sidebar';
-import HeaderComponent from '../../component/Header';
-import FooterComponent from '../../component/Footer';
+import { Form, Input, Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../hook/useAuthContext';
 import { Modal } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import env from "react-dotenv";
 
-const { Content } = Layout;
 
 const CreateBom = () => {
-    const [collapsed, setCollapsed] = useState(false);
     const [Code_Fg, setCode_Fg] = useState('');
     const [Name_Fg, setName_Fg] = useState('');
     const [Code_Dr, setCode_Dr] = useState('');
@@ -74,122 +69,108 @@ const CreateBom = () => {
     };
 
     return (
-        <Layout style={{ minHeight: '100vh' }}>
-            <Sidebar collapsed={collapsed} onCollapse={setCollapsed} />
-            <Layout>
-                <HeaderComponent />
-                <Content
-                    style={{
-                        margin: '24px 16px 0',
-                        padding: '24px',
-                        background: '#ffffff',
-                        borderRadius: '4px',
-                        boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
-                    }}
-                >
-                    <div>
-                        <h2>Create New BOM</h2>
-                        <Form onSubmitCapture={handleSubmit} layout="vertical">
-                            <div className='container-fluid'>
-                                <div className='row'>
-                                    <div className='col-xl-6 col-lg-6 col-md-12'>
-                                        <Form.Item label="Code FG">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Code_Fg}
-                                                onChange={(e) => setCode_Fg(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Name FG">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Name_Fg}
-                                                onChange={(e) => setName_Fg(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Code Dr">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Code_Dr}
-                                                onChange={(e) => setCode_Dr(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Name Dr">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Name_Dr}
-                                                onChange={(e) => setName_Dr(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Code Wip">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Code_Wip}
-                                                onChange={(e) => setCode_Wip(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Name Wip">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Name_Wip}
-                                                onChange={(e) => setName_Wip(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                    </div>
-                                    <div className='col-xl-6 col-lg-6 col-md-12'>
-                                        <Form.Item label="Ra Wip">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Ra_Wip}
-                                                onChange={(e) => setRa_Wip(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Ra L">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Ra_L}
-                                                onChange={(e) => setRa_L(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Remark">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Remark}
-                                                onChange={(e) => setRemark(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                    </div>
-                                    <div className='col-12'>
-                                        <Form.Item>
-                                            <Button type="" className='me-2' onClick={handleOnClick}>
-                                                Back
-                                            </Button>
 
-                                            <Button
-                                                type="primary"
-                                                htmlType="submit"
-                                                disabled={isPending}
-                                            >
-                                                {isPending ? 'Saving...' : 'Save Data'}
-                                            </Button>
-                                        </Form.Item>
-                                    </div>
-                                </div>
+        <div>            
+            <div>
+                <h2>Create New BOM</h2>
+                <Form onSubmitCapture={handleSubmit} layout="vertical">
+                    <div className='container-fluid'>
+                        <div className='row'>
+                            <div className='col-xl-6 col-lg-6 col-md-12'>
+                                <Form.Item label="Code FG">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Code_Fg}
+                                        onChange={(e) => setCode_Fg(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="Name FG">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Name_Fg}
+                                        onChange={(e) => setName_Fg(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="Code Dr">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Code_Dr}
+                                        onChange={(e) => setCode_Dr(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="Name Dr">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Name_Dr}
+                                        onChange={(e) => setName_Dr(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="Code Wip">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Code_Wip}
+                                        onChange={(e) => setCode_Wip(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="Name Wip">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Name_Wip}
+                                        onChange={(e) => setName_Wip(e.target.value)}
+                                    />
+                                </Form.Item>
                             </div>
-                        </Form>
+                            <div className='col-xl-6 col-lg-6 col-md-12'>
+                                <Form.Item label="Ra Wip">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Ra_Wip}
+                                        onChange={(e) => setRa_Wip(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="Ra L">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Ra_L}
+                                        onChange={(e) => setRa_L(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="Remark">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Remark}
+                                        onChange={(e) => setRemark(e.target.value)}
+                                    />
+                                </Form.Item>
+                            </div>
+                            <div className='col-12'>
+                                <Form.Item>
+                                    <Button type="" className='me-2' onClick={handleOnClick}>
+                                        Back
+                                    </Button>
+
+                                    <Button
+                                        type="primary"
+                                        htmlType="submit"
+                                        disabled={isPending}
+                                    >
+                                        {isPending ? 'Saving...' : 'Save Data'}
+                                    </Button>
+                                </Form.Item>
+                            </div>
+                        </div>
                     </div>
-                </Content>
-                <FooterComponent />
-            </Layout>
+                </Form>
+            </div>
 
             {/* Modal for showing success/error messages */}
             <Modal show={showModal} onHide={handleCloseModal}>
@@ -203,7 +184,8 @@ const CreateBom = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
-        </Layout>
+        </div>
+
     );
 };
 

@@ -6,6 +6,8 @@ import { useAuthContext } from '../../hook/useAuthContext';
 import env from "react-dotenv";
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
+//PDf gen
+import ChildPDFComponent from './ChildPDFComponent';
 
 const DashTable = () => {
     const { user } = useAuthContext();
@@ -29,6 +31,31 @@ const DashTable = () => {
         { headerName: 'Name_Wip', field: 'Name_Wip', filter: 'agTextColumnFilter' },
         { headerName: 'Ra_L', field: 'R_L_Modify', filter: 'agTextColumnFilter' },
         { headerName: 'Remark', field: 'Remark', filter: 'agTextColumnFilter' },
+        {
+            headerName: 'Actions',
+            field: 'actions',
+            cellRenderer: (params) => (
+                <div>
+                    <button
+                        className="btn btn-primary btn-sm"
+                        onClick={() => handlePDFButtonClick([params.data])}
+                        style={{ marginRight: '5px' }}
+                    >
+                        PDF
+                    </button>
+            
+                    <button
+                        className="btn btn-secondary btn-sm"
+                        // onClick={() => handleShowEdit(params.data)}
+                        style={{ marginRight: '5px' }}
+                    >
+                        DRAWING 1
+                    </button>
+                        
+                    
+                </div>
+            ),
+        }
     ];
 
     const [rowData, setRowData] = useState([]);
@@ -37,13 +64,9 @@ const DashTable = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [gridApi, setGridApi] = useState(null);
-    // const [showModal, setShowModal] = useState(false);
-    // const [modalData, setModalData] = useState(null);
-    // const [showDeleteModal, setShowDeleteModal] = useState(false);
-    // const [deleteData, setDeleteData] = useState(null);
+    //selete row PDF
+    const [rowPdf, setRowPdf] = useState(null);
 
-    // const [showSuccessAlert, setShowSuccessAlert] = useState(false); //Alert Dellete success
-    // const [successAlertMessage, setSuccessAlertMessage] = useState('');
 
     const fetchData = async () => {
         setLoading(true);
@@ -132,7 +155,7 @@ const DashTable = () => {
                 Chem_Grade: item.Chem_Grade,
                 Weight_Per_Pcs: item.Weight_Per_Pcs,
                 Pcs_Per_Mold: item.Pcs_Per_Mold,
-                Pcs_Per_Set: item.Pcs_Per_Set,
+                Pcs_Per_Set_Wip: item.Pcs_Per_Set_Wip,
                 Type_Brake: item.Type_Brake,
                 Type_Mold: item.Type_Mold,
                 Time_Per_Mold: item.Time_Per_Mold,
@@ -363,7 +386,7 @@ const DashTable = () => {
                 Chem_Grade: item.Chem_Grade,
                 Weight_Per_Pcs: item.Weight_Per_Pcs,
                 Pcs_Per_Mold: item.Pcs_Per_Mold,
-                Pcs_Per_Set: item.Pcs_Per_Set,
+                Pcs_Per_Set: item.Pcs_Per_Set_Wip,
                 Type_Brake: item.Type_Brake,
                 Type_Mold: item.Type_Mold,
                 Time_Per_Mold: item.Time_Per_Mold,
@@ -418,7 +441,58 @@ const DashTable = () => {
         }
     };
 
+    //pass to pdf gen 
+    const handlePDFButtonClick = (row) => {
+        // Create a Set of Code_Fg values for quick lookup
+        const codeFgSet = new Set(row.map(rows => rows.Code_Fg));
+        console.log('codeFgSet', codeFgSet); // Debug: Log the Set of Code_Fg values
+    
+        // Filter mappedData to include only items where Code_Fg is in the Set
+        const filteredDataFg = mappedData.filter(data => codeFgSet.has(data.Code_Fg));
+        console.log('filteredDataFg', filteredDataFg); // Debug: Log the filtered data
+        const mappedDataFg = filteredDataFg.map(item =>({
+            Code_Fg: item.Code_Fg,
+            Name_Fg: item.Name_Fg,
+            Model: item.Model,
+            Part_No: item.Part_No,
+            OE_Part_No: item.OE_Part_No,
+            Code: item.Code_fg,
+            Chem_Grade: item.Chem_Grade,
+            Pcs_Per_Set: item.Pcs_Per_Set_FG,
+            Box_No: item.Box_No,
+            Weight_Box: item.Weight_Box,
+            Box_Erp_No: item.Box_Erp_No,
+            Rivet_No: item.Rivet_No,
+            Weight_Revit_Per_Set:item.Weight_Revit_Per_Set,
+            Num_Revit_Per_Set: item.Num_Revit_Per_Set,
+            Revit_Erp_No: item.Revit_Erp_No,
+            Remark: item.Remark_Fg,
+            //Dr
+            Status_Dr:item.Status_Dr,
+            Num_Hole:item.Num_Hole,
+            Type_Brake_Dr:item.Type_Brake_Dr,
+            Dimension: item.Dimension,
 
+        }))
+        // Function to remove duplicate objects from an array
+        function removeDuplicates(data) {
+            const seen = new Set(); // Create a Set to keep track of seen items
+            return data.filter(item => {
+                // Create a unique key by stringifying the item
+                const key = JSON.stringify(item);
+                // Check if the item has been seen before
+                return seen.has(key) ? false : seen.add(key); // Add to seen Set if not seen
+            });
+        }
+    
+        // Remove duplicates from the filtered data
+        const uniqueDataFg = removeDuplicates(mappedDataFg);
+    
+        // Update state with unique data for PDF generation
+        setRowPdf(uniqueDataFg);
+    };
+    
+    console.log("rowPdf", rowPdf)
 
     const onGridReady = params => {
         setGridApi(params.api);
@@ -465,6 +539,14 @@ const DashTable = () => {
                             filter: true,
                         }}
                     />
+                    <div>
+
+                    {rowPdf ? (
+                        <ChildPDFComponent rowPdf={rowPdf} />
+                        ) : (
+                            <div style={{ display: 'none' }}>Loading...</div> // Optional: show a loading indicator
+                        )}
+                    </div>
                 </div>
             )}
     

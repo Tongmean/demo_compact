@@ -1,7 +1,4 @@
-import { Layout } from 'antd';
-import Sidebar from '../../component/Sidebar';
-import HeaderComponent from '../../component/Header';
-import FooterComponent from '../../component/Footer';
+
 import React, { useState, useRef } from 'react';
 import * as XLSX from 'xlsx';
 import axios from 'axios';
@@ -10,11 +7,9 @@ import { useAuthContext } from '../../hook/useAuthContext';
 import template from '../../Asset/Wip_template.xlsx'; // Update template path if necessary
 import env from "react-dotenv";
 
-const { Content } = Layout;
 
 const CreateWipExcel = () => {
     const { user } = useAuthContext(); // Retrieve user context
-    const [collapsed, setCollapsed] = useState(false);
     const [excelData, setExcelData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null); // State to manage errors
@@ -105,101 +100,88 @@ const CreateWipExcel = () => {
     };
 
     return (
-        <Layout style={{ minHeight: '100vh' }}>
-            <Sidebar collapsed={collapsed} onCollapse={setCollapsed} />
-            <Layout>
-                <HeaderComponent />
-                <Content
-                    style={{
-                        margin: '24px 16px 0',
-                        padding: '24px',
-                        background: '#ffffff',
-                        borderRadius: '4px',
-                        boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
-                    }}
-                >
-                    <div className="App">
-                        <div className='container-fluid'>
-                            <div className='row pe-5'>
-                                <div className="card">
-                                    <div className="card-header">
-                                        Note
-                                    </div>
-                                    <div className="card-body">
-                                        <blockquote className="blockquote mb-0">
-                                        <p>Code_Wip, Name_Wip, รหัสแม่พิมพ์, ขนาด(กว้าง*หนา-ยาว), เกรดเคมี, น้ำหนักต่อชิ้น, ชิ้นต่อพิมพ์, ชิ้นต่อชุด, ลักษณะผ้าเบรก, ลักษณะแม่พิมพ์, เวลาต่อพิมพ์, พิมพ์ต่อ8ชั่วโมง, หมายเหตุ</p>
-                                        <footer className="blockquote-footer">ต้องเรียงข้อมูลแต่ละ Column ตามนี้เท่านั้น</footer>
-                                        </blockquote>
-                                    </div>
-                                </div>
+
+        <div>
+            <div className="App">
+                <div className='container-fluid'>
+                    <div className='row pe-5'>
+                        <div className="card">
+                            <div className="card-header">
+                                Note
                             </div>
-                            <div className='row'>
-                                <div className='row col-xl-4 col-lg-4 col-md-6'>
-                                    Excel Template
-                                    <div>
-                                        <a href={template} download="Wip_template.xlsx" className="btn btn-secondary">Download Excel Template</a>
-                                    </div>
-                                </div>
-                                <div className='row col-xl-8 col-lg-8 col-md-6'>
-                                    <label htmlFor="formFile" className="form-label">Default file input example</label>
-                                    <input
-                                        type="file"
-                                        accept=".xlsx, .xls"
-                                        onChange={handleFileUpload}
-                                        className='form-control'
-                                        ref={fileInputRef} // Attach ref to file input
-                                        required
-                                    />
-                                    <button onClick={handleSubmit} disabled={loading} className='btn btn-primary mt-2'>
-                                        {loading ? 'Uploading...' : 'Upload and Save Data'}
-                                    </button>
-                                </div>
+                            <div className="card-body">
+                                <blockquote className="blockquote mb-0">
+                                <p>Code_Wip, Name_Wip, รหัสแม่พิมพ์, ขนาด(กว้าง*หนา-ยาว), เกรดเคมี, น้ำหนักต่อชิ้น, ชิ้นต่อพิมพ์, ชิ้นต่อชุด, ลักษณะผ้าเบรก, ลักษณะแม่พิมพ์, เวลาต่อพิมพ์, พิมพ์ต่อ8ชั่วโมง, หมายเหตุ</p>
+                                <footer className="blockquote-footer">ต้องเรียงข้อมูลแต่ละ Column ตามนี้เท่านั้น</footer>
+                                </blockquote>
                             </div>
                         </div>
-                        {loading && <div className="loading">Loading...</div>}
                     </div>
-
-                    {/* Bootstrap Modal for Error Handling */}
-                    {error && (
-                        <div className="modal fade show" style={{ display: 'block' }} tabIndex="-1" role="dialog">
-                            <div className="modal-dialog" role="document">
-                                <div className="modal-content">
-                                    <div className="modal-header">
-                                        <h5 className="modal-title">Error</h5>
-                                    </div>
-                                    <div className="modal-body">
-                                        <p>{error}</p>
-                                    </div>
-                                    <div className="modal-footer">
-                                        <button type="button" className="btn btn-secondary" onClick={() => setError(null)}>Close</button>
-                                    </div>
-                                </div>
+                    <div className='row'>
+                        <div className='row col-xl-4 col-lg-4 col-md-6'>
+                            Excel Template
+                            <div>
+                                <a href={template} download="Wip_template.xlsx" className="btn btn-secondary">Download Excel Template</a>
                             </div>
                         </div>
-                    )}
+                        <div className='row col-xl-8 col-lg-8 col-md-6'>
+                            <label htmlFor="formFile" className="form-label">Default file input example</label>
+                            <input
+                                type="file"
+                                accept=".xlsx, .xls"
+                                onChange={handleFileUpload}
+                                className='form-control'
+                                ref={fileInputRef} // Attach ref to file input
+                                required
+                            />
+                            <button onClick={handleSubmit} disabled={loading} className='btn btn-primary mt-2'>
+                                {loading ? 'Uploading...' : 'Upload and Save Data'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {loading && <div className="loading">Loading...</div>}
+            </div>
 
-                    {/* Bootstrap Modal for Success Notification */}
-                    {successMessage && (
-                        <div className="modal fade show" style={{ display: 'block' }} tabIndex="-1" role="dialog">
-                            <div className="modal-dialog" role="document">
-                                <div className="modal-content">
-                                    <div className="modal-header">
-                                        <h5 className="modal-title">Success</h5>
-                                    </div>
-                                    <div className="modal-body">
-                                        <p>{successMessage}</p>
-                                    </div>
-                                    <div className="modal-footer">
-                                        <button type="button" className="btn btn-secondary" onClick={() => setSuccessMessage(null)}>Close</button>
-                                    </div>
-                                </div>
+            {/* Bootstrap Modal for Error Handling */}
+            {error && (
+                <div className="modal fade show" style={{ display: 'block' }} tabIndex="-1" role="dialog">
+                    <div className="modal-dialog" role="document">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title">Error</h5>
+                            </div>
+                            <div className="modal-body">
+                                <p>{error}</p>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" onClick={() => setError(null)}>Close</button>
                             </div>
                         </div>
-                    )}
-                </Content>
-                <FooterComponent />
-            </Layout>
-        </Layout>
+                    </div>
+                </div>
+            )}
+
+            {/* Bootstrap Modal for Success Notification */}
+            {successMessage && (
+                <div className="modal fade show" style={{ display: 'block' }} tabIndex="-1" role="dialog">
+                    <div className="modal-dialog" role="document">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title">Success</h5>
+                            </div>
+                            <div className="modal-body">
+                                <p>{successMessage}</p>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" onClick={() => setSuccessMessage(null)}>Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+
     );
 };
 

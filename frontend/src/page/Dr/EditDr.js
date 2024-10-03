@@ -1,18 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Layout } from 'antd';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Sidebar from '../../component/Sidebar';
-import HeaderComponent from '../../component/Header';
-import FooterComponent from '../../component/Footer';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../hook/useAuthContext';
 import { Form, Button, Spinner, Row, Col, Modal as BootstrapModal } from 'react-bootstrap';
 import env from "react-dotenv";
 
-const { Content } = Layout;
 
 const EditDr = () => {
-    const [collapsed, setCollapsed] = useState(false);
     const { id } = useParams();
     const navigate = useNavigate();
     const { user } = useAuthContext();
@@ -171,314 +165,302 @@ const EditDr = () => {
     };
 
     return (
-        <Layout style={{ minHeight: '100vh' }}>
-            <Sidebar collapsed={collapsed} onCollapse={setCollapsed} />
-            <Layout>
-                <HeaderComponent />
-                <Content
-                    style={{
-                        margin: '24px 16px',
-                        padding: '24px',
-                        background: '#ffffff',
-                        borderRadius: '4px',
-                        boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
-                    }}
-                >
-                    <div>
-                        <h2>Edit DR</h2>
-                        {loading ? (
-                            <Spinner animation="border" variant="primary" />
-                        ) : (
-                            <Form onSubmit={handleSubmit}>
-                                <Row>
-                                    <Col md={6}>
-                                        <Form.Group controlId="Code_Dr">
-                                            <Form.Label>Code Dr</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Code_Dr"
-                                                value={formData.Code_Dr}
-                                                onChange={handleChange}
-                                                required
-                                            />
-                                        </Form.Group>
 
-                                        <Form.Group controlId="Name_Dr">
-                                            <Form.Label>Name Dr</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Name_Dr"
-                                                value={formData.Name_Dr}
-                                                onChange={handleChange}
-                                                required
-                                            />
-                                        </Form.Group>
+        <div>
+                        
+            <div>
+                <h2>Edit DR</h2>
+                {loading ? (
+                    <Spinner animation="border" variant="primary" />
+                ) : (
+                    <Form onSubmit={handleSubmit}>
+                        <Row>
+                            <Col md={6}>
+                                <Form.Group controlId="Code_Dr">
+                                    <Form.Label>Code Dr</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="Code_Dr"
+                                        value={formData.Code_Dr}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </Form.Group>
 
-                                        <Form.Group controlId="Name_Wip">
-                                            <Form.Label>Name Wip</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Name_Wip"
-                                                value={formData.Name_Wip}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
+                                <Form.Group controlId="Name_Dr">
+                                    <Form.Label>Name Dr</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="Name_Dr"
+                                        value={formData.Name_Dr}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </Form.Group>
 
-                                        <Form.Group controlId="Name_Fg_1">
-                                            <Form.Label>Name Fg 1</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Name_Fg_1"
-                                                value={formData.Name_Fg_1}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
+                                <Form.Group controlId="Name_Wip">
+                                    <Form.Label>Name Wip</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="Name_Wip"
+                                        value={formData.Name_Wip}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
 
-                                        <Form.Group controlId="Demension">
-                                            <Form.Label>Demension</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Demension"
-                                                value={formData.Demension}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
+                                <Form.Group controlId="Name_Fg_1">
+                                    <Form.Label>Name Fg 1</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="Name_Fg_1"
+                                        value={formData.Name_Fg_1}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
 
-                                        <Form.Group controlId="Type_Brake">
-                                            <Form.Label>Type Brake</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Type_Brake"
-                                                value={formData.Type_Brake}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
+                                <Form.Group controlId="Demension">
+                                    <Form.Label>Demension</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="Demension"
+                                        value={formData.Demension}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
 
-                                        <Form.Group controlId="Chem_Grade">
-                                            <Form.Label>Chem Grade</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Chem_Grade"
-                                                value={formData.Chem_Grade}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
-                                        <Form.Group controlId="Status_Dr">
-                                            <Form.Label>Status Dr</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Status_Dr"
-                                                value={formData.Status_Dr}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
+                                <Form.Group controlId="Type_Brake">
+                                    <Form.Label>Type Brake</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="Type_Brake"
+                                        value={formData.Type_Brake}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
 
-                                        <Form.Group controlId="No_Grind">
-                                            <Form.Label>No Grind</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="No_Grind"
-                                                value={formData.No_Grind}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
+                                <Form.Group controlId="Chem_Grade">
+                                    <Form.Label>Chem Grade</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="Chem_Grade"
+                                        value={formData.Chem_Grade}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
+                                <Form.Group controlId="Status_Dr">
+                                    <Form.Label>Status Dr</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="Status_Dr"
+                                        value={formData.Status_Dr}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
 
-                                        <Form.Group controlId="Num_Hole">
-                                            <Form.Label>Num Hole</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Num_Hole"
-                                                value={formData.Num_Hole}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
+                                <Form.Group controlId="No_Grind">
+                                    <Form.Label>No Grind</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="No_Grind"
+                                        value={formData.No_Grind}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
 
-                                        <Form.Group controlId="No_Jig_Drill">
-                                            <Form.Label>No Jig Drill</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="No_Jig_Drill"
-                                                value={formData.No_Jig_Drill}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
+                                <Form.Group controlId="Num_Hole">
+                                    <Form.Label>Num Hole</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="Num_Hole"
+                                        value={formData.Num_Hole}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
 
-                                        <Form.Group controlId="No_Drill">
-                                            <Form.Label>No Drill</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="No_Drill"
-                                                value={formData.No_Drill}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
+                                <Form.Group controlId="No_Jig_Drill">
+                                    <Form.Label>No Jig Drill</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="No_Jig_Drill"
+                                        value={formData.No_Jig_Drill}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
 
-                                        <Form.Group controlId="No_Reamer">
-                                            <Form.Label>No Reamer</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="No_Reamer"
-                                                value={formData.No_Reamer}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
-                                        <Form.Group controlId="Code">
-                                            <Form.Label>Code</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Code"
-                                                value={formData.Code}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group> 
-                                        <Form.Group controlId="Remark">
-                                            <Form.Label>Remark</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Remark"
-                                                value={formData.Remark}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
-                                    </Col>
+                                <Form.Group controlId="No_Drill">
+                                    <Form.Label>No Drill</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="No_Drill"
+                                        value={formData.No_Drill}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
 
-                                    <Col md={6}>
+                                <Form.Group controlId="No_Reamer">
+                                    <Form.Label>No Reamer</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="No_Reamer"
+                                        value={formData.No_Reamer}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
+                                <Form.Group controlId="Code">
+                                    <Form.Label>Code</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="Code"
+                                        value={formData.Code}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group> 
+                                <Form.Group controlId="Remark">
+                                    <Form.Label>Remark</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="Remark"
+                                        value={formData.Remark}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
+                            </Col>
+
+                            <Col md={6}>
 
 
-                                        <Form.Group controlId="Color">
-                                            <Form.Label>Color</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Color"
-                                                value={formData.Color}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
+                                <Form.Group controlId="Color">
+                                    <Form.Label>Color</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="Color"
+                                        value={formData.Color}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
 
-                                        <Form.Group controlId="Color_Spray">
-                                            <Form.Label>Color Spray</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Color_Spray"
-                                                value={formData.Color_Spray}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
+                                <Form.Group controlId="Color_Spray">
+                                    <Form.Label>Color Spray</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="Color_Spray"
+                                        value={formData.Color_Spray}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
 
-                                        <Form.Group controlId="Grind_Back">
-                                            <Form.Label>Grind Back</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Grind_Back"
-                                                value={formData.Grind_Back}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
+                                <Form.Group controlId="Grind_Back">
+                                    <Form.Label>Grind Back</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="Grind_Back"
+                                        value={formData.Grind_Back}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
 
-                                        <Form.Group controlId="Grind_Front">
-                                            <Form.Label>Grind Front</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Grind_Front"
-                                                value={formData.Grind_Front}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
+                                <Form.Group controlId="Grind_Front">
+                                    <Form.Label>Grind Front</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="Grind_Front"
+                                        value={formData.Grind_Front}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
 
-                                        <Form.Group controlId="Grind_Detail">
-                                            <Form.Label>Grind Detail</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Grind_Detail"
-                                                value={formData.Grind_Detail}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
+                                <Form.Group controlId="Grind_Detail">
+                                    <Form.Label>Grind Detail</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="Grind_Detail"
+                                        value={formData.Grind_Detail}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
 
-                                        <Form.Group controlId="Drill">
-                                            <Form.Label>Drill</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Drill"
-                                                value={formData.Drill}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
+                                <Form.Group controlId="Drill">
+                                    <Form.Label>Drill</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="Drill"
+                                        value={formData.Drill}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
 
-                                        <Form.Group controlId="Baat">
-                                            <Form.Label>Baat</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Baat"
-                                                value={formData.Baat}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
+                                <Form.Group controlId="Baat">
+                                    <Form.Label>Baat</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="Baat"
+                                        value={formData.Baat}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
 
-                                        <Form.Group controlId="Ji_Hou">
-                                            <Form.Label>Ji Hou</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Ji_Hou"
-                                                value={formData.Ji_Hou}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
+                                <Form.Group controlId="Ji_Hou">
+                                    <Form.Label>Ji Hou</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="Ji_Hou"
+                                        value={formData.Ji_Hou}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
 
-                                        <Form.Group controlId="Fon_Hou">
-                                            <Form.Label>Fon Hou</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Fon_Hou"
-                                                value={formData.Fon_Hou}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
+                                <Form.Group controlId="Fon_Hou">
+                                    <Form.Label>Fon Hou</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="Fon_Hou"
+                                        value={formData.Fon_Hou}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
 
-                                        <Form.Group controlId="Tha_Khob">
-                                            <Form.Label>Tha Khob</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Tha_Khob"
-                                                value={formData.Tha_Khob}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
+                                <Form.Group controlId="Tha_Khob">
+                                    <Form.Label>Tha Khob</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="Tha_Khob"
+                                        value={formData.Tha_Khob}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
 
-                                        <Form.Group controlId="Cut">
-                                            <Form.Label>Cut</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Cut"
-                                                value={formData.Cut}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
+                                <Form.Group controlId="Cut">
+                                    <Form.Label>Cut</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="Cut"
+                                        value={formData.Cut}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
 
-                                        <Form.Group controlId="Form">
-                                            <Form.Label>Form</Form.Label>
-                                            <Form.Control
-                                                type="text"
-                                                name="Form"
-                                                value={formData.Form}
-                                                onChange={handleChange}
-                                            />
-                                        </Form.Group>
-                                    </Col>
-                                </Row>
+                                <Form.Group controlId="Form">
+                                    <Form.Label>Form</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        name="Form"
+                                        value={formData.Form}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
+                            </Col>
+                        </Row>
 
-                                <Button variant="primary" type="submit" className="mt-3">
-                                    Update
-                                </Button>
-                                <Button variant="secondary" onClick={handleOnClick} className="mt-3 ms-2">
-                                    Cancel
-                                </Button>
-                            </Form>
-                        )}
-                    </div>
-                </Content>
-                <FooterComponent />
-            </Layout>
+                        <Button variant="primary" type="submit" className="mt-3">
+                            Update
+                        </Button>
+                        <Button variant="secondary" onClick={handleOnClick} className="mt-3 ms-2">
+                            Cancel
+                        </Button>
+                    </Form>
+                )}
+            </div>
+
 
             <BootstrapModal show={modalVisible} onHide={() => setModalVisible(false)}>
                 <BootstrapModal.Header closeButton>
@@ -491,7 +473,8 @@ const EditDr = () => {
                     </Button>
                 </BootstrapModal.Footer>
             </BootstrapModal>
-        </Layout>
+
+        </div>
     );
 };
 

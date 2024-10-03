@@ -7,8 +7,8 @@ import * as XLSX from 'xlsx';
 import { useAuthContext } from '../../hook/useAuthContext';
 import { Modal, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { convertToUTCPlus7 } from '../../utility/Moment-timezone';
 import env from "react-dotenv";
+import ModalComponent from './ModalComponent'
 
 const DrTable = () => {
     const currentDate = new Date();
@@ -28,18 +28,18 @@ const DrTable = () => {
         { headerName: 'Name_Dr', field: 'Name_Dr', filter: 'agTextColumnFilter' },
         { headerName: 'Name_Wip', field: 'Name_Wip', filter: 'agTextColumnFilter' },
         { headerName: 'Name_Fg_1', field: 'Name_Fg_1', filter: 'agTextColumnFilter' },
-        { headerName: 'Demension', field: 'Demension', filter: 'agTextColumnFilter' },
-        { headerName: 'Type_Brake', field: 'Type_Brake', filter: 'agTextColumnFilter' },
-        { headerName: 'Chem_Grade', field: 'Chem_Grade', filter: 'agTextColumnFilter' },
-        { headerName: 'Status_Dr', field: 'Status_Dr', filter: 'agTextColumnFilter' },
-        { headerName: 'No_Grind', field: 'No_Grind', filter: 'agTextColumnFilter' },
-        { headerName: 'Num_Hole', field: 'Num_Hole', filter: 'agTextColumnFilter' },
+        { headerName: 'ขนาด(กว้าง*หนา-ยาว)', field: 'Demension', filter: 'agTextColumnFilter' },
+        { headerName: 'ลักษณะผ้า', field: 'Type_Brake', filter: 'agTextColumnFilter' },
+        { headerName: 'เกรดเคมี', field: 'Chem_Grade', filter: 'agTextColumnFilter' },
+        { headerName: 'สถานะการเจาะ', field: 'Status_Dr', filter: 'agTextColumnFilter' },
+        { headerName: 'ขนาดโค้งผ้าเบรก', field: 'No_Grind', filter: 'agTextColumnFilter' },
+        { headerName: 'จำนวนรู', field: 'Num_Hole', filter: 'agTextColumnFilter' },
         { headerName: 'No_Jig_Drill', field: 'No_Jig_Drill', filter: 'agTextColumnFilter' },
-        { headerName: 'No_Drill', field: 'No_Drill', filter: 'agTextColumnFilter' },
-        { headerName: 'No_Reamer', field: 'No_Reamer', filter: 'agTextColumnFilter' },
-        { headerName: 'Code', field: 'Code', filter: 'agTextColumnFilter' },
-        { headerName: 'Remark', field: 'Remark', filter: 'agTextColumnFilter' },
-        { headerName: 'Color', field: 'Color', filter: 'agTextColumnFilter' },
+        { headerName: 'ขนาดรูเจาะ', field: 'No_Drill', filter: 'agTextColumnFilter' },
+        { headerName: 'ขนาดรูคว้าน', field: 'No_Reamer', filter: 'agTextColumnFilter' },
+        { headerName: 'โค้ดการขาย', field: 'Code', filter: 'agTextColumnFilter' },
+        { headerName: 'หมายเหตุ', field: 'Remark', filter: 'agTextColumnFilter' },
+        { headerName: 'สี', field: 'Color', filter: 'agTextColumnFilter' },
         // { headerName: 'Color_Spray', field: 'Color_Spray', filter: 'agTextColumnFilter' },
         // { headerName: 'Grind_Back', field: 'Grind_Back', filter: 'agTextColumnFilter' },
         // { headerName: 'Grind_Front', field: 'Grind_Front', filter: 'agTextColumnFilter' },
@@ -144,6 +144,7 @@ const DrTable = () => {
                 Tha_Khob: item.Tha_Khob,
                 Cut: item.Cut,
                 Form: item.Form,
+                CreateBy: item.CreateBy,
                 CreateAt: item.CreateAt,
                 UpdateAt: item.UpdateAt,
             }));
@@ -322,17 +323,37 @@ const DrTable = () => {
 
         // console.log(tsvData)
         // Use the Clipboard API to copy the data
-        navigator.clipboard.writeText(tsvData)
-            .then(() => {
-                console.log('Copied to clipboard successfully.', );
+        // navigator.clipboard.writeText(tsvData)
+        //     .then(() => {
+        //         console.log('Copied to clipboard successfully.', );
+        //         setShowSuccessAlert(true);
+        //         setSuccessAlertMessage(`Copied to clipboard successfully.`);
+        //         setTimeout(() => setShowSuccessAlert(false), 1000); // Hide alert after 1.5 seconds
+
+        //     })
+        //     .catch(err => {
+        //         console.error('Failed to copy:', err);
+        //     });
+        //Alternative method for copy
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                console.log('Copied to clipboard successfully.');
                 setShowSuccessAlert(true);
                 setSuccessAlertMessage(`Copied to clipboard successfully.`);
                 setTimeout(() => setShowSuccessAlert(false), 1000); // Hide alert after 1.5 seconds
-
-            })
-            .catch(err => {
+            } catch (err) {
                 console.error('Failed to copy:', err);
-            });
+            }
+            document.body.removeChild(textarea);
+        }
+        
+        // Usage
+        copyToClipboard(tsvData);
     };
 
     return (
@@ -378,7 +399,7 @@ const DrTable = () => {
             )}
     
             {/* Detail Modal */}
-            <Modal show={showModal} onHide={() => setShowModal(false)} size="lg">
+            {/* <Modal show={showModal} onHide={() => setShowModal(false)} size="lg">
                 <Modal.Header closeButton>
                     <Modal.Title>Detail Information</Modal.Title>
                 </Modal.Header>
@@ -427,7 +448,83 @@ const DrTable = () => {
                         Close
                     </Button>
                 </Modal.Footer>
-            </Modal>
+            </Modal> */}
+
+
+            {/* <Modal show={showModal} onHide={() => setShowModal(false)} centered size="xl">
+                <Modal.Header closeButton>
+                    <Modal.Title>Detail Information</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {modalData && (
+                        <div className="row">
+                            {[
+                                { label: 'Code_Dr:', value: modalData.Code_Dr },
+                                { label: 'Name_Dr:', value: modalData.Name_Dr },
+                                { label: 'Name_Wip:', value: modalData.Name_Wip },
+                                { label: 'Name_Fg_1:', value: modalData.Name_Fg_1 },
+                                { label: 'Dimension:', value: modalData.Demension },
+                                { label: 'Type_Brake:', value: modalData.Type_Brake },
+                                { label: 'Chem_Grade:', value: modalData.Chem_Grade },
+                                { label: 'Status_Dr:', value: modalData.Status_Dr },
+                                { label: 'No_Grind:', value: modalData.No_Grind },
+                                { label: 'Num_Hole:', value: modalData.Num_Hole },
+                                { label: 'No_Jig_Drill:', value: modalData.No_Jig_Drill },
+                                { label: 'No_Drill:', value: modalData.No_Drill },
+                                { label: 'No_Reamer:', value: modalData.No_Reamer },
+                                { label: 'Code:', value: modalData.Code },
+                                { label: 'Remark:', value: modalData.Remark },
+                                { label: 'Color:', value: modalData.Color },
+                                { label: 'Color_Spray:', value: modalData.Color_Spray },
+                                { label: 'Grind_Back:', value: modalData.Grind_Back },
+                                { label: 'Grind_Front:', value: modalData.Grind_Front },
+                                { label: 'Grind_Detail:', value: modalData.Grind_Detail },
+                                { label: 'Drill:', value: modalData.Drill },
+                                { label: 'Baat:', value: modalData.Baat },
+                                { label: 'Ji_Hou:', value: modalData.Ji_Hou },
+                                { label: 'Fon_Hou:', value: modalData.Fon_Hou },
+                                { label: 'Tha_Khob:', value: modalData.Tha_Khob },
+                                { label: 'Cut:', value: modalData.Cut },
+                                { label: 'Form:', value: modalData.Form },
+                                { label: 'Create At:', value: convertToUTCPlus7(modalData.CreateAt) },
+                                { label: 'Update At:', value: convertToUTCPlus7(modalData.UpdateAt) },
+                            ].reduce((acc, field, index) => {
+                                const rowIndex = Math.floor(index / 3);
+                                if (!acc[rowIndex]) {
+                                    acc[rowIndex] = [];
+                                }
+                                acc[rowIndex].push(field);
+                                return acc;
+                            }, []).map((rowFields, rowIndex) => (
+                                <div key={rowIndex} className="row mb-3">
+                                    {rowFields.map((field, fieldIndex) => (
+                                        <div key={fieldIndex} className="col-md-4">
+                                            <div className="p-2 border border-primary rounded bg-light">
+                                                <h6 className="text-primary mb-1">{field.label}</h6>
+                                                <p className="m-0">{field.value || '-'}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowModal(false)}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal> */}
+            {modalData && (
+                <ModalComponent
+                    showModal={showModal}
+                    setShowModal={setShowModal}
+                    modalData={modalData}
+                    Api_URL={`${env.API_URL}/api/historylog/dr/${modalData.No}`}
+                />
+            )}
+
 
     
             {/* Delete Confirmation Modal */}

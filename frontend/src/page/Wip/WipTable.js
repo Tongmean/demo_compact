@@ -7,9 +7,8 @@ import * as XLSX from 'xlsx';
 import { useAuthContext } from '../../hook/useAuthContext';
 import { Modal, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom'; 
-import { convertToUTCPlus7 } from '../../utility/Moment-timezone';
 import env from "react-dotenv";
-
+import ModalComponent from './ModalComponent'
 const WipTable = () => {
     const currentDate = new Date();
     const formattedDate = currentDate.toLocaleDateString(); 
@@ -110,6 +109,7 @@ const WipTable = () => {
                     Mold_Per_8_Hour: item.Mold_Per_8_Hour,
                     Remark: item.Remark,
                     CreateAt: item.CreateAt,
+                    CreateBy: item.CreateBy,
                     UpdateAt: item.UpdateAt,
                 }));
                 setRowData(mappedData);
@@ -189,7 +189,14 @@ const WipTable = () => {
                 Mold_Per_8_Hour: item.Mold_Per_8_Hour,
                 Remark: item.Remark,
             }));
+
+            console.log('customHeaders',customHeaders);
+            console.log('Object.values(customHeaders)', Object.values(customHeaders))
+            console.log('Object.keys(customHeaders)', Object.keys(customHeaders))
+            console.log('mappedData',mappedData)
+
             const worksheet = XLSX.utils.json_to_sheet(mappedData, { header: Object.values(customHeaders) });
+            console.log('worksheet',worksheet)
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, 'SelectedData');
             const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
@@ -254,17 +261,38 @@ const WipTable = () => {
 
         // console.log(tsvData)
         // Use the Clipboard API to copy the data
-        navigator.clipboard.writeText(tsvData)
-            .then(() => {
-                console.log('Copied to clipboard successfully.', );
+        // navigator.clipboard.writeText(tsvData)
+        //     .then(() => {
+        //         console.log('Copied to clipboard successfully.', );
+        //         setShowSuccessAlert(true);
+        //         setSuccessAlertMessage(`Copied to clipboard successfully.`);
+        //         setTimeout(() => setShowSuccessAlert(false), 1000); // Hide alert after 1.5 seconds
+
+        //     })
+        //     .catch(err => {
+        //         console.error('Failed to copy:', err);
+        //     });
+        //Alternative method for copy
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                console.log('Copied to clipboard successfully.');
                 setShowSuccessAlert(true);
                 setSuccessAlertMessage(`Copied to clipboard successfully.`);
                 setTimeout(() => setShowSuccessAlert(false), 1000); // Hide alert after 1.5 seconds
-
-            })
-            .catch(err => {
+            } catch (err) {
                 console.error('Failed to copy:', err);
-            });
+            }
+            document.body.removeChild(textarea);
+        }
+        
+        // Usage
+        copyToClipboard(tsvData);
+        
     };
 
 
@@ -303,28 +331,49 @@ const WipTable = () => {
                     />
                 </div>
             )}
-            <Modal show={showModal} onHide={() => setShowModal(false)}>
+            
+            {/* <Modal show={showModal} onHide={() => setShowModal(false)} centered size='xl'>
                 <Modal.Header closeButton>
-                    <Modal.Title>Wip Details</Modal.Title>
+                    <Modal.Title>Information Details</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     {modalData && (
-                        <div>
-                            <p><strong>Code_Wip:</strong> {modalData.Code_Wip}</p>
-                            <p><strong>Name_Wip:</strong> {modalData.Name_Wip}</p>
-                            <p><strong>Code_Mold:</strong> {modalData.Code_Mold}</p>
-                            <p><strong>Dimension:</strong> {modalData.Dimension}</p>
-                            <p><strong>Chem_Grade:</strong> {modalData.Chem_Grade}</p>
-                            <p><strong>Weight_Per_Pcs:</strong> {modalData.Weight_Per_Pcs}</p>
-                            <p><strong>Pcs_Per_Mold:</strong> {modalData.Pcs_Per_Mold}</p>
-                            <p><strong>Pcs_Per_Set:</strong> {modalData.Pcs_Per_Set}</p>
-                            <p><strong>Type_Brake:</strong> {modalData.Type_Brake}</p>
-                            <p><strong>Type_Mold:</strong> {modalData.Type_Mold}</p>
-                            <p><strong>Time_Per_Mold:</strong> {modalData.Time_Per_Mold}</p>
-                            <p><strong>Mold_Per_8_Hour:</strong> {modalData.Mold_Per_8_Hour}</p>
-                            <p><strong>Remark:</strong> {modalData.Remark}</p>
-                            <p><strong>Create At:</strong> {convertToUTCPlus7(modalData.CreateAt)}</p>
-                            <p><strong>Update At:</strong> {convertToUTCPlus7(modalData.UpdateAt)}</p>
+                        <div className="row">
+                            {[
+                                { label: 'Code_Wip:', value: modalData.Code_Wip },
+                                { label: 'Name_Wip:', value: modalData.Name_Wip },
+                                { label: 'Code_Mold:', value: modalData.Code_Mold },
+                                { label: 'Dimension:', value: modalData.Dimension },
+                                { label: 'Chem_Grade:', value: modalData.Chem_Grade },
+                                { label: 'Weight_Per_Pcs:', value: modalData.Weight_Per_Pcs },
+                                { label: 'Pcs_Per_Mold:', value: modalData.Pcs_Per_Mold },
+                                { label: 'Pcs_Per_Set:', value: modalData.Pcs_Per_Set },
+                                { label: 'Type_Brake:', value: modalData.Type_Brake },
+                                { label: 'Type_Mold:', value: modalData.Type_Mold },
+                                { label: 'Time_Per_Mold:', value: modalData.Time_Per_Mold },
+                                { label: 'Mold_Per_8_Hour:', value: modalData.Mold_Per_8_Hour },
+                                { label: 'Remark:', value: modalData.Remark },
+                                { label: 'Create At:', value: convertToUTCPlus7(modalData.CreateAt) },
+                                { label: 'Update At:', value: convertToUTCPlus7(modalData.UpdateAt) },
+                            ].reduce((acc, field, index) => {
+                                const rowIndex = Math.floor(index / 3);
+                                if (!acc[rowIndex]) {
+                                    acc[rowIndex] = [];
+                                }
+                                acc[rowIndex].push(field);
+                                return acc;
+                            }, []).map((rowFields, rowIndex) => (
+                                <div key={rowIndex} className="row mb-3">
+                                    {rowFields.map((field, fieldIndex) => (
+                                        <div key={fieldIndex} className="col-md-4">
+                                            <div className="p-2 border border-primary rounded bg-light">
+                                                <h6 className="text-primary mb-1">{field.label}</h6>
+                                                <p className="m-0">{field.value || '-'}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ))}
                         </div>
                     )}
                 </Modal.Body>
@@ -333,7 +382,16 @@ const WipTable = () => {
                         Close
                     </Button>
                 </Modal.Footer>
-            </Modal>
+            </Modal> */}
+            {modalData && (
+                <ModalComponent
+                    showModal={showModal}
+                    setShowModal={setShowModal}
+                    modalData={modalData}
+                    Api_URL={`${env.API_URL}/api/historylog/wip/${modalData.No}`}
+                />
+            )}
+
 
             <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
                 <Modal.Header closeButton>

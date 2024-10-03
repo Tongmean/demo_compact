@@ -1,7 +1,7 @@
-import React, { memo } from 'react';
+import React, { memo, useEffect } from 'react';
 import { HomeOutlined, UserOutlined, ExceptionOutlined, FileExcelOutlined, FileExclamationOutlined, DashboardOutlined } from '@ant-design/icons';
 import { Menu, Layout } from 'antd';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../hook/useAuthContext';
 
 
@@ -9,7 +9,18 @@ const { Sider } = Layout;
 
 const Sidebar = ({ collapsed, onCollapse }) => {
   const { user } = useAuthContext();
-  // Conditionally render items based on user role
+  const navigate = useNavigate();
+  const isAuthenticated = user && user.token;
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login'); // Redirect to login page if user is not authenticated
+    }
+  }, [isAuthenticated, navigate]);
+
+  // If user is not loaded yet, don't render the sidebar
+  if (!user) return null;
+
   const items = [
     { key: '1', icon: <HomeOutlined />, label: <Link to="/home">Home</Link> },
     { key: 'sub1', icon: <ExceptionOutlined />, label: 'Wip', children: [

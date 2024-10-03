@@ -21,6 +21,7 @@ export const AuthContextProvider = ({children}) => {
     const [state, dispatch] = useReducer(authReducer, {
         user:JSON.parse(localStorage.getItem('user'))
     });
+    
     //Retrive user from local storage
     useEffect(()=>{
         const user = JSON.parse(localStorage.getItem('user'))

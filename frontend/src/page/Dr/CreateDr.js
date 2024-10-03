@@ -1,18 +1,13 @@
 import React, { useState } from 'react';
-import { Layout, Form, Input, Button } from 'antd';
-import Sidebar from '../../component/Sidebar';
-import HeaderComponent from '../../component/Header';
-import FooterComponent from '../../component/Footer';
+import {  Form, Input, Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../hook/useAuthContext';
 import env from "react-dotenv";
 
 import {Modal} from 'react-bootstrap';
 
-const { Content } = Layout;
 
 const CreateDr = () => {
-    const [collapsed, setCollapsed] = useState(false);
     const [Code_Dr, setCode_Dr] = useState('');
     const [Name_Dr, setName_Dr] = useState('');
     const [Name_Wip, setName_Wip] = useState('');
@@ -93,261 +88,245 @@ const CreateDr = () => {
         navigate('/dr');
     };
     return (
-        <Layout style={{ minHeight: '100vh' }}>
-            <Sidebar collapsed={collapsed} onCollapse={setCollapsed} />
-            <Layout>
-                <HeaderComponent />
-                <Content
-                    style={{
-                        margin: '24px 16px 0',
-                        padding: '24px',
-                        background: '#ffffff',
-                        borderRadius: '4px',
-                        boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
-                    }}
-                >
-                    <div>
-                        <h2>Create New DR</h2>
-                        <Form onSubmitCapture={handleSubmit} layout="vertical">
-                            <div className='container-fluid'>
-                                <div className='row'>
-                                    <div className='col-xl-6 col-lg-6 col-md-12'>
-                                        <Form.Item label="Code DR">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Code_Dr}
-                                                onChange={(e) => setCode_Dr(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Name DR">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Name_Dr}
-                                                onChange={(e) => setName_Dr(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Name WIP">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Name_Wip}
-                                                onChange={(e) => setName_Wip(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Name FG 1">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Name_Fg_1}
-                                                onChange={(e) => setName_Fg_1(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Demension">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Demension}
-                                                onChange={(e) => setDemension(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Type Brake">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Type_Brake}
-                                                onChange={(e) => setType_Brake(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Chemical Grade">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Chem_Grade}
-                                                onChange={(e) => setChem_Grade(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Status DR">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Status_Dr}
-                                                onChange={(e) => setStatus_Dr(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="No Grind">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={No_Grind}
-                                                onChange={(e) => setNo_Grind(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Number Hole">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Num_Hole}
-                                                onChange={(e) => setNum_Hole(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="No Jig Drill">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={No_Jig_Drill}
-                                                onChange={(e) => setNo_Jig_Drill(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="No Drill">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={No_Drill}
-                                                onChange={(e) => setNo_Drill(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="No Reamer">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={No_Reamer}
-                                                onChange={(e) => setNo_Reamer(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                    </div>
-                                    <div className='col-xl-6 col-lg-6 col-md-12'>
-                                        <Form.Item label="Code">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Code}
-                                                onChange={(e) => setCode(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Remark">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Remark}
-                                                onChange={(e) => setRemark(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Color">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Color}
-                                                onChange={(e) => setColor(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Color Spray">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Color_Spray}
-                                                onChange={(e) => setColor_Spray(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Grind Back">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Grind_Back}
-                                                onChange={(e) => setGrind_Back(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Grind Front">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Grind_Front}
-                                                onChange={(e) => setGrind_Front(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Grind Detail">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Grind_Detail}
-                                                onChange={(e) => setGrind_Detail(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Drill">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Drill}
-                                                onChange={(e) => setDrill(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Baat">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Baat}
-                                                onChange={(e) => setBaat(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Ji Hou">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Ji_Hou}
-                                                onChange={(e) => setJi_Hou(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Fon Hou">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Fon_Hou}
-                                                onChange={(e) => setFon_Hou(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Tha Khob">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Tha_Khob}
-                                                onChange={(e) => setTha_Khob(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Cut">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Cut}
-                                                onChange={(e) => setCut(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Form">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={FormValue}
-                                                onChange={(e) => setFormValue(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                    </div>
-                                </div>
+        <div>
+            <div>
+                <h2>Create New DR</h2>
+                <Form onSubmitCapture={handleSubmit} layout="vertical">
+                    <div className='container-fluid'>
+                        <div className='row'>
+                            <div className='col-xl-6 col-lg-6 col-md-12'>
+                                <Form.Item label="Code DR">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Code_Dr}
+                                        onChange={(e) => setCode_Dr(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="Name DR">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Name_Dr}
+                                        onChange={(e) => setName_Dr(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="Name WIP">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Name_Wip}
+                                        onChange={(e) => setName_Wip(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="Name FG 1">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Name_Fg_1}
+                                        onChange={(e) => setName_Fg_1(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="Demension">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Demension}
+                                        onChange={(e) => setDemension(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="Type Brake">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Type_Brake}
+                                        onChange={(e) => setType_Brake(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="Chemical Grade">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Chem_Grade}
+                                        onChange={(e) => setChem_Grade(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="Status DR">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Status_Dr}
+                                        onChange={(e) => setStatus_Dr(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="No Grind">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={No_Grind}
+                                        onChange={(e) => setNo_Grind(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="Number Hole">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Num_Hole}
+                                        onChange={(e) => setNum_Hole(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="No Jig Drill">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={No_Jig_Drill}
+                                        onChange={(e) => setNo_Jig_Drill(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="No Drill">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={No_Drill}
+                                        onChange={(e) => setNo_Drill(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="No Reamer">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={No_Reamer}
+                                        onChange={(e) => setNo_Reamer(e.target.value)}
+                                    />
+                                </Form.Item>
                             </div>
-                            <Form.Item>
-                                <Button type="" className='me-2' onClick={handleOnClick}>
-                                    Back
-                                </Button>
-                                <Button type="primary" htmlType="submit" loading={isPending}>
-                                    Create
-                                </Button>
-
-                            </Form.Item>
-                        </Form>
+                            <div className='col-xl-6 col-lg-6 col-md-12'>
+                                <Form.Item label="Code">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Code}
+                                        onChange={(e) => setCode(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="Remark">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Remark}
+                                        onChange={(e) => setRemark(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="Color">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Color}
+                                        onChange={(e) => setColor(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="Color Spray">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Color_Spray}
+                                        onChange={(e) => setColor_Spray(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="Grind Back">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Grind_Back}
+                                        onChange={(e) => setGrind_Back(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="Grind Front">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Grind_Front}
+                                        onChange={(e) => setGrind_Front(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="Grind Detail">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Grind_Detail}
+                                        onChange={(e) => setGrind_Detail(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="Drill">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Drill}
+                                        onChange={(e) => setDrill(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="Baat">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Baat}
+                                        onChange={(e) => setBaat(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="Ji Hou">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Ji_Hou}
+                                        onChange={(e) => setJi_Hou(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="Fon Hou">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Fon_Hou}
+                                        onChange={(e) => setFon_Hou(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="Tha Khob">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Tha_Khob}
+                                        onChange={(e) => setTha_Khob(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="Cut">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Cut}
+                                        onChange={(e) => setCut(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="Form">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={FormValue}
+                                        onChange={(e) => setFormValue(e.target.value)}
+                                    />
+                                </Form.Item>
+                            </div>
+                        </div>
                     </div>
-                </Content>
-                <FooterComponent />
-            </Layout>
+                    <Form.Item>
+                        <Button type="" className='me-2' onClick={handleOnClick}>
+                            Back
+                        </Button>
+                        <Button type="primary" htmlType="submit" loading={isPending}>
+                            Create
+                        </Button>
 
+                    </Form.Item>
+                </Form>
+            </div>
 
             <Modal show={showModal} onHide={handleCloseModal}>
                 <Modal.Header closeButton>
@@ -360,8 +339,7 @@ const CreateDr = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
-
-        </Layout>
+        </div>
     );
 };
 

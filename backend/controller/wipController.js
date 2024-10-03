@@ -1,10 +1,11 @@
 const dbconnect = require('../DbConnect');
-
+const { logUpdate } = require('../utility/historylog')
 //Get all Wip
 const getWip = async (req, res) => {
     try {
-        dbconnect.query('SELECT * FROM "wip"', (err, result) => {
+        dbconnect.query(`SELECT * FROM "wip" WHERE "Status" IN ('Active', 'Update') ORDER BY "Code_Wip" ASC`, (err, result) => {
             if (err) {
+                console.log(err)
                 res.status(400).json({
                     success: false,
                     msg: "There sth Error with Retrieve Wip Database.",
@@ -14,7 +15,8 @@ const getWip = async (req, res) => {
                 res.status(200).json({
                     success: true,
                     msg: "Query wip successful",
-                    data: result.rows // PostgreSQL stores result data in 'rows'
+                    data: result.rows, // PostgreSQL stores result data in 'rows'
+                    count: result.rows.length // PostgreSQL stores result data in 'rows'
                 });
             }
         });
@@ -60,7 +62,11 @@ const getSingleWip = async (req, res) => {
 //post wip
 const postWip = async (req, res) => {
     const { Code_Wip, Name_Wip, Code_Mold, Dimension, Chem_Grade, Weight_Per_Pcs, Pcs_Per_Mold, Pcs_Per_Set, Type_Brake, Type_Mold, Time_Per_Mold, Mold_Per_8_Hour, Remark } = req.body;
-
+    const Status = "Active";
+    // Access the user email from requireAuth middleware
+    const userEmail = req.user.email; // This email comes from requireAuth
+    console.log('userEmail:', userEmail)
+    const CreateBy = userEmail;
     // Define the query to check for duplicates
     const checkSqlCommand = `
         SELECT * FROM "wip"
@@ -102,10 +108,10 @@ const postWip = async (req, res) => {
             // Record doesn't exist, proceed with insertion
             const insertSqlCommand = `
                 INSERT INTO "wip" 
-                ("Code_Wip", "Name_Wip", "Code_Mold", "Dimension", "Chem_Grade", "Weight_Per_Pcs", "Pcs_Per_Mold", "Pcs_Per_Set", "Type_Brake", "Type_Mold", "Time_Per_Mold", "Mold_Per_8_Hour", "Remark") 
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+                ("Code_Wip", "Name_Wip", "Code_Mold", "Dimension", "Chem_Grade", "Weight_Per_Pcs", "Pcs_Per_Mold", "Pcs_Per_Set", "Type_Brake", "Type_Mold", "Time_Per_Mold", "Mold_Per_8_Hour", "Remark", "Status", "CreateBy") 
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
             `;
-            dbconnect.query(insertSqlCommand, [Code_Wip, Name_Wip, Code_Mold, Dimension, Chem_Grade, Weight_Per_Pcs, Pcs_Per_Mold, Pcs_Per_Set, Type_Brake, Type_Mold, Time_Per_Mold, Mold_Per_8_Hour, Remark], (insertErr, insertResult) => {
+            dbconnect.query(insertSqlCommand, [Code_Wip, Name_Wip, Code_Mold, Dimension, Chem_Grade, Weight_Per_Pcs, Pcs_Per_Mold, Pcs_Per_Set, Type_Brake, Type_Mold, Time_Per_Mold, Mold_Per_8_Hour, Remark, Status, CreateBy], (insertErr, insertResult) => {
                 if (insertErr) {
                     return res.status(500).json({
                         success: false,
@@ -139,11 +145,13 @@ const postWipExcel = async (req, res) => {
         // Get value from request (Http)
         let data = req.body;  // Array of objects
 
-        // Define which columns are of type double precision. Adjust indices as needed.
+        // Replace blank or null values with "-"
         data = data.map(row => row.map(value => value === "" || value === null ? "-" : value));
 
-
-        
+        // Access the user email from requireAuth middleware
+        const userEmail = req.user.email; // This email comes from requireAuth
+        console.log('userEmail:', userEmail)
+        const CreateBy = userEmail;
         let duplicateCount = 0;
         let insertedCount = 0;
         const nonDuplicateData = [];
@@ -171,8 +179,6 @@ const postWipExcel = async (req, res) => {
             `;
 
             try {
-                console.log('data',data);
-                
                 const result = await dbconnect.query(checkDuplicateSql, [
                     Code_Wip, Name_Wip, Code_Mold, Dimension, Chem_Grade, Weight_Per_Pcs,
                     Pcs_Per_Mold, Pcs_Per_Set, Type_Brake, Type_Mold, Time_Per_Mold, Mold_Per_8_Hour, Remark
@@ -184,13 +190,11 @@ const postWipExcel = async (req, res) => {
                     duplicateCount++;  // Increment duplicate count
                 }
             } catch (err) {
-                console.log(err.message)
                 throw new Error(`Error while checking duplicates: ${err.message}`);
-                
             }
         };
 
-        // Function to insert non-duplicate records into the database
+        // Function to insert non-duplicate records into the database with 'Status' field as 'Active' and 'CreateBy' field as the userEmail
         const insertNonDuplicateRecords = async () => {
             if (nonDuplicateData.length === 0) {
                 return res.status(200).json({
@@ -201,9 +205,10 @@ const postWipExcel = async (req, res) => {
                 });
             }
 
+            // Include 'Status' field as 'Active' and 'CreateBy' field with the user email when inserting records
             const sqlCommand = `
-                INSERT INTO "wip"("Code_Wip", "Name_Wip", "Code_Mold", "Dimension", "Chem_Grade", "Weight_Per_Pcs", "Pcs_Per_Mold", "Pcs_Per_Set", "Type_Brake", "Type_Mold", "Time_Per_Mold", "Mold_Per_8_Hour", "Remark") 
-                VALUES ${nonDuplicateData.map(row => `(${row.map(value => value === null ? 'NULL' : `'${value}'`).join(", ")})`).join(", ")}
+                INSERT INTO "wip"("Code_Wip", "Name_Wip", "Code_Mold", "Dimension", "Chem_Grade", "Weight_Per_Pcs", "Pcs_Per_Mold", "Pcs_Per_Set", "Type_Brake", "Type_Mold", "Time_Per_Mold", "Mold_Per_8_Hour", "Remark", "Status", "CreateBy") 
+                VALUES ${nonDuplicateData.map(row => `(${row.map(value => value === null ? 'NULL' : `'${value}'`).join(", ")}, 'Active', '${CreateBy}')`).join(", ")}
             `;
 
             try {
@@ -250,21 +255,35 @@ const postWipExcel = async (req, res) => {
 
 
 
+
+
 const updateWip = async (req, res) => {
+    // Access the user email from requireAuth middleware
+    const userEmail = req.user.email; // This email comes from requireAuth
+    console.log('userEmail:', userEmail);
+    const UpdateBy = userEmail;
     const id = req.params.id;
+    const Status = "Update";
     const { Code_Wip, Name_Wip, Code_Mold, Dimension, Chem_Grade, Weight_Per_Pcs, Pcs_Per_Mold, Pcs_Per_Set, Type_Brake, Type_Mold, Time_Per_Mold, Mold_Per_8_Hour, Remark } = req.body;
 
     // Using double quotes for PostgreSQL field names
     const sqlCommand = `UPDATE "wip" 
                         SET "Code_Wip" = $1, "Name_Wip" = $2, "Code_Mold" = $3, "Dimension" = $4, "Chem_Grade" = $5, "Weight_Per_Pcs" = $6, 
                             "Pcs_Per_Mold" = $7, "Pcs_Per_Set" = $8, "Type_Brake" = $9, "Type_Mold" = $10, "Time_Per_Mold" = $11, 
-                            "Mold_Per_8_Hour" = $12, "Remark" = $13 
-                        WHERE "id" = $14`;
+                            "Mold_Per_8_Hour" = $12, "Remark" = $13, "Status" = $14 
+                        WHERE "id" = $15`;
 
-    const values = [Code_Wip, Name_Wip, Code_Mold, Dimension, Chem_Grade, Weight_Per_Pcs, Pcs_Per_Mold, Pcs_Per_Set, Type_Brake, Type_Mold, Time_Per_Mold, Mold_Per_8_Hour, Remark, id];
+    const values = [Code_Wip, Name_Wip, Code_Mold, Dimension, Chem_Grade, Weight_Per_Pcs, Pcs_Per_Mold, Pcs_Per_Set, Type_Brake, Type_Mold, Time_Per_Mold, Mold_Per_8_Hour, Remark, Status, id];
 
     try {
-        dbconnect.query(sqlCommand, values, (err, result) => {
+        //Check Oldvalue before update
+        // Update was successful, now fetch the old values
+        const selectedQuery = `SELECT * FROM "wip" WHERE "id" = $1`;
+        const selectedResult = await dbconnect.query(selectedQuery, [id]);
+
+
+        // Perform the update
+        dbconnect.query(sqlCommand, values, async (err, result) => {
             if (err) {
                 console.log("err", err);
                 res.status(500).json({
@@ -273,11 +292,42 @@ const updateWip = async (req, res) => {
                     data: err
                 });
             } else {
-                res.status(200).json({
-                    msg: `Wip Id: ${id} & Code_Wip: ${Code_Wip} was updated successfully`,
-                    success: true,
-                    data: result
-                });
+                try {
+                    if (selectedResult.rows.length > 0) {
+                        const oldValues = selectedResult.rows[0];
+                        
+                        // Log changes
+                        for (const column of ["Code_Wip", "Name_Wip", "Code_Mold", "Dimension", "Chem_Grade", "Weight_Per_Pcs", "Pcs_Per_Mold", "Pcs_Per_Set", "Type_Brake", "Type_Mold", "Time_Per_Mold", "Mold_Per_8_Hour", "Remark"]) {
+                            const oldValue = oldValues[column];
+                            const newValue = req.body[column];
+                            console.log('oldValues', oldValue);
+                            console.log('newValue', newValue)
+                            if (oldValue !== newValue) {
+                                await logUpdate('wip', column, id , oldValue, newValue, UpdateBy);
+
+                            }
+                        }
+
+                        res.status(200).json({
+                            msg: `Wip Id: ${id} & Code_Wip: ${Code_Wip} was updated successfully`,
+                            success: true,
+                            data: result
+                        });
+                    } else {
+                        // No row found with the given id
+                        res.status(404).json({
+                            msg: `No record found with ID: ${id}`,
+                            success: false
+                        });
+                    }
+                } catch (queryErr) {
+                    console.error("Error fetching updated row:", queryErr);
+                    res.status(500).json({
+                        msg: "There was an error fetching the updated row",
+                        success: false,
+                        data: queryErr
+                    });
+                }
             }
         });
     } catch (error) {
@@ -287,15 +337,25 @@ const updateWip = async (req, res) => {
             data: error
         });
     }
-}
+};
 
 
 
-//Dellete Wip
+//Delete Wip
 const deleteWip = async (req, res) => {
     const id = req.params.id;
+    const Status = "Delete"
+    // Access the user email from requireAuth middleware
+    const userEmail = req.user.email; // This email comes from requireAuth
+    console.log('userEmail:', userEmail);
+    const UpdateBy = userEmail;
     try {
-        dbconnect.query('DELETE FROM "wip" WHERE "id" = $1', [id], (err, result) => {
+        //Query value before update status
+        const selectedQuery = `SELECT * FROM "wip" WHERE "id" = $1`;
+        const selectedResult = await dbconnect.query(selectedQuery, [id]);
+
+        //Update status to Update
+        dbconnect.query('UPDATE "wip" SET "Status" = $1 WHERE "id" = $2', [Status, id], (err, result) => {
             if (err) {
                 res.status(400).json({
                     msg: "There are some Problem",
@@ -303,6 +363,21 @@ const deleteWip = async (req, res) => {
                     success: false
                 });
             } else {
+                if (selectedResult.rows.length > 0) {
+                    const oldValues = selectedResult.rows[0];
+                    
+                    // Log changes
+                    for (const column of ["Status"]) {
+                        const oldValue = oldValues[column];
+                        const newValue = Status;
+                        console.log('oldValues', oldValue);
+                        console.log('newValue', newValue)
+                        if (oldValue !== newValue) {
+                            logUpdate('wip', column, id , oldValue, newValue, UpdateBy);
+
+                        }
+                    }
+                }
                 res.status(200).json({
                     success: true,
                     msg: `Delete record ${id} successfully`,

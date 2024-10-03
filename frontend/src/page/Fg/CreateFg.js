@@ -1,17 +1,11 @@
 import React, { useState } from 'react';
-import { Layout, Form, Input, Button } from 'antd';
-import Sidebar from '../../component/Sidebar';
-import HeaderComponent from '../../component/Header';
-import FooterComponent from '../../component/Footer';
+import { Form, Input, Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../hook/useAuthContext';
 import { Modal } from 'react-bootstrap';
 import env from "react-dotenv";
 
-const { Content } = Layout;
-
 const CreateFg = () => {
-    const [collapsed, setCollapsed] = useState(false);
     const [Code_Fg, setCode_Fg] = useState('');
     const [Name_Fg, setName_Fg] = useState('');
     const [Model, setModel] = useState('');
@@ -76,182 +70,167 @@ const CreateFg = () => {
         }
     };
     const handleOnClick = () => {
-        navigate('/bom');
+        navigate('/fg');
     };
 
     return (
-        <Layout style={{ minHeight: '100vh' }}>
-            <Sidebar collapsed={collapsed} onCollapse={setCollapsed} />
-            <Layout>
-                <HeaderComponent />
-                <Content
-                    style={{
-                        margin: '24px 16px 0',
-                        padding: '24px',
-                        background: '#ffffff',
-                        borderRadius: '4px',
-                        boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
-                    }}
-                >
-                    <div>
-                        <h2>Create New FG</h2>
-                        <Form onSubmitCapture={handleSubmit} layout="vertical">
-                            <div className='container-fluid'>
-                                <div className='row'>
-                                    <div className='col-xl-6 col-lg-6 col-md-12'>
-                                        <Form.Item label="Code FG">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Code_Fg}
-                                                onChange={(e) => setCode_Fg(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Name FG">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Name_Fg}
-                                                onChange={(e) => setName_Fg(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Model">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Model}
-                                                onChange={(e) => setModel(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Part No">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Part_No}
-                                                onChange={(e) => setPart_No(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="OE Part No">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={OE_Part_No}
-                                                onChange={(e) => setOE_Part_No(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Code">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Code}
-                                                onChange={(e) => setCode(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Chemical Grade">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Chem_Grade}
-                                                onChange={(e) => setChem_Grade(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Pcs Per Set">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Pcs_Per_Set}
-                                                onChange={(e) => setPcs_Per_Set(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                    </div>
-                                    <div className='col-xl-6 col-lg-6 col-md-12'>
-                                        <Form.Item label="Box No">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Box_No}
-                                                onChange={(e) => setBox_No(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Weight Box">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Weight_Box}
-                                                onChange={(e) => setWeight_Box(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Box Erp No">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Box_Erp_No}
-                                                onChange={(e) => setBox_Erp_No(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Rivet No">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Rivet_No}
-                                                onChange={(e) => setRivet_No(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Weight Rivet Per Set">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Weight_Revit_Per_Set}
-                                                onChange={(e) => setWeight_Revit_Per_Set(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Num Rivet Per Set">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Num_Revit_Per_Set}
-                                                onChange={(e) => setNum_Revit_Per_Set(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Rivet Erp No">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Revit_Erp_No}
-                                                onChange={(e) => setRevit_Erp_No(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                        <Form.Item label="Remark">
-                                            <Input
-                                                type="text"
-                                                required
-                                                value={Remark}
-                                                onChange={(e) => setRemark(e.target.value)}
-                                            />
-                                        </Form.Item>
-                                    </div>
-                                    <div className='col-12'>
-                                        
-                                        <Form.Item>
-                                            <Button type="" className='me-2' onClick={handleOnClick}>
-                                                Back
-                                            </Button>
-                                            <Button
-                                                type="primary"
-                                                htmlType="submit"
-                                                disabled={isPending}
-                                            >
-                                                {isPending ? 'Saving...' : 'Save Data'}
-                                            </Button>
-                                        </Form.Item>
-                                    </div>
-                                </div>
+        <div>
+            <div>
+                <h2>Create New FG</h2>
+                <Form onSubmitCapture={handleSubmit} layout="vertical">
+                    <div className='container-fluid'>
+                        <div className='row'>
+                            <div className='col-xl-6 col-lg-6 col-md-12'>
+                                <Form.Item label="Code FG">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Code_Fg}
+                                        onChange={(e) => setCode_Fg(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="Name FG">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Name_Fg}
+                                        onChange={(e) => setName_Fg(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="Model">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Model}
+                                        onChange={(e) => setModel(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="Part No">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Part_No}
+                                        onChange={(e) => setPart_No(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="พาร์ทลูกค้า">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={OE_Part_No}
+                                        onChange={(e) => setOE_Part_No(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="โค้ดการขาย">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Code}
+                                        onChange={(e) => setCode(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="เกรดเคมี">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Chem_Grade}
+                                        onChange={(e) => setChem_Grade(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="ชิ้นต่อชุด">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Pcs_Per_Set}
+                                        onChange={(e) => setPcs_Per_Set(e.target.value)}
+                                    />
+                                </Form.Item>
                             </div>
-                        </Form>
+                            <div className='col-xl-6 col-lg-6 col-md-12'>
+                                <Form.Item label="เบอร์กล่อง">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Box_No}
+                                        onChange={(e) => setBox_No(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="น้ำหนักกล่อง">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Weight_Box}
+                                        onChange={(e) => setWeight_Box(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="รหัสกล่อง_ERP">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Box_Erp_No}
+                                        onChange={(e) => setBox_Erp_No(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="เบอร์รีเวท">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Rivet_No}
+                                        onChange={(e) => setRivet_No(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="น้ำหนักรีเวทต่อชุด">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Weight_Revit_Per_Set}
+                                        onChange={(e) => setWeight_Revit_Per_Set(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="จำนวนรีเวทต่อชุด">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Num_Revit_Per_Set}
+                                        onChange={(e) => setNum_Revit_Per_Set(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="รหัสรีเวท_ERP">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Revit_Erp_No}
+                                        onChange={(e) => setRevit_Erp_No(e.target.value)}
+                                    />
+                                </Form.Item>
+                                <Form.Item label="หมายเหตุ">
+                                    <Input
+                                        type="text"
+                                        required
+                                        value={Remark}
+                                        onChange={(e) => setRemark(e.target.value)}
+                                    />
+                                </Form.Item>
+                            </div>
+                            <div className='col-12'>
+                                
+                                <Form.Item>
+                                    <Button type="" className='me-2' onClick={handleOnClick}>
+                                        Back
+                                    </Button>
+                                    <Button
+                                        type="primary"
+                                        htmlType="submit"
+                                        disabled={isPending}
+                                    >
+                                        {isPending ? 'Saving...' : 'Save Data'}
+                                    </Button>
+                                </Form.Item>
+                            </div>
+                        </div>
                     </div>
-                </Content>
-                <FooterComponent />
-            </Layout>
+                </Form>
+            </div>
 
             {/* Modal for showing success/error messages */}
             <Modal show={showModal} onHide={handleCloseModal}>
@@ -265,7 +244,9 @@ const CreateFg = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
-        </Layout>
+        </div>
+
+        
     );
 };
 

@@ -3,8 +3,7 @@ const router = express.Router();
 
 //Import bomController form Controller
 const { getBoms,getSigleBom, postBom, updatebom, deletebom, postBomExcel } =  require("../controller/bomController");
-const requireAuth = require('../middleware/requireAuth');
-router.use(requireAuth);
+
 //Get all bom value Sellect *
 router.get('/',getBoms);
 //Get Single bom value Sellect *
