@@ -8,7 +8,7 @@ import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
 //PDf gen
 import ChildPDFComponent from './ChildPDFComponent';
-
+import DrawingFetch from './DrawingFetch'
 const DashTable = () => {
     const { user } = useAuthContext();
     const currentDate = new Date();
@@ -43,14 +43,14 @@ const DashTable = () => {
                     >
                         PDF
                     </button>
-            
-                    <button
+                    <DrawingFetch params = {params}/>
+                    {/* <button
                         className="btn btn-secondary btn-sm"
                         // onClick={() => handleShowEdit(params.data)}
                         style={{ marginRight: '5px' }}
                     >
                         DRAWING 1
-                    </button>
+                    </button> */}
                         
                     
                 </div>

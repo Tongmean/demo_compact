@@ -7,9 +7,12 @@ const cors = require('cors')
 //Call body-parser
 const bodyParser = require('body-parser');
 //Middleware
+const path = require('path');
 app.use(cors())
 app.use(express.json()); // Upcoming req to Json
 app.use(bodyParser.json());
+// Serve static files from the 'Assets' folder
+app.use('/Assets', express.static(path.join(__dirname, 'Assets')));
 //Connect Db
 // const dbconnect = require('../Backend/DbConnect');
 //Import Router Bom
@@ -22,10 +25,11 @@ const drRoutes = require('./routes/drRoutes')
 const dashRoutes = require('./routes/dashRoutes')
 const requireAuth = require('./middleware/requireAuth');
 const historyLogRouter = require('./routes/historyLogRouters') 
-
+const drawingRouter = require('./routes/drawingRoutes')
 // Create Router (Table User)
 app.use('/api/user', userrouter);
 app.use(requireAuth);
+
 // Create Router (Table bom)
 app.use('/api/bom', bomsrouter);
 
@@ -40,6 +44,8 @@ app.use('/api/dr', drRoutes)
 app.use('/api/dash', dashRoutes)
 
 app.use('/api/historylog',historyLogRouter)
+//Drawing
+app.use('/api/drawing',drawingRouter)
 
 
 //Config Port using dotenv

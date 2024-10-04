@@ -43,7 +43,12 @@ const Sidebar = ({ collapsed, onCollapse }) => {
       { key: '10', label: <Link to="/createbomexcel">Excel Insert</Link>, hidden: user.user.role !== 'admin' },
       { key: '11', label: <Link to="/createbom">Form Insert</Link>, hidden: user.user.role !== 'admin' }
     ]},
-    { key: 'sub5', icon: <DashboardOutlined />, label: <Link to="/dashboard">Product-Data</Link> },
+    { key: 'sub6', icon: <FileExclamationOutlined />, label: 'Drawing', children: [
+      { key: '3311', label: <Link to="/drawing">Report</Link> },
+      { key: '1011', label: <Link to="/createdrawing">Drawing Insert</Link>, hidden: user.user.role !== 'admin' },
+    ]},
+    
+    { key: 'sub5', icon: <DashboardOutlined />, label: <Link to="/Product-Data">Product-Data</Link> },
     { key: '91', icon: <UserOutlined />, label: 'User Management', children: [
       { key: '100', label: <Link to="/user">User</Link>, hidden: user.user.role !== 'admin' },
       { key: '99', label: <Link to="/createuser">Insert User</Link>, hidden: user.user.role !== 'admin' }

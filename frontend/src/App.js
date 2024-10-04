@@ -145,7 +145,7 @@
 
 
 
-import React from 'react';
+import React, {useState} from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import useTokenExpiration from './hook/useTokenExpiration';
@@ -175,6 +175,9 @@ import CreateUser from './page/User/CreateUser';
 import Dashboard from './page/Dash/Dashboard';
 import HeaderComponent from './component/Header';
 import FooterComponent from './component/Footer';
+
+import DrawingTable from './page/Drawing/DrawingTable';
+import CreateDrawing from "./page/Drawing/CreateDrawing"
 import { Layout } from 'antd';
 const { Content } = Layout;
 
@@ -182,8 +185,7 @@ const App = () => {
   useTokenExpiration();
   const { user } = useAuthContext();
   const isAuthenticated = Boolean(user && user.token);
-
-
+  const [collapsed, setCollapsed] = useState(false);
 
   console.log("user", user)
   console.log("isAuthenticated", isAuthenticated)
@@ -191,7 +193,7 @@ const App = () => {
     <Router>
       <Layout style={{ minHeight: '100vh' }}>
         {/* Sidebar placed outside the Routes */}
-        <Sidebar />
+        <Sidebar collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}/>
         <Layout>
           <HeaderComponent />
           <Content style={{
@@ -255,9 +257,12 @@ const App = () => {
               
               <Route path='/createuser' element={isAuthenticated ? < CreateUser /> : <Navigate to='/login' />} />
 
-              <Route path='/dashboard' element={isAuthenticated ? < Dashboard /> : <Navigate to='/login' />} />
-              
+              <Route path='/Product-Data' element={isAuthenticated ? < Dashboard /> : <Navigate to='/login' />} />
 
+              <Route path='/drawing' element={isAuthenticated ? < DrawingTable /> : <Navigate to='/login' />} />
+              <Route path='/createdrawing' element={isAuthenticated ? < CreateDrawing /> : <Navigate to='/login' />} />
+              
+              
             </Routes>
           </Content>
           <FooterComponent />
