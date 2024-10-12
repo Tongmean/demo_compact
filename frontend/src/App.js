@@ -178,6 +178,7 @@ import FooterComponent from './component/Footer';
 
 import DrawingTable from './page/Drawing/DrawingTable';
 import CreateDrawing from "./page/Drawing/CreateDrawing"
+import EditDrawing from './page/Drawing/EditDrawing';
 import { Layout } from 'antd';
 const { Content } = Layout;
 
@@ -260,7 +261,11 @@ const App = () => {
               <Route path='/Product-Data' element={isAuthenticated ? < Dashboard /> : <Navigate to='/login' />} />
 
               <Route path='/drawing' element={isAuthenticated ? < DrawingTable /> : <Navigate to='/login' />} />
+
               <Route path='/createdrawing' element={isAuthenticated ? < CreateDrawing /> : <Navigate to='/login' />} />
+
+              <Route path='/drawing/:id' element={isAuthenticated ? < EditDrawing /> : <Navigate to='/login' />} />
+
               
               
             </Routes>

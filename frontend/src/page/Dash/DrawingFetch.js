@@ -39,7 +39,7 @@ const DrawingFetch = ({ params }) => {
             {drawingPathCount > 0 && drawingPaths.map((drawingPath, index) => (
                 <a
                     key={index}
-                    href={`${env.API_URL}/assets/Drawing/${encodeURIComponent(drawingPath.filename)}`} // Use drawingPath as the link
+                    href={`${env.API_URL}/Assets/Drawing/${encodeURIComponent(drawingPath.filename)}`} // Use drawingPath as the link
                     target="_blank" // Open link in new tab
                     rel="noopener noreferrer" // Security best practice
                 >

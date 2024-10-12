@@ -2,6 +2,8 @@ const path = require('path'); // Import path module
 const fs = require('fs'); // Import fs module
 const dbconnect = require('../DbConnect');
 const multer = require('multer');
+const { logUpdate } = require('../utility/historylog');
+const { config } = require('dotenv');
 
 // Ensure the directory exists for file uploads
 const uploadDir = path.join(__dirname, '../Assets', 'Drawing');
@@ -101,8 +103,207 @@ const getDrawingByCode_Fg = async (req, res) =>{
     }
 }
 
+const getDrawings = async(req, res) =>{
+    const sqlCommand =`
+        SELECT * FROM drawing
+        WHERE "Status" IN ('Active', 'Update')
+        ORDER BY "Part_No" ASC  
+    `
+    try {
+        dbconnect.query(sqlCommand, (err, result)=>{
+            if(err){
+                res.status(400).json({
+                    success: false,
+                    data: err,
+                    msg:"Query Fail"
+                })
+            }else{
+                res.status(200).json({
+                    success: true,
+                    data:result.rows,
+                    const: result.rows.length,
+                    msg:'Query Success'
+                })
+            }
+        })
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            data: error,
+            msg:"Query Fail"
+        })
+    }
+}
+
+const getSigleDrawing = async(req, res) =>{
+    id = req.params.id;
+    const sqlCommand = `
+    SELECT * FROM drawing
+    Where id = $1
+    `
+    try {
+        dbconnect.query(sqlCommand, [id], (err, result)=>{
+            if(err){
+                res.status(400).json({
+                    success: false,
+                    data: err,
+                    msg:"Query Fail"
+                })
+            }else{
+                res.status(200).json({
+                    success: true,
+                    data:result.rows,
+                    const: result.rows.length,
+                    msg:'Query Success'
+                })
+            }
+        })
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            data: error,
+            msg:"Query Fail"
+        })
+    }
+
+}
+
+const deleteDrawing = async (req, res) => {
+    const id = req.params.id;
+    const Status = "Delete";
+    const userEmail = req.user.email; // This email comes from requireAuth
+    console.log('userEmail:', userEmail);
+    const UpdateBy = userEmail;
+
+    try {
+        //Query currrent value before update
+        const selectedQuery = `SELECT * FROM "drawing" WHERE "id" = $1`;
+        const selectedResult = await dbconnect.query(selectedQuery, [id]);
+        
+        // Execute the query to update
+        dbconnect.query('UPDATE "drawing" SET "Status" = $1 WHERE "id" = $2', [Status, id], (err, result) => {
+            if (err) {
+                res.status(400).json({
+                    success: false,
+                    data: err,
+                    msg: `There was a problem while deleting Drawing ${id}`,
+                });
+            } else {
+                if (selectedResult.rows.length > 0) {
+                    const oldValues = selectedResult.rows[0];
+                    
+                    // Log changes
+                    for (const column of ["Status"]) {
+                        const oldValue = oldValues[column];
+                        const newValue = Status;
+                        console.log('oldValues', oldValue);
+                        console.log('newValue', newValue)
+
+                        if (oldValue !== newValue) {
+                            logUpdate('drawing', column, id , oldValue, newValue, UpdateBy);
+
+                        }
+                    }
+                }
+                res.status(200).json({
+                    msg: `Drawing id:${id} deleted successfully`,
+                    data: result.rows,
+                    success: true
+                });
+            }
+        });
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            msg: `There was a problem while deleting BOM ${id}`,
+            data: error
+        });
+    }
+};
+
+const updateDrawing = async (req, res) => {
+    const id = req.params.id; // Get the drawing ID from the request params
+    const status = "Update"; // Set the status to "Update"
+    const userEmail = req.user.email; // Get the user's email
+    const createdBy = userEmail; // Set the creator to the user's email
+
+    try {
+        const { Part_No } = req.body; // Destructure to get Part_No
+        console.log('Request Body:', req.body);
+        
+        // Validate Part_No
+        if (!Part_No) {
+            return res.status(400).json({ msg: 'Part No is required.' });
+        }
+
+        // Validate uploaded files
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({ msg: 'No files uploaded.' });
+        }
+
+        // Map uploaded file information
+        const fileInfos = req.files.map(file => ({
+            file_name: file.filename, // New field name
+            file_path: file.path // New field name
+        }));
+
+        // Query to select the drawing
+        const selectedQuery = `SELECT * FROM "drawing" WHERE "id" = $1`;
+        const selectedResult = await dbconnect.query(selectedQuery, [id]);
+
+        // Ensure the drawing exists
+        if (selectedResult.rows.length === 0) {
+            return res.status(404).json({ msg: 'Drawing not found.' });
+        }
+
+        const oldValues = selectedResult.rows[0]; // Retrieve old values before updating
+
+        // Prepare the SQL update command
+        const sqlCommand = `UPDATE drawing 
+                            SET filename = $1, filepath = $2, "Part_No" = $3, "Status" = $4
+                            WHERE id = $5`;
+
+        // Update the drawing for each uploaded file
+        for (const fileInfo of fileInfos) {
+            // Execute the update query
+            await dbconnect.query(sqlCommand, 
+                [fileInfo.file_name, fileInfo.file_path, Part_No, status, id]);
+
+            // Prepare changes to log
+            const changes = {
+                Status: { old: oldValues.Status, new: status },
+                Part_No: { old: oldValues.Part_No, new: Part_No },
+                filename: { old: oldValues.filename, new: fileInfo.file_name },
+                filepath: { old: oldValues.filepath, new: fileInfo.file_path },
+            };
+
+            // Log each change if old and new values differ
+            for (const [column, { old: oldValue, new: newValue }] of Object.entries(changes)) {
+                if (oldValue !== newValue) {
+                    console.log(`Logging change for ${column}: oldValue = ${oldValue}, newValue = ${newValue}`); // Log the values being saved
+                    await logUpdate('drawing', column, id, oldValue, newValue, createdBy); // Ensure logUpdate is awaited if it returns a promise
+                }
+            }
+        }
+
+        // Respond with success message and updated file information
+        res.status(200).json({ msg: 'Files updated successfully!', files: fileInfos });
+    } catch (error) {
+        console.error('Error updating files:', error);
+        res.status(500).json({ msg: 'Error updating files' });
+    }
+};
+
+
+
+
+
 module.exports = {
     uploadMidleware,
     postDrawing,
-    getDrawingByCode_Fg
+    getDrawingByCode_Fg,
+    getDrawings,
+    getSigleDrawing,
+    deleteDrawing,
+    updateDrawing
 };

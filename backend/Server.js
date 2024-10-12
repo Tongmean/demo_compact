@@ -15,37 +15,38 @@ app.use(bodyParser.json());
 app.use('/Assets', express.static(path.join(__dirname, 'Assets')));
 //Connect Db
 // const dbconnect = require('../Backend/DbConnect');
-//Import Router Bom
-const bomsrouter = require('../Backend/routes/bomRoutes');
+
 //Import Router user
 const userrouter = require('./routes/userRoutes')
+//Auth middleware
+const requireAuth = require('./middleware/requireAuth');
+//Import Router Bom
+const bomsrouter = require('../Backend/routes/bomRoutes');
 const fgRoutes = require('./routes/fgRoutes')
 const wipRoutes = require('./routes/wiproutes')
 const drRoutes = require('./routes/drRoutes')
 const dashRoutes = require('./routes/dashRoutes')
-const requireAuth = require('./middleware/requireAuth');
 const historyLogRouter = require('./routes/historyLogRouters') 
 const drawingRouter = require('./routes/drawingRoutes')
 // Create Router (Table User)
 app.use('/api/user', userrouter);
-app.use(requireAuth);
 
 // Create Router (Table bom)
-app.use('/api/bom', bomsrouter);
+app.use('/api/bom', requireAuth, bomsrouter);
 
 //Fg
-app.use('/api/fg',fgRoutes)
+app.use('/api/fg',requireAuth,fgRoutes)
 //wip
-app.use('/api/wip',wipRoutes)
+app.use('/api/wip',requireAuth,wipRoutes)
 //dr
-app.use('/api/dr', drRoutes)
+app.use('/api/dr', requireAuth, drRoutes)
 
 //dash(Product Data)
-app.use('/api/dash', dashRoutes)
+app.use('/api/dash',requireAuth, dashRoutes)
 
-app.use('/api/historylog',historyLogRouter)
+app.use('/api/historylog', requireAuth,historyLogRouter)
 //Drawing
-app.use('/api/drawing',drawingRouter)
+app.use('/api/drawing', requireAuth, drawingRouter)
 
 
 //Config Port using dotenv

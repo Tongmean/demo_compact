@@ -5,15 +5,18 @@ import { Modal } from 'react-bootstrap'; // Import Modal from react-bootstrap
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useAuthContext } from '../../hook/useAuthContext';
 import env from "react-dotenv";
+import { useNavigate } from 'react-router-dom';
+
 const CreateDrawing = () => {
     // State to hold the part number and files
+    
     const { user } = useAuthContext();
     const [Part_No, setPart_No] = useState('');
     const [files, setFiles] = useState([]);
     const [isPending, setIsPending] = useState(false);
     const [modalContent, setModalContent] = useState('');
     const [showModal, setShowModal] = useState(false);
-
+    const navigate = useNavigate();
     // Handle part number input change
     const handlePartNoChange = (e) => {
         setPart_No(e.target.value);
@@ -60,6 +63,8 @@ const CreateDrawing = () => {
             });
             setModalContent(response.data.msg || 'Files uploaded successfully!'); // Get message from response
             setShowModal(true);
+            setTimeout(() => navigate('/drawing'), 1500);
+
 
         } catch (error) {
             console.error('Error uploading files:', error); // Handle errors
@@ -71,7 +76,9 @@ const CreateDrawing = () => {
     };
 
     const handleCloseModal = () => setShowModal(false);
-
+    const handleOnClick = () => {
+        navigate('/drawing');
+    };
     return (
         <div>
             <h2>Create New Drawing</h2>
@@ -103,6 +110,9 @@ const CreateDrawing = () => {
                         </div>
                         <div className='col-12'>
                             <Form.Item>
+                                <Button className='btn-secondary' variant="primary" onClick={handleOnClick}>
+                                    Back
+                                </Button>
                                 <Button type="primary" htmlType="submit" disabled={isPending}>
                                     {isPending ? 'Uploading...' : 'Upload'}
                                 </Button>
