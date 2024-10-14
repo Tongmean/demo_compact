@@ -66,7 +66,7 @@ const Sidebar = ({ collapsed, onCollapse }) => {
       }}
     >
       <div className="logo" style={{ padding: '16px', textAlign: 'center', color: '#fff' }}>
-        {collapsed ? 'C' : 'Compact Design'}
+        {collapsed ? 'C' : 'Compact Brake'}
       </div>
       <Menu
         theme="dark"

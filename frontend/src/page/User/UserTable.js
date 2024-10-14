@@ -329,7 +329,7 @@ const UserTable = () => {
             {/* Feedback Modal */}
             <Modal show={showFeedbackModal} onHide={() => setShowFeedbackModal(false)}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Feedback</Modal.Title>
+                    <Modal.Title>Message</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <div className={`alert alert-${feedbackType}`}>

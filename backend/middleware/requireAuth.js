@@ -15,7 +15,7 @@ const requireAuth = async (req, res, next) => {
     try {
         // Verify the token and extract the user ID
         const decoded = jwt.verify(token, process.env.SECRET);
-        console.log('Decoded Token:', decoded);
+        // console.log('Decoded Token:', decoded);
 
         // Destructure id from decoded
         const { id } = decoded;

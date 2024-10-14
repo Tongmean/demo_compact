@@ -1,3 +1,6 @@
+//Middleware make request body light weight
+const compression = require('compression')
+
 //call express
 const express = require('express');
 // app express
@@ -7,6 +10,7 @@ const cors = require('cors')
 //Call body-parser
 const bodyParser = require('body-parser');
 //Middleware
+app.use(compression())
 const path = require('path');
 app.use(cors())
 app.use(express.json()); // Upcoming req to Json
