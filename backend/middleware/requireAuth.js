@@ -10,7 +10,7 @@ const requireAuth = async (req, res, next) => {
     }
 
     const token = authorization.split(' ')[1];
-    console.log(token);
+    // console.log(token);
 
     try {
         // Verify the token and extract the user ID

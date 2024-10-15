@@ -394,10 +394,10 @@ const DashTable = () => {
                 Remark: item.Remark_Wip,
             }));
 
-            console.log("Dr",mappedDataDr)
-            console.log("Wip",mappedDataWip)
-            console.log("fg",mappedDataFg)
-            console.log("bom",mappedDataBom)
+            // console.log("Dr",mappedDataDr)
+            // console.log("Wip",mappedDataWip)
+            // console.log("fg",mappedDataFg)
+            // console.log("bom",mappedDataBom)
 
             // Function to remove duplicate objects from an array
             function removeDuplicates(data) {
@@ -415,10 +415,10 @@ const DashTable = () => {
             const uniqueDataWip = removeDuplicates(mappedDataWip);
 
             
-            console.log("uniqueDataBom",uniqueDataBom)
-            console.log("uniqueDataFg",uniqueDataFg)
-            console.log("uniqueDataDr",uniqueDataDr)
-            console.log("uniqueDataWip",uniqueDataWip)
+            // console.log("uniqueDataBom",uniqueDataBom)
+            // console.log("uniqueDataFg",uniqueDataFg)
+            // console.log("uniqueDataDr",uniqueDataDr)
+            // console.log("uniqueDataWip",uniqueDataWip)
 
             // Create worksheets with unique data
             const worksheetBom = XLSX.utils.json_to_sheet(uniqueDataBom, { header: Object.values(customHeadersBom) });
@@ -524,11 +524,9 @@ const DashTable = () => {
                         columnDefs={columnDefs}
                         rowData={rowData}
                         rowSelection="multiple"
-                        enableRangeSelection={true}
                         suppressClipboardPaste={false} 
                         suppressMultiRangeSelection={false}
                         suppressCopySingleCellRanges={false} 
-                        enableRangeHandle={true} 
                         onGridReady={onGridReady}
                         onSelectionChanged={onSelectionChanged}
                         pagination={true}

@@ -34,6 +34,12 @@ const CreateDrExcel = () => {
             if (headers.length !== 27) { // Adjust the column count as needed
                 console.error('Header does not have exactly 18 columns.');
                 alert('Check the Excel template again!');
+                setTimeout(() => {
+                    const fileInput = document.getElementById('fileInputId'); // Replace with your file input's actual ID
+                    if (fileInput) {
+                        fileInput.value = ''; // This clears the file input
+                    }
+                }, 1000);
                 return;
             }
 
@@ -128,6 +134,7 @@ const CreateDrExcel = () => {
                         <div className='row col-xl-8 col-lg-8 col-md-6'>
                             <label htmlFor="formFile" className="form-label">Default file input example</label>
                             <input
+                                id ="fileInputId"
                                 type="file"
                                 accept=".xlsx, .xls"
                                 onChange={handleFileUpload}

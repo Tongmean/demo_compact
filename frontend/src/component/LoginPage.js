@@ -6,6 +6,7 @@ import Spinner from 'react-bootstrap/Spinner';
 import useLogin from '../hook/useLogin';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router-dom';
+import brakeCOA from '../Asset/COA.png';
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
@@ -32,16 +33,20 @@ const LoginPage = () => {
     return (
         <MDBContainer fluid className="p-3 my-5 h-custom">
             <MDBRow className="d-flex justify-content-center align-items-center h-100">
-                <MDBCol col="12" md="6">
-            
-                    <img
-                        src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
-                        className="img-fluid"
-                        alt="Login illustration"
-                    />
-                    <div className='text-center'>
-                        <h5>ระบบจัดการข้อมูลผลิตภัณฑ์</h5>
+
+                <MDBCol col="12" md="6" className="d-flex flex-column align-items-center text-center">
+                    
+                    <div className="text-center mt-4">
+                        <h5>ระบบจัดการข้อมูลผลิตภัณฑ์ ผ้าเบรก</h5>
                     </div>
+                    <div className="d-flex justify-content-center w-100">
+                        <img
+                            src={brakeCOA}
+                            className="img-fluid w-75"
+                            alt="Login illustration"
+                        />
+                    </div>
+
                 </MDBCol>
                 <MDBCol col="12" md="6" className="d-flex justify-content-center">
                     <form onSubmit={handleSubmit} style={{ width: '80%', maxWidth: '400px' }}>

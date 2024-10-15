@@ -1,5 +1,5 @@
 // logging.js
-const dbconnect = require('../DbConnect'); // Adjust the path to your dbconnect module
+const dbconnect = require('../DbConnect'); 
 
 async function logUpdate(table, column, record_id, oldValue, newValue, user) {
     const query = `
@@ -11,7 +11,7 @@ async function logUpdate(table, column, record_id, oldValue, newValue, user) {
     try {
         // Ensure the query is properly awaited
         const result = await dbconnect.query(query, values);
-        console.log("History Log successfully inserted", result.command);
+        // console.log("History Log successfully inserted", result.command);
     } catch (err) {
         console.error('Error logging update:', err); // Log the error if something goes wrong
     }

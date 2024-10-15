@@ -33,7 +33,6 @@ const HomePage = () => {
           <Button as={Link} to="/Product-Data" className="btn btn-warning mx-1">
             Go Product Data
           </Button>
-
         </div>
       </div>
     </div>

@@ -65,6 +65,13 @@ const CreateFgExcel = () => {
         // if file submitted
         if (!fileInputRef.current?.files?.length) {
             alert('Please select a file before submitting.');
+                // Delay the clearing of the file input form by 1 second (1000 milliseconds)
+            setTimeout(() => {
+                const fileInput = document.getElementById('fileInputId'); // Replace with your file input's actual ID
+                if (fileInput) {
+                    fileInput.value = ''; // This clears the file input
+                }
+            }, 1000);
             return;
         }
         setLoading(true);
@@ -129,6 +136,7 @@ const CreateFgExcel = () => {
                         <div className='row col-xl-8 col-lg-8 col-md-6'>
                             <label htmlFor="formFile" className="form-label">Default file input example</label>
                             <input
+                                id ="fileInputId"
                                 type="file"
                                 accept=".xlsx, .xls"
                                 onChange={handleFileUpload}

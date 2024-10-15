@@ -250,31 +250,42 @@ const EditWip = () => {
                                     onChange={handleChange}
                                     className="form-select"
                                 >
+                                    {/* Display the selected value */}
                                     <option value={formData.Type_Brake}>{formData.Type_Brake}</option>
-                                    <option value="-">-</option>
-                                    <option value="ผ้าสั้น">ผ้าสั้น</option>
-                                    <option value="ผ้ายาว">ผ้ายาว</option>
-                                    <option value="ผ้าเล็ก">ผ้าเล็ก</option>
+                                    {/* Unique options array */}
+                                    {["-", "ผ้าสั้น", "ผ้ายาว", "ผ้าเล็ก"]
+                                        .filter(option => option !== formData.Type_Brake) // Filter out the selected value
+                                        .map((option, index) => (
+                                            <option key={index} value={option}>
+                                                {option}
+                                            </option>
+                                        ))}
                                 </select>
                             </Form.Group>        
                         </Col>
 
                         <Col md={6}>
                             <Form.Group controlId="ลักษณะแม่พิมพ์">
-                                <Form.Label>ลักษณะแม่พิมพ์</Form.Label>
+                            <Form.Label>ลักษณะแม่พิมพ์</Form.Label>
                                 <select
+                                    name="Type_Mold"
                                     value={formData.Type_Mold}
                                     onChange={handleChange}
                                     className="form-select"
-                                    type="text"
-                                    name="Type_Mold"
                                 >
+                                    {/* Display the selected value */}
                                     <option value={formData.Type_Mold}>{formData.Type_Mold}</option>
-                                    <option value="-">-</option>
-                                    <option value="แบน">แบน</option>
-                                    <option value="โค้ง">โค้ง</option>
+                                    {/* Unique options array */}
+                                    {["-", "แบน", "โค้ง"]
+                                        .filter(option => option !== formData.Type_Mold) // Filter out the selected value
+                                        .map((option, index) => (
+                                            <option key={index} value={option}>
+                                                {option}
+                                            </option>
+                                        ))}
                                 </select>
-                            </Form.Group>    
+                            </Form.Group>
+ 
                             {/* <Form.Group controlId="Type_Mold">
                                 <Form.Label>Type Mold</Form.Label>
                                 <Form.Control

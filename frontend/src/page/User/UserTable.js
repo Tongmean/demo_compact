@@ -163,22 +163,13 @@ const UserTable = () => {
         setShowModal(true);
     };
 
-    // const handleShowEdit = (data) => {
-    //     setEditData(data);
-    //     setShowEditModal(true);
-    // };
 
     const handleShowDelete = (data) => {
         setDeleteData(data);
         setShowDeleteModal(true);
     };
 
-    // const handleEditSave = async () => {
-    //     if (editData) {
-    //         await updateUserData(editData.No, editData);
-    //         setShowEditModal(false);
-    //     }
-    // };
+
 
     const handleDelete = () => {
         if (deleteData && deleteData.No) {
@@ -191,7 +182,7 @@ const UserTable = () => {
         setFeedbackType(type);
         setFeedbackMessage(message);
         setShowFeedbackModal(true);
-        setTimeout(() => setShowFeedbackModal(false), 3000); // Hide feedback modal after 3 seconds
+        setTimeout(() => setShowFeedbackModal(false), 2000); // Hide feedback modal after 3 seconds
     };
 
     const onGridReady = params => {
@@ -210,9 +201,6 @@ const UserTable = () => {
     return (
         <div>
             <div>
-                {/* <button style={{ marginBottom: '10px' }}>
-                    Export Selected Rows to Excel
-                </button> */}
             </div>
             {loading ? (
                 <div>Loading data, please wait...</div>
@@ -224,11 +212,10 @@ const UserTable = () => {
                         columnDefs={columnDefs}
                         rowData={rowData}
                         rowSelection="multiple"
-                        enableRangeSelection={true}
                         suppressClipboardPaste={false}
                         suppressMultiRangeSelection={false}
                         suppressCopySingleCellRanges={false}
-                        enableRangeHandle={true}
+                  
                         onGridReady={onGridReady}
                         onSelectionChanged={onSelectionChanged}
                         pagination={true}

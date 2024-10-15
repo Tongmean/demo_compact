@@ -21,10 +21,10 @@ const DrawingFetch = ({ params }) => {
             setDrawingPaths(data.data || []); // Ensure it's an array
             setDrawingPathCount(data.count || 0); // Handle count safely
 
-            console.log('Drawing Paths:', data.data);
-            console.log('Drawing Paths:', data.data.filename);
-            console.log('Drawing Path Count:', data.count);
-            console.log('Params:', params.data.Code_Fg);
+            // console.log('Drawing Paths:', data.data);
+            // console.log('Drawing Paths:', data.data.filename);
+            // console.log('Drawing Path Count:', data.count);
+            // console.log('Params:', params.data.Code_Fg);
         } catch (error) {
             console.log('Error:', error);
         }

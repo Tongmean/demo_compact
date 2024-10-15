@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {  Form, Input, Button } from 'antd';
+import {  Form, Input, Button,Select } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../hook/useAuthContext';
 import env from "react-dotenv";
@@ -127,7 +127,7 @@ const CreateDr = () => {
                                         onChange={(e) => setName_Fg_1(e.target.value)}
                                     />
                                 </Form.Item>
-                                <Form.Item label="Demension">
+                                <Form.Item label="ขนาด(กว้าง*หนา-ยาว)">
                                     <Input
                                         type="text"
                                         required
@@ -135,15 +135,31 @@ const CreateDr = () => {
                                         onChange={(e) => setDemension(e.target.value)}
                                     />
                                 </Form.Item>
-                                <Form.Item label="Type Brake">
+                                {/* <Form.Item label="ลักษระผ้าเบรก">
                                     <Input
                                         type="text"
                                         required
                                         value={Type_Brake}
                                         onChange={(e) => setType_Brake(e.target.value)}
                                     />
+                                </Form.Item> */}
+                                <Form.Item label="ลักษระผ้าเบรก">
+                                    <Select
+                                        required
+                                        value={Type_Brake}
+                                        onChange={(value) => setType_Brake(value)}
+                                    >
+                                        <Select.Option value="-">-</Select.Option>
+                                        <Select.Option value="ผ้าเบรกใหญ่">ผ้าเบรกใหญ่</Select.Option>
+                                        <Select.Option value="ผ้าเบรกใหญ่เรียว">ผ้าเบรกใหญ่เรียว</Select.Option>
+                                        <Select.Option value="ผ้าเบรกกลาง">ผ้าเบรกกลาง</Select.Option>
+                                        <Select.Option value="ผ้าเบรกเล็ก">ผ้าเบรกเล็ก</Select.Option>
+                                        <Select.Option value="ผ้าเบรกแผ่น">ผ้าเบรกแผ่น</Select.Option>
+                                        <Select.Option value="ผ้าประกอบก้าม">ผ้าประกอบก้าม</Select.Option>
+                                    </Select>
                                 </Form.Item>
-                                <Form.Item label="Chemical Grade">
+
+                                <Form.Item label="เกรดเคมี">
                                     <Input
                                         type="text"
                                         required
@@ -151,15 +167,20 @@ const CreateDr = () => {
                                         onChange={(e) => setChem_Grade(e.target.value)}
                                     />
                                 </Form.Item>
-                                <Form.Item label="Status DR">
-                                    <Input
-                                        type="text"
+                                <Form.Item label="สถานะการเจาะ">
+                                    <Select
                                         required
                                         value={Status_Dr}
                                         onChange={(e) => setStatus_Dr(e.target.value)}
-                                    />
+                                    >
+                                        <Select.Option value="-">-</Select.Option>
+                                        <Select.Option value="A">A</Select.Option>
+                                        <Select.Option value="B">B</Select.Option>
+
+                                    </Select>
                                 </Form.Item>
-                                <Form.Item label="No Grind">
+
+                                <Form.Item label="ขนาดโค้งผ้า">
                                     <Input
                                         type="text"
                                         required
@@ -167,7 +188,8 @@ const CreateDr = () => {
                                         onChange={(e) => setNo_Grind(e.target.value)}
                                     />
                                 </Form.Item>
-                                <Form.Item label="Number Hole">
+
+                                <Form.Item label="จำนวนรู">
                                     <Input
                                         type="text"
                                         required
@@ -175,7 +197,8 @@ const CreateDr = () => {
                                         onChange={(e) => setNum_Hole(e.target.value)}
                                     />
                                 </Form.Item>
-                                <Form.Item label="No Jig Drill">
+
+                                <Form.Item label="No.ก้ามเจาะ">
                                     <Input
                                         type="text"
                                         required
@@ -183,7 +206,7 @@ const CreateDr = () => {
                                         onChange={(e) => setNo_Jig_Drill(e.target.value)}
                                     />
                                 </Form.Item>
-                                <Form.Item label="No Drill">
+                                <Form.Item label="ขนาดรูเจาะ">
                                     <Input
                                         type="text"
                                         required
@@ -191,7 +214,7 @@ const CreateDr = () => {
                                         onChange={(e) => setNo_Drill(e.target.value)}
                                     />
                                 </Form.Item>
-                                <Form.Item label="No Reamer">
+                                <Form.Item label="ขนาดรูคว้าน">
                                     <Input
                                         type="text"
                                         required
@@ -200,8 +223,9 @@ const CreateDr = () => {
                                     />
                                 </Form.Item>
                             </div>
+
                             <div className='col-xl-6 col-lg-6 col-md-12'>
-                                <Form.Item label="Code">
+                                <Form.Item label="โค้ดการขาย">
                                     <Input
                                         type="text"
                                         required
@@ -209,7 +233,7 @@ const CreateDr = () => {
                                         onChange={(e) => setCode(e.target.value)}
                                     />
                                 </Form.Item>
-                                <Form.Item label="Remark">
+                                <Form.Item label="หมายเหตุ">
                                     <Input
                                         type="text"
                                         required
@@ -217,101 +241,231 @@ const CreateDr = () => {
                                         onChange={(e) => setRemark(e.target.value)}
                                     />
                                 </Form.Item>
-                                <Form.Item label="Color">
-                                    <Input
-                                        type="text"
+                                <Form.Item label="สี">
+                                    <Select
                                         required
                                         value={Color}
                                         onChange={(e) => setColor(e.target.value)}
-                                    />
+                                    >
+                                        <Select.Option value="-">-</Select.Option>
+                                        <Select.Option value="เหลือง">เหลือง</Select.Option>
+                                        <Select.Option value="ฟ้า">ฟ้า</Select.Option>
+                                        <Select.Option value="ส้ม">ส้ม</Select.Option>
+                                    </Select>
                                 </Form.Item>
-                                <Form.Item label="Color Spray">
-                                    <Input
-                                        type="text"
+                                <Form.Item label="พ่นสี">
+                                    <Select
                                         required
                                         value={Color_Spray}
                                         onChange={(e) => setColor_Spray(e.target.value)}
-                                    />
+                                    >
+                                        <Select.Option value="-">-</Select.Option>
+                                        <Select.Option value="1">1</Select.Option>
+                                        <Select.Option value="2">2</Select.Option>
+                                        <Select.Option value="3">3</Select.Option>
+                                        <Select.Option value="4">4</Select.Option>
+                                        <Select.Option value="5">5</Select.Option>
+                                        <Select.Option value="6">6</Select.Option>
+                                        <Select.Option value="7">7</Select.Option>
+                                        <Select.Option value="8">8</Select.Option>
+                                        <Select.Option value="9">9</Select.Option>
+                                        <Select.Option value="10">10</Select.Option>
+                                    </Select>
                                 </Form.Item>
-                                <Form.Item label="Grind Back">
-                                    <Input
-                                        type="text"
+                                <Form.Item label="ฝนหลังหยาบ">
+                                    <Select
                                         required
                                         value={Grind_Back}
                                         onChange={(e) => setGrind_Back(e.target.value)}
-                                    />
+                                    >
+                                        <Select.Option value="-">-</Select.Option>
+                                        <Select.Option value="1">1</Select.Option>
+                                        <Select.Option value="2">2</Select.Option>
+                                        <Select.Option value="3">3</Select.Option>
+                                        <Select.Option value="4">4</Select.Option>
+                                        <Select.Option value="5">5</Select.Option>
+                                        <Select.Option value="6">6</Select.Option>
+                                        <Select.Option value="7">7</Select.Option>
+                                        <Select.Option value="8">8</Select.Option>
+                                        <Select.Option value="9">9</Select.Option>
+                                        <Select.Option value="10">10</Select.Option>
+                                    </Select>
                                 </Form.Item>
-                                <Form.Item label="Grind Front">
-                                    <Input
-                                        type="text"
+                                <Form.Item label="ฝนท้อง">
+                                    <Select
                                         required
                                         value={Grind_Front}
                                         onChange={(e) => setGrind_Front(e.target.value)}
-                                    />
+                                    >
+                                        <Select.Option value="-">-</Select.Option>
+                                        <Select.Option value="1">1</Select.Option>
+                                        <Select.Option value="2">2</Select.Option>
+                                        <Select.Option value="3">3</Select.Option>
+                                        <Select.Option value="4">4</Select.Option>
+                                        <Select.Option value="5">5</Select.Option>
+                                        <Select.Option value="6">6</Select.Option>
+                                        <Select.Option value="7">7</Select.Option>
+                                        <Select.Option value="8">8</Select.Option>
+                                        <Select.Option value="9">9</Select.Option>
+                                        <Select.Option value="10">10</Select.Option>    
+                                    </Select>
                                 </Form.Item>
-                                <Form.Item label="Grind Detail">
-                                    <Input
-                                        type="text"
+                                <Form.Item label="ฝนละเอียด">
+                                    <Select
                                         required
                                         value={Grind_Detail}
                                         onChange={(e) => setGrind_Detail(e.target.value)}
-                                    />
+                                    >
+                                        <Select.Option value="-">-</Select.Option>
+                                        <Select.Option value="1">1</Select.Option>
+                                        <Select.Option value="2">2</Select.Option>
+                                        <Select.Option value="3">3</Select.Option>
+                                        <Select.Option value="4">4</Select.Option>
+                                        <Select.Option value="5">5</Select.Option>
+                                        <Select.Option value="6">6</Select.Option>
+                                        <Select.Option value="7">7</Select.Option>
+                                        <Select.Option value="8">8</Select.Option>
+                                        <Select.Option value="9">9</Select.Option>
+                                        <Select.Option value="10">10</Select.Option>    
+                                    </Select>
                                 </Form.Item>
-                                <Form.Item label="Drill">
-                                    <Input
-                                        type="text"
+                                <Form.Item label="เจาะ">
+                                    <Select
                                         required
                                         value={Drill}
                                         onChange={(e) => setDrill(e.target.value)}
-                                    />
+                                    >
+
+                                        <Select.Option value="-">-</Select.Option>
+                                        <Select.Option value="1">1</Select.Option>
+                                        <Select.Option value="2">2</Select.Option>
+                                        <Select.Option value="3">3</Select.Option>
+                                        <Select.Option value="4">4</Select.Option>
+                                        <Select.Option value="5">5</Select.Option>
+                                        <Select.Option value="6">6</Select.Option>
+                                        <Select.Option value="7">7</Select.Option>
+                                        <Select.Option value="8">8</Select.Option>
+                                        <Select.Option value="9">9</Select.Option>
+                                        <Select.Option value="10">10</Select.Option> 
+                                    </Select>
                                 </Form.Item>
-                                <Form.Item label="Baat">
-                                    <Input
-                                        type="text"
+                                <Form.Item label="ปาด">
+                                    <Select
                                         required
                                         value={Baat}
                                         onChange={(e) => setBaat(e.target.value)}
-                                    />
+                                    >
+                                        <Select.Option value="-">-</Select.Option>
+                                        <Select.Option value="1">1</Select.Option>
+                                        <Select.Option value="2">2</Select.Option>
+                                        <Select.Option value="3">3</Select.Option>
+                                        <Select.Option value="4">4</Select.Option>
+                                        <Select.Option value="5">5</Select.Option>
+                                        <Select.Option value="6">6</Select.Option>
+                                        <Select.Option value="7">7</Select.Option>
+                                        <Select.Option value="8">8</Select.Option>
+                                        <Select.Option value="9">9</Select.Option>
+                                        <Select.Option value="10">10</Select.Option> 
+                                    </Select>
                                 </Form.Item>
-                                <Form.Item label="Ji Hou">
-                                    <Input
-                                        type="text"
+                                <Form.Item label="จี๋หัว">
+                                    <Select
                                         required
                                         value={Ji_Hou}
                                         onChange={(e) => setJi_Hou(e.target.value)}
-                                    />
+                                    >
+                                        <Select.Option value="-">-</Select.Option>
+                                        <Select.Option value="1">1</Select.Option>
+                                        <Select.Option value="2">2</Select.Option>
+                                        <Select.Option value="3">3</Select.Option>
+                                        <Select.Option value="4">4</Select.Option>
+                                        <Select.Option value="5">5</Select.Option>
+                                        <Select.Option value="6">6</Select.Option>
+                                        <Select.Option value="7">7</Select.Option>
+                                        <Select.Option value="8">8</Select.Option>
+                                        <Select.Option value="9">9</Select.Option>
+                                        <Select.Option value="10">10</Select.Option> 
+                                    </Select>
                                 </Form.Item>
-                                <Form.Item label="Fon Hou">
-                                    <Input
-                                        type="text"
-                                        required
-                                        value={Fon_Hou}
-                                        onChange={(e) => setFon_Hou(e.target.value)}
-                                    />
+                                <Form.Item label="ฝนหัว">
+                                    <Select
+                                       required
+                                       value={Fon_Hou}
+                                       onChange={(e) => setFon_Hou(e.target.value)}
+                                    >
+                                        <Select.Option value="-">-</Select.Option>
+                                        <Select.Option value="1">1</Select.Option>
+                                        <Select.Option value="2">2</Select.Option>
+                                        <Select.Option value="3">3</Select.Option>
+                                        <Select.Option value="4">4</Select.Option>
+                                        <Select.Option value="5">5</Select.Option>
+                                        <Select.Option value="6">6</Select.Option>
+                                        <Select.Option value="7">7</Select.Option>
+                                        <Select.Option value="8">8</Select.Option>
+                                        <Select.Option value="9">9</Select.Option>
+                                        <Select.Option value="10">10</Select.Option> 
+                                    </Select>
                                 </Form.Item>
-                                <Form.Item label="Tha Khob">
-                                    <Input
-                                        type="text"
+                                <Form.Item label="ทำขอบ">
+                                    <Select
                                         required
                                         value={Tha_Khob}
                                         onChange={(e) => setTha_Khob(e.target.value)}
-                                    />
+                                    >
+                                        <Select.Option value="-">-</Select.Option>
+                                        <Select.Option value="1">1</Select.Option>
+                                        <Select.Option value="2">2</Select.Option>
+                                        <Select.Option value="3">3</Select.Option>
+                                        <Select.Option value="4">4</Select.Option>
+                                        <Select.Option value="5">5</Select.Option>
+                                        <Select.Option value="6">6</Select.Option>
+                                        <Select.Option value="7">7</Select.Option>
+                                        <Select.Option value="8">8</Select.Option>
+                                        <Select.Option value="9">9</Select.Option>
+                                        <Select.Option value="10">10</Select.Option> 
+                                    </Select>
                                 </Form.Item>
-                                <Form.Item label="Cut">
-                                    <Input
-                                        type="text"
+                                <Form.Item label="ตัด">
+                                    <Select
                                         required
                                         value={Cut}
                                         onChange={(e) => setCut(e.target.value)}
-                                    />
+                                    >
+                                    <Select.Option value="-">-</Select.Option>
+                                        <Select.Option value="1">1</Select.Option>
+                                        <Select.Option value="2">2</Select.Option>
+                                        <Select.Option value="3">3</Select.Option>
+                                        <Select.Option value="4">4</Select.Option>
+                                        <Select.Option value="5">5</Select.Option>
+                                        <Select.Option value="6">6</Select.Option>
+                                        <Select.Option value="7">7</Select.Option>
+                                        <Select.Option value="8">8</Select.Option>
+                                        <Select.Option value="9">9</Select.Option>
+                                        <Select.Option value="10">10</Select.Option> 
+                                    </Select>
                                 </Form.Item>
-                                <Form.Item label="Form">
-                                    <Input
-                                        type="text"
+                                <Form.Item label="ฟอร์ม">
+                                    <Select
                                         required
                                         value={FormValue}
                                         onChange={(e) => setFormValue(e.target.value)}
-                                    />
+                                    >
+                                        <Select.Option value="1">1</Select.Option>
+                                        <Select.Option value="2">2</Select.Option>
+                                        <Select.Option value="3">3</Select.Option>
+                                        <Select.Option value="4">4</Select.Option>
+                                        <Select.Option value="5">5</Select.Option>
+                                        <Select.Option value="6">6</Select.Option>
+                                        <Select.Option value="7">7</Select.Option>
+                                        <Select.Option value="8">8</Select.Option>
+                                        <Select.Option value="9">9</Select.Option>
+                                        <Select.Option value="10">10</Select.Option> 
+                                        <Select.Option value="11">11</Select.Option> 
+                                        <Select.Option value="12">12</Select.Option> 
+                                        <Select.Option value="13">13</Select.Option> 
+                                        <Select.Option value="14">14</Select.Option> 
+                                        <Select.Option value="15">15</Select.Option> 
+                                    </Select>
                                 </Form.Item>
                             </div>
                         </div>

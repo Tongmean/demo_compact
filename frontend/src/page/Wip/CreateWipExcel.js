@@ -35,6 +35,13 @@ const CreateWipExcel = () => {
             if (headers.length !== 13) { // 13 columns for Wip
                 console.error('Header does not have exactly 13 columns.');
                 alert('Check the Excel template again!');
+                // Delay the clearing of the file input form by 1 second (1000 milliseconds)
+                setTimeout(() => {
+                    const fileInput = document.getElementById('fileInputId'); // Replace with your file input's actual ID
+                    if (fileInput) {
+                        fileInput.value = ''; // This clears the file input
+                    }
+                }, 1000);
                 return;
             }
 
@@ -127,6 +134,7 @@ const CreateWipExcel = () => {
                         <div className='row col-xl-8 col-lg-8 col-md-6'>
                             <label htmlFor="formFile" className="form-label">Default file input example</label>
                             <input
+                                id = "fileInputId"
                                 type="file"
                                 accept=".xlsx, .xls"
                                 onChange={handleFileUpload}
