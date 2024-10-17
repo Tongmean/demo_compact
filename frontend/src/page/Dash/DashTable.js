@@ -14,14 +14,14 @@ const DashTable = () => {
     const currentDate = new Date();
     const formattedDate = currentDate.toLocaleDateString();
     const columnDefs = [
-        {
-            headerName: 'NO.',
-            field: 'No',
-            filter: 'agTextColumnFilter',
-            checkboxSelection: true,
-            headerCheckboxSelection: true,
-        },
-        { headerName: 'Code_Fg', field: 'Code_Fg', filter: 'agTextColumnFilter' },
+        // {
+        //     headerName: 'NO.',
+        //     field: 'No',
+        //     filter: 'agTextColumnFilter',
+        //     checkboxSelection: true,
+        //     headerCheckboxSelection: true,
+        // },
+        { headerName: 'Code_Fg', field: 'Code_Fg', filter: 'agTextColumnFilter' ,headerCheckboxSelection: true, checkboxSelection: true,},
         { headerName: 'Name_Fg', field: 'Name_Fg', filter: 'agTextColumnFilter' },
         { headerName: 'Pcs_Per_Set', field: 'Pcs_Per_Set_FG', filter: 'agTextColumnFilter' },
         { headerName: 'Code_Dr', field: 'Code_Dr', filter: 'agTextColumnFilter' },

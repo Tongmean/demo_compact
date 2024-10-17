@@ -179,6 +179,8 @@ import FooterComponent from './component/Footer';
 import DrawingTable from './page/Drawing/DrawingTable';
 import CreateDrawing from "./page/Drawing/CreateDrawing"
 import EditDrawing from './page/Drawing/EditDrawing';
+
+import Staticmain from './page/static/Staticmain';
 import { Layout } from 'antd';
 const { Content } = Layout;
 
@@ -265,6 +267,8 @@ const App = () => {
               <Route path='/createdrawing' element={isAuthenticated ? < CreateDrawing /> : <Navigate to='/login' />} />
 
               <Route path='/drawing/:id' element={isAuthenticated ? < EditDrawing /> : <Navigate to='/login' />} />
+
+              <Route path='/static' element={isAuthenticated ? < Staticmain /> : <Navigate to='/login' />} />
 
               
               

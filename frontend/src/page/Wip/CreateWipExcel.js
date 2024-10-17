@@ -7,7 +7,6 @@ import { useAuthContext } from '../../hook/useAuthContext';
 import template from '../../Asset/Wip_template.xlsx'; // Update template path if necessary
 import env from "react-dotenv";
 
-
 const CreateWipExcel = () => {
     const { user } = useAuthContext(); // Retrieve user context
     const [excelData, setExcelData] = useState([]);
@@ -114,7 +113,7 @@ const CreateWipExcel = () => {
                     <div className='row pe-5'>
                         <div className="card">
                             <div className="card-header">
-                                Note
+                                *** ขอแนะนำการใช้งาน
                             </div>
                             <div className="card-body">
                                 <blockquote className="blockquote mb-0">

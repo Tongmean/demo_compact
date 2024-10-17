@@ -16,14 +16,14 @@ const WipTable = () => {
     const navigate = useNavigate(); 
 
     const columnDefs = [
-        {
-            headerName: 'NO.',
-            field: 'No',
-            filter: 'agTextColumnFilter',
-            checkboxSelection: true,
-            headerCheckboxSelection: true,
-        },
-        { headerName: 'Code_Wip', field: 'Code_Wip', filter: 'agTextColumnFilter' },
+        // {
+        //     headerName: 'NO.',
+        //     field: 'No',
+        //     filter: 'agTextColumnFilter',
+        //     checkboxSelection: true,
+        //     headerCheckboxSelection: true,
+        // },
+        { headerName: 'Code_Wip', field: 'Code_Wip', filter: 'agTextColumnFilter' ,headerCheckboxSelection: true, checkboxSelection: true,},
         { headerName: 'Name_Wip', field: 'Name_Wip', filter: 'agTextColumnFilter' },
         { headerName: 'รหัสแม่พิมพ์', field: 'Code_Mold', filter: 'agTextColumnFilter' },
         { headerName: 'ขนาดผ้า', field: 'Dimension', filter: 'agTextColumnFilter' },
@@ -252,7 +252,7 @@ const WipTable = () => {
         }
         //destructuring No, CreateAt, UpdateAt 
         
-        const cleanedRows = selectedRows.map(({ No, CreateAt,UpdateAt, ...rest }) => rest);
+        const cleanedRows = selectedRows.map(({ No,CreateBy, CreateAt,UpdateAt, ...rest }) => rest);
         // Convert the rows to a tab-separated string
         const tsvData = cleanedRows.map(row => {
             // Object.values(row) extracts all values from the row object

@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-import { Form, Input, Button } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Form, Input, Button, Select } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../hook/useAuthContext';
 import { Modal } from 'react-bootstrap';
+
 import env from "react-dotenv";
+const { Option } = Select;
 
 const CreateFg = () => {
     const [Code_Fg, setCode_Fg] = useState('');
@@ -72,11 +74,108 @@ const CreateFg = () => {
     const handleOnClick = () => {
         navigate('/fg');
     };
+    //Validate basic
+    const handleCodeFgChange = (e) => {
+        const value = e.target.value;
+        setCode_Fg(value);
+    
+        // Check if Code_Fg has the right format to extract Model and Part_No
+        if (value.length >= 10) {
+            const modelPart = value.split("-");
+            const model = modelPart[0].substring(modelPart[0].length - 5); // Extract Model (last 5 digits before '-')
+            const partNo = value.substring(value.length - 11); // Extract last 10 digits for Part_No
+            const code = value.slice(0, -11); ;
+            setCode(code)
+            setModel(model);
+            setPart_No(partNo);
+        } else {
+          // Reset if the Code_Fg is not valid
+            setModel("");
+            setPart_No("");
+            setCode("")
+        }
+    }
+    //static 
+    const [optionPartNo, setOptionPartNo] = useState([]);
+    useEffect(() => {
+        // Function to fetch FG options data from the server
+        const fetchDataFgpartNo = async () => {
+            try {
+                const response = await fetch(`${env.API_URL}/api/static/fg/partno`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`, // Adding token to the request headers
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                // Check if the response is okay before proceeding
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status} - ${response.statusText}`);
+                }
+
+                // Parse the response JSON and set it in the state
+                const result = await response.json();
+                // console.log("API response data:", result.data);
+                
+                // Ensure data is an array before setting it
+                if (Array.isArray(result.data)) {
+                    setOptionPartNo(result.data);
+                } else {
+                    console.error("Expected data to be an array, but got:", typeof result.data);
+                }
+            } catch (error) {
+                // Log any errors encountered during the fetch
+                console.error("Failed to fetch FG options:", error);
+            }
+        };
+
+        // Call the fetch function after component mounts
+        fetchDataFgpartNo();
+    }, [user.token]);
+    const [optionPcsperset, setOptionpcsperset]= useState([]);
+
+    useEffect(() => {
+        // Function to fetch FG options data from the server
+        const fetchDatapcsperset = async () => {
+            try {
+                const response = await fetch(`${env.API_URL}/api/static/pcsperset`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`, // Adding token to the request headers
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                // Check if the response is okay before proceeding
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status} - ${response.statusText}`);
+                }
+
+                // Parse the response JSON and set it in the state
+                const result = await response.json();
+                // console.log("API response data:", result.data);
+                
+                // Ensure data is an array before setting it
+                if (Array.isArray(result.data)) {
+                    setOptionpcsperset(result.data);
+                } else {
+                    console.error("Expected data to be an array, but got:", typeof result.data);
+                }
+            } catch (error) {
+                // Log any errors encountered during the fetch
+                console.error("Failed to fetch FG options:", error);
+            }
+        };
+
+        // Call the fetch function after component mounts
+        fetchDatapcsperset();
+    }, [user.token]);
 
     return (
         <div>
             <div>
-                <h2>Create New FG</h2>
+                <h2>Create New FG (สร้างรหัสสินค้าสำเร็จรูป)</h2>
                 <Form onSubmitCapture={handleSubmit} layout="vertical">
                     <div className='container-fluid'>
                         <div className='row'>
@@ -86,7 +185,7 @@ const CreateFg = () => {
                                         type="text"
                                         required
                                         value={Code_Fg}
-                                        onChange={(e) => setCode_Fg(e.target.value)}
+                                        onChange={handleCodeFgChange}
                                     />
                                 </Form.Item>
                                 <Form.Item label="Name FG">
@@ -106,12 +205,23 @@ const CreateFg = () => {
                                     />
                                 </Form.Item>
                                 <Form.Item label="Part No">
-                                    <Input
-                                        type="text"
-                                        required
+                                    <Select
+                                        showSearch
+                                        placeholder="Select Part No"
                                         value={Part_No}
-                                        onChange={(e) => setPart_No(e.target.value)}
-                                    />
+                                        onChange={(value)=> setPart_No(value)}
+                                        filterOption={(input, option) =>
+                                            option.children.toLowerCase().includes(input.toLowerCase())
+                                        }
+                                        >
+                                        <Option value="-">-</Option>
+                                        {optionPartNo.map(item => (
+                                            <Option key={item.Part_No} value={item.Part_No}>
+                                                {item.Part_No}
+                                            </Option>
+
+                                        ))}
+                                    </Select>
                                 </Form.Item>
                                 <Form.Item label="พาร์ทลูกค้า">
                                     <Input
@@ -138,12 +248,24 @@ const CreateFg = () => {
                                     />
                                 </Form.Item>
                                 <Form.Item label="ชิ้นต่อชุด">
-                                    <Input
-                                        type="text"
+                                    <Select
+                                        showSearch
+                                        placeholder="Select Part No"
                                         required
                                         value={Pcs_Per_Set}
-                                        onChange={(e) => setPcs_Per_Set(e.target.value)}
-                                    />
+                                        onChange={(value) => setPcs_Per_Set(value)}
+                                        filterOption={(input, option) =>
+                                            option.children.toLowerCase().includes(input.toLowerCase())
+                                        }
+                                        >
+                                        <Option value="-">-</Option>
+                                        {optionPcsperset.map(item => (
+                                            <Option key={item.Pcs_Per_Set} value={item.Pcs_Per_Set}>
+                                                {item.Pcs_Per_Set}
+                                            </Option>
+
+                                        ))}
+                                    </Select>
                                 </Form.Item>
                             </div>
                             <div className='col-xl-6 col-lg-6 col-md-12'>

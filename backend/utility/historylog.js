@@ -13,7 +13,7 @@ async function logUpdate(table, column, record_id, oldValue, newValue, user) {
         const result = await dbconnect.query(query, values);
         // console.log("History Log successfully inserted", result.command);
     } catch (err) {
-        console.error('Error logging update:', err); // Log the error if something goes wrong
+        console.log('Error logging update:', err); // Log the error if something goes wrong
     }
 }
 

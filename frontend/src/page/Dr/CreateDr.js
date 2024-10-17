@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {  Form, Input, Button,Select } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../hook/useAuthContext';
 import env from "react-dotenv";
-
 import {Modal} from 'react-bootstrap';
+const { Option } = Select;
+
 
 
 const CreateDr = () => {
@@ -87,10 +88,262 @@ const CreateDr = () => {
     const handleOnClick = () => {
         navigate('/dr');
     };
+    //basic validation
+    const handleCodeDrChange = (e) => {
+        const value = e.target.value;
+        setCode_Dr(value);
+
+        // Extract the Code and Status_Dr based on the specified rules
+        const parts = value.split('-'); // Split by '-'
+        if (parts.length > 1) {
+            const modelPart = value.split("-");
+            // const model = modelPart[0].substring(modelPart[0].length - 5); // Extract Model (last 5 digits before '-')
+            // const partNo = value.substring(value.length - 12); // Extract last 10 digits for Part_No
+            const code = value.slice(0, -12); ;
+            const firstDigitAfterDash = parts[1][0];
+            if(firstDigitAfterDash === '0'){
+                setStatus_Dr("A");
+            }else{
+                setStatus_Dr("B");
+            }
+            setCode(code)
+        } else {
+            // Reset Code and Status_Dr if format is incorrect
+            setCode("");
+            setStatus_Dr("");
+        }
+    }
+    //Static ---
+    const [optionWip, setOptionwip] = useState([])
+    useEffect(() => {
+        // Function to fetch FG options data from the server
+        const fetchDatawip = async () => {
+            try {
+                const response = await fetch(`${env.API_URL}/api/static/wip`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`, // Adding token to the request headers
+                        'Content-Type': 'application/json'
+                    }
+                });
+    
+                // Check if the response is okay before proceeding
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status} - ${response.msg}`);
+                }
+    
+                // Parse the response JSON and set it in the state
+                const data = (await response.json()).data;
+                //
+                const unique_Name_wip = Array.from(
+                    new Set(data.map(item => item.Name_Wip))
+                ).map(name => ({ Name_Wip: name }));
+                
+
+                // console.log("data", data);
+                // console.log("unique_Name_wip", unique_Name_wip);
+                setOptionwip(unique_Name_wip)
+                // console.log('optionWip',optionWip)
+            } catch (error) {
+                // Log any errors encountered during the fetch
+                console.error("Failed to fetch FG options:", error);
+            }
+        };
+    
+        // Call the fetch function after component mounts
+        fetchDatawip();
+    }, [user.token]);
+
+    const [optionFg, setOptionFg] = useState([]);
+    useEffect(() => {
+        // Function to fetch FG options data from the server
+        const fetchDatafg = async () => {
+            try {
+                const response = await fetch(`${env.API_URL}/api/static/fg`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`, // Adding token to the request headers
+                        'Content-Type': 'application/json'
+                    }
+                });
+    
+                // Check if the response is okay before proceeding
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status} - ${response.msg}`);
+                }
+    
+                // Parse the response JSON and set it in the state
+                const data = (await response.json()).data;
+                
+                const unique_Name_Fg = Array.from(
+                    new Set(data.map(item => item.Name_Fg))
+                ).map(name => ({ Name_Fg: name }));
+
+                setOptionFg(unique_Name_Fg);
+                // console.log(data.data);
+            } catch (error) {
+                // Log any errors encountered during the fetch
+                console.error("Failed to fetch FG options:", error);
+            }
+        };
+    
+        // Call the fetch function after component mounts
+        fetchDatafg();
+    }, [user.token]); 
+    //Static
+    const [optionTypebrake, setOptiontypebrake]= useState([]);
+    useEffect(() => {
+        // Function to fetch FG options data from the server
+        const fetchDatatyebrake = async () => {
+            try {
+                const response = await fetch(`${env.API_URL}/api/static/dr/typebrake`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`, // Adding token to the request headers
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                // Check if the response is okay before proceeding
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status} - ${response.statusText}`);
+                }
+
+                // Parse the response JSON and set it in the state
+                const result = await response.json();
+                // console.log("API response data:", result.data);
+                
+                // Ensure data is an array before setting it
+                if (Array.isArray(result.data)) {
+                    setOptiontypebrake(result.data);
+                } else {
+                    console.error("Expected data to be an array, but got:", typeof result.data);
+                }
+            } catch (error) {
+                // Log any errors encountered during the fetch
+                console.error("Failed to fetch FG options:", error);
+            }
+        };
+
+        // Call the fetch function after component mounts
+        fetchDatatyebrake();
+    }, [user.token]);
+    const [optionColor, setOptioncolor]= useState([]);
+    useEffect(() => {
+        // Function to fetch FG options data from the server
+        const fetchDatacolor = async () => {
+            try {
+                const response = await fetch(`${env.API_URL}/api/static/dr/color`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`, // Adding token to the request headers
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                // Check if the response is okay before proceeding
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status} - ${response.statusText}`);
+                }
+
+                // Parse the response JSON and set it in the state
+                const result = await response.json();
+                // console.log("API response data:", result.data);
+                
+                // Ensure data is an array before setting it
+                if (Array.isArray(result.data)) {
+                    setOptioncolor(result.data);
+                } else {
+                    console.error("Expected data to be an array, but got:", typeof result.data);
+                }
+            } catch (error) {
+                // Log any errors encountered during the fetch
+                console.error("Failed to fetch FG options:", error);
+            }
+        };
+
+        // Call the fetch function after component mounts
+        fetchDatacolor();
+    }, [user.token]);
+    const [optionProcessorder, setOptionprocessorder]= useState([]);
+    useEffect(() => {
+        // Function to fetch FG options data from the server
+        const fetchDataprocessorder = async () => {
+            try {
+                const response = await fetch(`${env.API_URL}/api/static/dr/processorder`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`, // Adding token to the request headers
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                // Check if the response is okay before proceeding
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status} - ${response.statusText}`);
+                }
+
+                // Parse the response JSON and set it in the state
+                const result = await response.json();
+                // console.log("API response data:", result.data);
+                
+                // Ensure data is an array before setting it
+                if (Array.isArray(result.data)) {
+                    setOptionprocessorder(result.data);
+                } else {
+                    console.error("Expected data to be an array, but got:", typeof result.data);
+                }
+            } catch (error) {
+                // Log any errors encountered during the fetch
+                console.error("Failed to fetch FG options:", error);
+            }
+        };
+
+        // Call the fetch function after component mounts
+        fetchDataprocessorder();
+    }, [user.token]);
+    const [optionFormreport, setOptionformreport]= useState([]);
+    useEffect(() => {
+        // Function to fetch FG options data from the server
+        const fetchDataformreport = async () => {
+            try {
+                const response = await fetch(`${env.API_URL}/api/static/dr/formreport`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`, // Adding token to the request headers
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                // Check if the response is okay before proceeding
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status} - ${response.statusText}`);
+                }
+
+                // Parse the response JSON and set it in the state
+                const result = await response.json();
+                // console.log("API response data:", result.data);
+                
+                // Ensure data is an array before setting it
+                if (Array.isArray(result.data)) {
+                    setOptionformreport(result.data);
+                } else {
+                    console.error("Expected data to be an array, but got:", typeof result.data);
+                }
+            } catch (error) {
+                // Log any errors encountered during the fetch
+                console.error("Failed to fetch FG options:", error);
+            }
+        };
+
+        // Call the fetch function after component mounts
+        fetchDataformreport();
+    }, [user.token]);
+
     return (
         <div>
             <div>
-                <h2>Create New DR</h2>
+                <h2>Create New DR (สร้างรหัสกึ่งสำเร็จรูป ฝน-เจาะ)</h2>
                 <Form onSubmitCapture={handleSubmit} layout="vertical">
                     <div className='container-fluid'>
                         <div className='row'>
@@ -100,7 +353,7 @@ const CreateDr = () => {
                                         type="text"
                                         required
                                         value={Code_Dr}
-                                        onChange={(e) => setCode_Dr(e.target.value)}
+                                        onChange={handleCodeDrChange}
                                     />
                                 </Form.Item>
                                 <Form.Item label="Name DR">
@@ -112,20 +365,43 @@ const CreateDr = () => {
                                     />
                                 </Form.Item>
                                 <Form.Item label="Name WIP">
-                                    <Input
-                                        type="text"
-                                        required
+                                    <Select
+                                        showSearch
+                                        placeholder="Select Name Wip"
                                         value={Name_Wip}
-                                        onChange={(e) => setName_Wip(e.target.value)}
-                                    />
+                                        onChange={(value) => setName_Wip(value)}
+                                        filterOption={(input, option) =>
+                                            option.children.toLowerCase().includes(input.toLowerCase())
+                                        }
+                                        >
+                                        <Option key="-" value="-">-</Option>
+                                        {optionWip.map((item) => (
+                                            <Option key={item.Name_Wip} value={item.Name_Wip}>
+                                                {item.Name_Wip}
+                                            </Option>
+
+                                        ))}
+                                    </Select>
+                                   
                                 </Form.Item>
                                 <Form.Item label="Name FG 1">
-                                    <Input
-                                        type="text"
-                                        required
+                                    <Select
+                                        showSearch
+                                        placeholder="Select Code FG 1"
                                         value={Name_Fg_1}
-                                        onChange={(e) => setName_Fg_1(e.target.value)}
-                                    />
+                                        onChange={(value) => setName_Fg_1(value)}
+                                        filterOption={(input, option) =>
+                                            option.children.toLowerCase().includes(input.toLowerCase())
+                                        }
+                                        >
+                                        <Option key="-" value="-">-</Option>
+                                        {optionFg.map(item => (
+                                            <Option key={item.Name_Fg} value={item.Name_Fg}>
+                                                {item.Name_Fg}
+                                            </Option>
+
+                                        ))}
+                                    </Select>
                                 </Form.Item>
                                 <Form.Item label="ขนาด(กว้าง*หนา-ยาว)">
                                     <Input
@@ -135,28 +411,21 @@ const CreateDr = () => {
                                         onChange={(e) => setDemension(e.target.value)}
                                     />
                                 </Form.Item>
-                                {/* <Form.Item label="ลักษระผ้าเบรก">
-                                    <Input
-                                        type="text"
-                                        required
-                                        value={Type_Brake}
-                                        onChange={(e) => setType_Brake(e.target.value)}
-                                    />
-                                </Form.Item> */}
                                 <Form.Item label="ลักษระผ้าเบรก">
                                     <Select
                                         required
                                         value={Type_Brake}
                                         onChange={(value) => setType_Brake(value)}
                                     >
-                                        <Select.Option value="-">-</Select.Option>
-                                        <Select.Option value="ผ้าเบรกใหญ่">ผ้าเบรกใหญ่</Select.Option>
-                                        <Select.Option value="ผ้าเบรกใหญ่เรียว">ผ้าเบรกใหญ่เรียว</Select.Option>
-                                        <Select.Option value="ผ้าเบรกกลาง">ผ้าเบรกกลาง</Select.Option>
-                                        <Select.Option value="ผ้าเบรกเล็ก">ผ้าเบรกเล็ก</Select.Option>
-                                        <Select.Option value="ผ้าเบรกแผ่น">ผ้าเบรกแผ่น</Select.Option>
-                                        <Select.Option value="ผ้าประกอบก้าม">ผ้าประกอบก้าม</Select.Option>
+                                        <Option value="-">-</Option>
+                                        {optionTypebrake.map(item => (
+                                            <Option key={item.Type_Brake} value={item.Type_Brake}>
+                                                {item.Type_Brake}
+                                            </Option>
+
+                                        ))}
                                     </Select>
+                                            
                                 </Form.Item>
 
                                 <Form.Item label="เกรดเคมี">
@@ -247,224 +516,187 @@ const CreateDr = () => {
                                         value={Color}
                                         onChange={(e) => setColor(e.target.value)}
                                     >
-                                        <Select.Option value="-">-</Select.Option>
-                                        <Select.Option value="เหลือง">เหลือง</Select.Option>
-                                        <Select.Option value="ฟ้า">ฟ้า</Select.Option>
-                                        <Select.Option value="ส้ม">ส้ม</Select.Option>
+                                        <Option key="-" value="-">-</Option>
+                                        {optionColor.map((item) => (
+                                            <Option key={item.Color} value={item.Color}>
+                                                {item.Color}
+                                            </Option>
+                                        ))}
                                     </Select>
                                 </Form.Item>
                                 <Form.Item label="พ่นสี">
                                     <Select
                                         required
+                                        showSearch
                                         value={Color_Spray}
                                         onChange={(e) => setColor_Spray(e.target.value)}
                                     >
-                                        <Select.Option value="-">-</Select.Option>
-                                        <Select.Option value="1">1</Select.Option>
-                                        <Select.Option value="2">2</Select.Option>
-                                        <Select.Option value="3">3</Select.Option>
-                                        <Select.Option value="4">4</Select.Option>
-                                        <Select.Option value="5">5</Select.Option>
-                                        <Select.Option value="6">6</Select.Option>
-                                        <Select.Option value="7">7</Select.Option>
-                                        <Select.Option value="8">8</Select.Option>
-                                        <Select.Option value="9">9</Select.Option>
-                                        <Select.Option value="10">10</Select.Option>
+                                        <Option key="-" value="-">-</Option>
+                                        {optionProcessorder.map((item) => (
+                                            <Option key={item.Process_Order} value={item.Process_Order}>
+                                                {item.Process_Order}
+                                            </Option>
+
+                                        ))}
                                     </Select>
                                 </Form.Item>
                                 <Form.Item label="ฝนหลังหยาบ">
                                     <Select
+                                        showSearch
                                         required
                                         value={Grind_Back}
                                         onChange={(e) => setGrind_Back(e.target.value)}
                                     >
-                                        <Select.Option value="-">-</Select.Option>
-                                        <Select.Option value="1">1</Select.Option>
-                                        <Select.Option value="2">2</Select.Option>
-                                        <Select.Option value="3">3</Select.Option>
-                                        <Select.Option value="4">4</Select.Option>
-                                        <Select.Option value="5">5</Select.Option>
-                                        <Select.Option value="6">6</Select.Option>
-                                        <Select.Option value="7">7</Select.Option>
-                                        <Select.Option value="8">8</Select.Option>
-                                        <Select.Option value="9">9</Select.Option>
-                                        <Select.Option value="10">10</Select.Option>
+                                        <Option key="-" value="-">-</Option>
+                                        {optionProcessorder.map((item) => (
+                                            <Option key={item.Process_Order} value={item.Process_Order}>
+                                                {item.Process_Order}
+                                            </Option>
+
+                                        ))}
                                     </Select>
                                 </Form.Item>
                                 <Form.Item label="ฝนท้อง">
                                     <Select
+                                        showSearch
                                         required
                                         value={Grind_Front}
                                         onChange={(e) => setGrind_Front(e.target.value)}
                                     >
-                                        <Select.Option value="-">-</Select.Option>
-                                        <Select.Option value="1">1</Select.Option>
-                                        <Select.Option value="2">2</Select.Option>
-                                        <Select.Option value="3">3</Select.Option>
-                                        <Select.Option value="4">4</Select.Option>
-                                        <Select.Option value="5">5</Select.Option>
-                                        <Select.Option value="6">6</Select.Option>
-                                        <Select.Option value="7">7</Select.Option>
-                                        <Select.Option value="8">8</Select.Option>
-                                        <Select.Option value="9">9</Select.Option>
-                                        <Select.Option value="10">10</Select.Option>    
+                                        <Option key="-" value="-">-</Option>
+                                        {optionProcessorder.map((item) => (
+                                            <Option key={item.Process_Order} value={item.Process_Order}>
+                                                {item.Process_Order}
+                                            </Option>
+
+                                        ))}
                                     </Select>
                                 </Form.Item>
                                 <Form.Item label="ฝนละเอียด">
                                     <Select
+                                        showSearch
                                         required
                                         value={Grind_Detail}
                                         onChange={(e) => setGrind_Detail(e.target.value)}
                                     >
-                                        <Select.Option value="-">-</Select.Option>
-                                        <Select.Option value="1">1</Select.Option>
-                                        <Select.Option value="2">2</Select.Option>
-                                        <Select.Option value="3">3</Select.Option>
-                                        <Select.Option value="4">4</Select.Option>
-                                        <Select.Option value="5">5</Select.Option>
-                                        <Select.Option value="6">6</Select.Option>
-                                        <Select.Option value="7">7</Select.Option>
-                                        <Select.Option value="8">8</Select.Option>
-                                        <Select.Option value="9">9</Select.Option>
-                                        <Select.Option value="10">10</Select.Option>    
+                                        <Option key="-" value="-">-</Option>
+                                        {optionProcessorder.map((item) => (
+                                            <Option key={item.Process_Order} value={item.Process_Order}>
+                                                {item.Process_Order}
+                                            </Option>
+                                        ))} 
                                     </Select>
                                 </Form.Item>
                                 <Form.Item label="เจาะ">
                                     <Select
+                                        showSearch
                                         required
                                         value={Drill}
                                         onChange={(e) => setDrill(e.target.value)}
                                     >
+                                        <Option key="-" value="-">-</Option>
+                                        {optionProcessorder.map((item) => (
+                                            <Option key={item.Process_Order} value={item.Process_Order}>
+                                                {item.Process_Order}
+                                            </Option>
 
-                                        <Select.Option value="-">-</Select.Option>
-                                        <Select.Option value="1">1</Select.Option>
-                                        <Select.Option value="2">2</Select.Option>
-                                        <Select.Option value="3">3</Select.Option>
-                                        <Select.Option value="4">4</Select.Option>
-                                        <Select.Option value="5">5</Select.Option>
-                                        <Select.Option value="6">6</Select.Option>
-                                        <Select.Option value="7">7</Select.Option>
-                                        <Select.Option value="8">8</Select.Option>
-                                        <Select.Option value="9">9</Select.Option>
-                                        <Select.Option value="10">10</Select.Option> 
+                                        ))}                                      
                                     </Select>
                                 </Form.Item>
                                 <Form.Item label="ปาด">
                                     <Select
+                                        showSearch
                                         required
                                         value={Baat}
                                         onChange={(e) => setBaat(e.target.value)}
                                     >
-                                        <Select.Option value="-">-</Select.Option>
-                                        <Select.Option value="1">1</Select.Option>
-                                        <Select.Option value="2">2</Select.Option>
-                                        <Select.Option value="3">3</Select.Option>
-                                        <Select.Option value="4">4</Select.Option>
-                                        <Select.Option value="5">5</Select.Option>
-                                        <Select.Option value="6">6</Select.Option>
-                                        <Select.Option value="7">7</Select.Option>
-                                        <Select.Option value="8">8</Select.Option>
-                                        <Select.Option value="9">9</Select.Option>
-                                        <Select.Option value="10">10</Select.Option> 
+                                        <Option key="-" value="-">-</Option>
+                                        {optionProcessorder.map((item) => (
+                                            <Option key={item.Process_Order} value={item.Process_Order}>
+                                                {item.Process_Order}
+                                            </Option>
+
+                                        ))}
                                     </Select>
                                 </Form.Item>
                                 <Form.Item label="จี๋หัว">
                                     <Select
+                                        showSearch
                                         required
                                         value={Ji_Hou}
                                         onChange={(e) => setJi_Hou(e.target.value)}
                                     >
-                                        <Select.Option value="-">-</Select.Option>
-                                        <Select.Option value="1">1</Select.Option>
-                                        <Select.Option value="2">2</Select.Option>
-                                        <Select.Option value="3">3</Select.Option>
-                                        <Select.Option value="4">4</Select.Option>
-                                        <Select.Option value="5">5</Select.Option>
-                                        <Select.Option value="6">6</Select.Option>
-                                        <Select.Option value="7">7</Select.Option>
-                                        <Select.Option value="8">8</Select.Option>
-                                        <Select.Option value="9">9</Select.Option>
-                                        <Select.Option value="10">10</Select.Option> 
+                                        <Option key="-" value="-">-</Option>
+                                        {optionProcessorder.map((item) => (
+                                            <Option key={item.Process_Order} value={item.Process_Order}>
+                                                {item.Process_Order}
+                                            </Option>
+
+                                        ))}
                                     </Select>
                                 </Form.Item>
                                 <Form.Item label="ฝนหัว">
                                     <Select
+                                        showSearch
                                        required
                                        value={Fon_Hou}
                                        onChange={(e) => setFon_Hou(e.target.value)}
                                     >
-                                        <Select.Option value="-">-</Select.Option>
-                                        <Select.Option value="1">1</Select.Option>
-                                        <Select.Option value="2">2</Select.Option>
-                                        <Select.Option value="3">3</Select.Option>
-                                        <Select.Option value="4">4</Select.Option>
-                                        <Select.Option value="5">5</Select.Option>
-                                        <Select.Option value="6">6</Select.Option>
-                                        <Select.Option value="7">7</Select.Option>
-                                        <Select.Option value="8">8</Select.Option>
-                                        <Select.Option value="9">9</Select.Option>
-                                        <Select.Option value="10">10</Select.Option> 
+                                        <Option key="-" value="-">-</Option>
+                                        {optionProcessorder.map((item) => (
+                                            <Option key={item.Process_Order} value={item.Process_Order}>
+                                                {item.Process_Order}
+                                            </Option>
+
+                                        ))}
                                     </Select>
                                 </Form.Item>
                                 <Form.Item label="ทำขอบ">
                                     <Select
+                                        showSearch
                                         required
                                         value={Tha_Khob}
                                         onChange={(e) => setTha_Khob(e.target.value)}
                                     >
-                                        <Select.Option value="-">-</Select.Option>
-                                        <Select.Option value="1">1</Select.Option>
-                                        <Select.Option value="2">2</Select.Option>
-                                        <Select.Option value="3">3</Select.Option>
-                                        <Select.Option value="4">4</Select.Option>
-                                        <Select.Option value="5">5</Select.Option>
-                                        <Select.Option value="6">6</Select.Option>
-                                        <Select.Option value="7">7</Select.Option>
-                                        <Select.Option value="8">8</Select.Option>
-                                        <Select.Option value="9">9</Select.Option>
-                                        <Select.Option value="10">10</Select.Option> 
+                                        <Option key="-" value="-">-</Option>
+                                        {optionProcessorder.map((item) => (
+                                            <Option key={item.Process_Order} value={item.Process_Order}>
+                                                {item.Process_Order}
+                                            </Option>
+
+                                        ))}
                                     </Select>
                                 </Form.Item>
                                 <Form.Item label="ตัด">
                                     <Select
+                                        showSearch
                                         required
                                         value={Cut}
                                         onChange={(e) => setCut(e.target.value)}
                                     >
-                                    <Select.Option value="-">-</Select.Option>
-                                        <Select.Option value="1">1</Select.Option>
-                                        <Select.Option value="2">2</Select.Option>
-                                        <Select.Option value="3">3</Select.Option>
-                                        <Select.Option value="4">4</Select.Option>
-                                        <Select.Option value="5">5</Select.Option>
-                                        <Select.Option value="6">6</Select.Option>
-                                        <Select.Option value="7">7</Select.Option>
-                                        <Select.Option value="8">8</Select.Option>
-                                        <Select.Option value="9">9</Select.Option>
-                                        <Select.Option value="10">10</Select.Option> 
+                                        <Option key="-" value="-">-</Option>
+                                        {optionProcessorder.map((item) => (
+                                            <Option key={item.Process_Order} value={item.Process_Order}>
+                                                {item.Process_Order}
+                                            </Option>
+
+                                        ))}
                                     </Select>
                                 </Form.Item>
                                 <Form.Item label="ฟอร์ม">
                                     <Select
+                                        showSearch
                                         required
                                         value={FormValue}
                                         onChange={(e) => setFormValue(e.target.value)}
                                     >
-                                        <Select.Option value="1">1</Select.Option>
-                                        <Select.Option value="2">2</Select.Option>
-                                        <Select.Option value="3">3</Select.Option>
-                                        <Select.Option value="4">4</Select.Option>
-                                        <Select.Option value="5">5</Select.Option>
-                                        <Select.Option value="6">6</Select.Option>
-                                        <Select.Option value="7">7</Select.Option>
-                                        <Select.Option value="8">8</Select.Option>
-                                        <Select.Option value="9">9</Select.Option>
-                                        <Select.Option value="10">10</Select.Option> 
-                                        <Select.Option value="11">11</Select.Option> 
-                                        <Select.Option value="12">12</Select.Option> 
-                                        <Select.Option value="13">13</Select.Option> 
-                                        <Select.Option value="14">14</Select.Option> 
-                                        <Select.Option value="15">15</Select.Option> 
+                                        <Option key="-" value="-">-</Option>
+                                        {optionFormreport.map((item) => (
+                                            <Option key={item.Form} value={item.Form}>
+                                                {item.Form}
+                                            </Option>
+
+                                        ))}
                                     </Select>
                                 </Form.Item>
                             </div>

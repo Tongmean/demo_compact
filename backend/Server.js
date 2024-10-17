@@ -13,7 +13,8 @@ const bodyParser = require('body-parser');
 app.use(compression())
 const path = require('path');
 app.use(cors())
-app.use(express.json()); // Upcoming req to Json
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true })); // For URL-encoded data
 app.use(bodyParser.json());
 // Serve static files from the 'Assets' folder
 app.use('/Assets', express.static(path.join(__dirname, 'Assets')));
@@ -32,6 +33,9 @@ const drRoutes = require('./routes/drRoutes')
 const dashRoutes = require('./routes/dashRoutes')
 const historyLogRouter = require('./routes/historyLogRouters') 
 const drawingRouter = require('./routes/drawingRoutes')
+const staticRouter = require('./routes/staticRoute')
+const staicWiprouter = require('./routes/staticWiproutes')
+const staticDrrouter = require('./routes/staticDrroutes')
 // Create Router (Table User)
 app.use('/api/user', userrouter);
 
@@ -51,6 +55,12 @@ app.use('/api/dash',requireAuth, dashRoutes)
 app.use('/api/historylog', requireAuth,historyLogRouter)
 //Drawing
 app.use('/api/drawing', requireAuth, drawingRouter)
+//Static Wip/Fg/Dr
+app.use('/api/static', requireAuth, staticRouter)
+//static wip
+app.use('/api/static/wip', requireAuth, staicWiprouter)
+app.use('/api/static/dr', requireAuth, staticDrrouter)
+//
 
 
 //Config Port using dotenv

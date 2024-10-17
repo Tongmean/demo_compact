@@ -18,14 +18,14 @@ const FgTable = () => {
 
     // Define column definitions with initial fields and search feature
     const columnDefs = [
-        {
-            headerName: 'NO.',
-            field: 'No',
-            filter: 'agTextColumnFilter',
-            checkboxSelection: true,
-            headerCheckboxSelection: true,
-        },
-        { headerName: 'Code_Fg', field: 'Code_Fg', filter: 'agTextColumnFilter' },
+        // {
+        //     headerName: 'NO.',
+        //     field: 'No',
+        //     filter: 'agTextColumnFilter',
+        //     checkboxSelection: true,
+        //     headerCheckboxSelection: true,
+        // },
+        { headerName: 'Code_Fg', field: 'Code_Fg', filter: 'agTextColumnFilter',headerCheckboxSelection: true, checkboxSelection: true, },
         { headerName: 'Name_Fg', field: 'Name_Fg', filter: 'agTextColumnFilter' },
         // { headerName: 'Model', field: 'Model', filter: 'agTextColumnFilter' },
         // { headerName: 'Part_No', field: 'Part_No', filter: 'agTextColumnFilter' },
@@ -266,7 +266,7 @@ const FgTable = () => {
         }
         //destructuring No, CreateAt, UpdateAt 
 
-        const cleanedRows = selectedRows.map(({ No, CreateAt,UpdateAt, ...rest }) => rest);
+        const cleanedRows = selectedRows.map(({ No, CreateAt, CreateBy,UpdateAt, ...rest }) => rest);
         // Convert the rows to a tab-separated string
         const tsvData = cleanedRows.map(row => {
             // Object.values(row) extracts all values from the row object

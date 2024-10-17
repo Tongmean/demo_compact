@@ -17,14 +17,14 @@ const DrTable = () => {
     const navigate = useNavigate();
 
     const columnDefs = [
-        {
-            headerName: 'NO.',
-            field: 'No',
-            filter: 'agTextColumnFilter',
-            checkboxSelection: true,
-            headerCheckboxSelection: true,
-        },
-        { headerName: 'Code_Dr', field: 'Code_Dr', filter: 'agTextColumnFilter' },
+        // {
+        //     headerName: 'NO.',
+        //     field: 'No',
+        //     filter: 'agTextColumnFilter',
+        //     checkboxSelection: true,
+        //     headerCheckboxSelection: true,
+        // },
+        { headerName: 'Code_Dr', field: 'Code_Dr', filter: 'agTextColumnFilter',headerCheckboxSelection: true, checkboxSelection: true, },
         { headerName: 'Name_Dr', field: 'Name_Dr', filter: 'agTextColumnFilter' },
         { headerName: 'Name_Wip', field: 'Name_Wip', filter: 'agTextColumnFilter' },
         { headerName: 'Name_Fg_1', field: 'Name_Fg_1', filter: 'agTextColumnFilter' },
@@ -312,7 +312,7 @@ const DrTable = () => {
         }
         //destructuring No, CreateAt, UpdateAt 
         
-        const cleanedRows = selectedRows.map(({ No, CreateAt,UpdateAt, ...rest }) => rest);
+        const cleanedRows = selectedRows.map(({ No, CreateBy , CreateAt,UpdateAt, ...rest }) => rest);
         console.log('cleanedRows', cleanedRows)
         // Convert the rows to a tab-separated string
 

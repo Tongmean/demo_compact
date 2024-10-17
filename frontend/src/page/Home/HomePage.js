@@ -18,6 +18,11 @@ const HomePage = () => {
           <p className="card-text">Dr: เป็นข้อมูลที่ใช้สำหรับผลิตหน่วยฝน-เจาะ ซึ่ง Code_Dr (รหัสสินค้ากึ่งที่ออกจากหน่วยฝน-เจาะ) ไม่สามารถซ้ำกันได้</p>
           <p className="card-text">Drawing: เป็นข้อมูลที่เกี่ยวกับเอกสาร Drawing(PDF)</p>
           <p className="card-text">Product-Data: เป็นส่วนข้อมูลที่เอาข้อมูลทั้ง 4 ส่วนมาชลกันโดยใช้คอลัมน์ (Code_Wip, Code_Dr, Code_Fg) </p>
+          <p className="card-text">Report: เป็นหน้าเว็บที่แสดงข้อมูลและการดึงข้อมูล</p>
+          <p className="card-text">Excel Insert: เป็นหน้าบันทึกข้อมูลเข้าฐานข้อมูล โดยใช้รูปแแบบ Excel ไฟล์</p>
+          <p className="card-text">Form Insert: เป็นหน้าบันทึกข้อมูล โดยการกรอกแบบฟอร์ม</p>
+          <p className="card-text">ปุ่ม PDF: เวลากดจะแสดงข้อมูลรายการนั้น ในรูปแบบ PDF ไฟล์</p>
+          <p className="card-text">ปุ่ม D: เวลากดจะแสดงเอกสาร Drawing อยู่ในรูปแบบ PDF </p>
           <Button as={Link} to="/wip" className="btn btn-primary">
             Go Wip
           </Button>

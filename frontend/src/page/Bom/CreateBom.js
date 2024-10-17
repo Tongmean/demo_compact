@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { Form, Input, Button } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Form, Input, Button, Select  } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../hook/useAuthContext';
 import { Modal } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import env from "react-dotenv";
-
+const { Option } = Select;
 
 const CreateBom = () => {
     const [Code_Fg, setCode_Fg] = useState('');
@@ -67,6 +67,136 @@ const CreateBom = () => {
     const handleOnClick = () => {
         navigate('/bom');
     };
+    //staic data    
+    const [optionFg, setOptionFg] = useState([]);
+    useEffect(() => {
+        // Function to fetch FG options data from the server
+        const fetchDatafg = async () => {
+            try {
+                const response = await fetch(`${env.API_URL}/api/static/fg`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`, // Adding token to the request headers
+                        'Content-Type': 'application/json'
+                    }
+                });
+    
+                // Check if the response is okay before proceeding
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status} - ${response.msg}`);
+                }
+    
+                // Parse the response JSON and set it in the state
+                const data = await response.json();
+                setOptionFg(data.data);
+                // console.log(data.data);
+            } catch (error) {
+                // Log any errors encountered during the fetch
+                console.error("Failed to fetch FG options:", error);
+            }
+        };
+    
+        // Call the fetch function after component mounts
+        fetchDatafg();
+    }, [user.token]); // Empty dependency array ensures this effect runs once after the component mounts
+    const handleCodeFgChange = (value) => {
+        setCode_Fg(value);
+    
+        // Find the corresponding Name_Fg from the options
+        const selectedItem = optionFg.find(item => item.Code_Fg === value);
+        if (selectedItem) {
+          setName_Fg(selectedItem.Name_Fg);
+        }else if(value === '-') {
+            setName_Fg('-'); // Clear Name_Fg if '-' is selected
+        }
+    };
+    const [optionDr, setOptionDr] = useState([]);
+    useEffect(() => {
+        // Function to fetch FG options data from the server
+        const fetchDatadr = async () => {
+            try {
+                const response = await fetch(`${env.API_URL}/api/static/dr`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`, // Adding token to the request headers
+                        'Content-Type': 'application/json'
+                    }
+                });
+    
+                // Check if the response is okay before proceeding
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status} - ${response.statusText}`);
+                }
+    
+                // Parse the response JSON and set it in the state
+                const data = await response.json();
+                setOptionDr(data.data);
+                // console.log(data);
+            } catch (error) {
+                // Log any errors encountered during the fetch
+                console.error("Failed to fetch FG options:", error);
+            }
+        };
+    
+        // Call the fetch function after component mounts
+        fetchDatadr();
+    }, [user.token]); // Empty dependency array ensures this effect runs once after the component mounts
+    const handleCodeDrChange = (value) => {
+        setCode_Dr(value);
+
+        // Find the corresponding Name_Fg from the options
+        const selectedItem = optionDr.find(item => item.Code_Dr === value);
+        if (selectedItem) {
+          setName_Dr(selectedItem.Name_Dr);
+        }
+        else if(value === '-') {
+            setName_Dr('-'); // Clear Name_Fg if '-' is selected
+        }
+    };
+    const [optionWip, setOptionwip] = useState([])
+    useEffect(() => {
+        // Function to fetch FG options data from the server
+        const fetchDatawip = async () => {
+            try {
+                const response = await fetch(`${env.API_URL}/api/static/wip`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`, // Adding token to the request headers
+                        'Content-Type': 'application/json'
+                    }
+                });
+    
+                // Check if the response is okay before proceeding
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status} - ${response.msg}`);
+                }
+    
+                // Parse the response JSON and set it in the state
+                const data = await response.json();
+                setOptionwip(data.data);
+                // console.log("wip",data);
+            } catch (error) {
+                // Log any errors encountered during the fetch
+                console.error("Failed to fetch FG options:", error);
+            }
+        };
+    
+        // Call the fetch function after component mounts
+        fetchDatawip();
+    }, [user.token]); // Empty dependency array ensures this effect runs once after the component mounts
+    const handleCodeWipChange = (value) => {
+        setCode_Wip(value);
+        console.log("codewip",value )
+        // Find the corresponding Name_Fg from the options
+        const selectedItem = optionWip.find(item => item.Code_Wip === value);
+        if (selectedItem) {
+          setName_Wip(selectedItem.Name_Wip);
+        }
+        else if(value === '-') {
+            setName_Wip('-'); // Clear Name_Fg if '-' is selected
+        }
+    };
+
 
     return (
 
@@ -78,12 +208,23 @@ const CreateBom = () => {
                         <div className='row'>
                             <div className='col-xl-6 col-lg-6 col-md-12'>
                                 <Form.Item label="Code FG">
-                                    <Input
-                                        type="text"
-                                        required
+                                    <Select
+                                        showSearch
+                                        placeholder="Select Code FG"
                                         value={Code_Fg}
-                                        onChange={(e) => setCode_Fg(e.target.value)}
-                                    />
+                                        onChange={handleCodeFgChange}
+                                        filterOption={(input, option) =>
+                                            option.children.toLowerCase().includes(input.toLowerCase())
+                                        }
+                                        >
+                                        <Option key="-" value="-">-</Option>
+                                        {optionFg.map(item => (
+                                            <Option key={item.Code_Fg} value={item.Code_Fg}>
+                                                {item.Code_Fg}
+                                            </Option>
+
+                                        ))}
+                                    </Select>
                                 </Form.Item>
                                 <Form.Item label="Name FG">
                                     <Input
@@ -94,12 +235,23 @@ const CreateBom = () => {
                                     />
                                 </Form.Item>
                                 <Form.Item label="Code Dr">
-                                    <Input
-                                        type="text"
-                                        required
+                                    <Select
+                                        showSearch
+                                        placeholder="Select Code Dr"
                                         value={Code_Dr}
-                                        onChange={(e) => setCode_Dr(e.target.value)}
-                                    />
+                                        onChange={handleCodeDrChange}
+                                        filterOption={(input, option) =>
+                                            option.children.toLowerCase().includes(input.toLowerCase())
+                                        }
+                                        >
+                                        <Option key="-" value="-">-</Option>
+                                        {optionDr.map(item => (
+                                            <Option key={item.Code_Dr} value={item.Code_Dr}>
+                                                {item.Code_Dr}
+                                            </Option>
+
+                                        ))}
+                                    </Select>
                                 </Form.Item>
                                 <Form.Item label="Name Dr">
                                     <Input
@@ -110,12 +262,23 @@ const CreateBom = () => {
                                     />
                                 </Form.Item>
                                 <Form.Item label="Code Wip">
-                                    <Input
-                                        type="text"
-                                        required
+                                    <Select
+                                        showSearch
+                                        placeholder="Select Code Wip"
                                         value={Code_Wip}
-                                        onChange={(e) => setCode_Wip(e.target.value)}
-                                    />
+                                        onChange={handleCodeWipChange}
+                                        filterOption={(input, option) =>
+                                            option.children.toLowerCase().includes(input.toLowerCase())
+                                        }
+                                        >
+                                        <Option key="-" value="-">-</Option>
+                                        {optionWip.map((item) => (
+                                            <Option key={item.Code_Wip} value={item.Code_Wip}>
+                                                {item.Code_Wip}
+                                            </Option>
+
+                                        ))}
+                                    </Select>
                                 </Form.Item>
                                 <Form.Item label="Name Wip">
                                     <Input

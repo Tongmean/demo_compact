@@ -11,7 +11,7 @@ const Dashboard = () => {
     <div>
       {/* <DashboardItem/> */}
       <div className="card mb-2">
-        <h5 className="card-header">Note:</h5>
+        <h5 className="card-header">***ข้อแนะนำการใช้งาน</h5>
         <div className="card-body">
           <h5 className="card-title">ตารางชุดข้อมูลผลิตภัณฑ์</h5>
           <p className="card-text">ซึ่งสร้างมาจากการ Join ตารางโดยตางราง Bom เป็นข้อมูลการจับคู่ระหวัง Fg, Dr, Wip ว่า 1 Fg ประกอบไปด้วย Dr อะไรบ้างแล้ว 1 Dr สร้างมาจาก Wip ตัวไหนบ้าง </p> 

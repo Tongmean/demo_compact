@@ -17,14 +17,14 @@ const BomTable = () => {
     const navigate = useNavigate();
 
     const columnDefs = [
-        {
-            headerName: 'NO.',
-            field: 'No',
-            filter: 'agTextColumnFilter',
-            checkboxSelection: true,
-            headerCheckboxSelection: true,
-        },
-        { headerName: 'Code_Fg', field: 'Code_Fg', filter: 'agTextColumnFilter' },
+        // {
+        //     headerName: 'NO.',
+        //     field: 'No',
+        //     filter: 'agTextColumnFilter',
+        //     checkboxSelection: true,
+        //     headerCheckboxSelection: true,
+        // },
+        { headerName: 'Code_Fg', field: 'Code_Fg', filter: 'agTextColumnFilter',headerCheckboxSelection: true, checkboxSelection: true,},
         { headerName: 'Name_Fg', field: 'Name_Fg', filter: 'agTextColumnFilter' },
         { headerName: 'Code_Dr', field: 'Code_Dr', filter: 'agTextColumnFilter' },
         { headerName: 'Name_Dr', field: 'Name_Dr', filter: 'agTextColumnFilter' },
@@ -238,7 +238,7 @@ const BomTable = () => {
             return;
         }
         //destructuring No, CreateAt, UpdateAt 
-        const cleanedRows = selectedRows.map(({ No, CreateAt,UpdateAt, ...rest }) => rest);
+        const cleanedRows = selectedRows.map(({ No, CreateAt, CreateBy,UpdateAt, ...rest }) => rest);
         // Convert the rows to a tab-separated string
         const tsvData = cleanedRows.map(row => {
             // Object.values(row) extracts all values from the row object

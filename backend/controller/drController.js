@@ -430,8 +430,8 @@ const updateDr = async (req, res) => {
                     for (const column of ["Code_Dr", "Name_Dr", "Name_Wip", "Name_Fg_1", "Demension", "Type_Brake", "Chem_Grade", "Status_Dr", "No_Grind", "Num_Hole", "No_Jig_Drill", "No_Drill", "No_Reamer", "Code", "Remark", "Color", "Color_Spray", "Grind_Back", "Grind_Front", "Grind_Detail", "Drill", "Baat", "Ji_Hou", "Fon_Hou", "Tha_Khob", "Cut", "Form"]) {
                         const oldValue = oldValues[column];
                         const newValue = req.body[column];
-                        console.log('oldValues', oldValue);
-                        console.log('newValue', newValue)
+                        // console.log('oldValues', oldValue);
+                        // console.log('newValue', newValue)
 
                         if (oldValue !== newValue) {
                             logUpdate('drill', column, id , oldValue, newValue, UpdateBy);

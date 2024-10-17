@@ -122,7 +122,7 @@ const CreateBomExcel = () => {
                                 <blockquote className="blockquote mb-0">
                                     <p>Code_Fg, Name_Fg, Code_Dr, Name_Dr, Code_Wip, Name_Wip, Ra_Wip, Ra_L, Remark</p>
                                     <footer className="blockquote-footer">ต้องเรียงข้อมูลแต่ละ Column ตามนี้เท่านั้น</footer>
-                                    <footer class="blockquote-footer">Note: ถ้า Code_Dr มีอยู่ในฐานข้อมูลอยู่แล้า ไม่สามารถบันทึกซ้ำได้ ):</footer>
+                                    <footer className="blockquote-footer">Note: ถ้า Code_Dr มีอยู่ในฐานข้อมูลอยู่แล้า ไม่สามารถบันทึกซ้ำได้ ):</footer>
                                 </blockquote>
                             </div>
                         </div>

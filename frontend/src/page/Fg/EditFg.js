@@ -140,6 +140,82 @@ const EditFg = () => {
     const handleOnClick = () => {
         navigate('/fg');
     };
+    //static 
+    const [optionPartNo, setOptionPartNo] = useState([]);
+    useEffect(() => {
+        // Function to fetch FG options data from the server
+        const fetchDataFgpartNo = async () => {
+            try {
+                const response = await fetch(`${env.API_URL}/api/static/fg/partno`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`, // Adding token to the request headers
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                // Check if the response is okay before proceeding
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status} - ${response.statusText}`);
+                }
+
+                // Parse the response JSON and set it in the state
+                const result = await response.json();
+                // console.log("API response data:", result.data);
+                
+                // Ensure data is an array before setting it
+                if (Array.isArray(result.data)) {
+                    setOptionPartNo(result.data);
+                } else {
+                    console.error("Expected data to be an array, but got:", typeof result.data);
+                }
+            } catch (error) {
+                // Log any errors encountered during the fetch
+                console.error("Failed to fetch FG options:", error);
+            }
+        };
+
+        // Call the fetch function after component mounts
+        fetchDataFgpartNo();
+    }, [user.token]);
+    const [optionPcsperset, setOptionpcsperset]= useState([]);
+
+    useEffect(() => {
+        // Function to fetch FG options data from the server
+        const fetchDatapcsperset = async () => {
+            try {
+                const response = await fetch(`${env.API_URL}/api/static/pcsperset`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`, // Adding token to the request headers
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                // Check if the response is okay before proceeding
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status} - ${response.statusText}`);
+                }
+
+                // Parse the response JSON and set it in the state
+                const result = await response.json();
+                // console.log("API response data:", result.data);
+                
+                // Ensure data is an array before setting it
+                if (Array.isArray(result.data)) {
+                    setOptionpcsperset(result.data);
+                } else {
+                    console.error("Expected data to be an array, but got:", typeof result.data);
+                }
+            } catch (error) {
+                // Log any errors encountered during the fetch
+                console.error("Failed to fetch FG options:", error);
+            }
+        };
+
+        // Call the fetch function after component mounts
+        fetchDatapcsperset();
+    }, [user.token]);
 
     return (
         <div>
@@ -185,12 +261,28 @@ const EditFg = () => {
 
                                 <Form.Group controlId="Part_No">
                                     <Form.Label>Part No</Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        name="Part_No"
-                                        value={formData.Part_No}
-                                        onChange={handleChange}
-                                    />
+                                        <select
+                                            name="Part_No"
+                                            value={formData.Part_No}
+                                            onChange={handleChange}
+                                            className="form-select"
+                                        >
+                                            {/* Display the selected value */}
+                                            <option value={formData.Part_No}>{formData.Part_No}</option>
+
+                                            {/* Conditionally render '-' option based on the current value */}
+                                            {formData.Part_No !== '-' && <option value="-">-</option>}
+
+                                            {/* Unique options array */}
+                                            {optionPartNo
+                                            .map(item => item.Part_No)
+                                            .filter(option => option !== formData.Part_No) // Filter out the selected value
+                                            .map((option, index) => (
+                                                <option key={index} value={option}>
+                                                    {option}
+                                                </option>
+                                            ))}
+                                        </select>
                                 </Form.Group>
 
                                 <Form.Group controlId="OE_Part_No">
@@ -227,12 +319,28 @@ const EditFg = () => {
                             <Col md={6}>
                                 <Form.Group controlId="Pcs_Per_Set">
                                     <Form.Label>Pcs Per Set</Form.Label>
-                                    <Form.Control
-                                        type="text"
-                                        name="Pcs_Per_Set"
-                                        value={formData.Pcs_Per_Set}
-                                        onChange={handleChange}
-                                    />
+                                        <select
+                                            name="Pcs_Per_Set"
+                                            value={formData.Pcs_Per_Set}
+                                            onChange={handleChange}
+                                            className="form-select"
+                                        >
+                                            {/* Display the selected value */}
+                                            <option value={formData.Pcs_Per_Set}>{formData.Pcs_Per_Set}</option>
+
+                                            {/* Conditionally render '-' option based on the current value */}
+                                            {formData.Pcs_Per_Set !== '-' && <option value="-">-</option>}
+
+                                            {/* Unique options array */}
+                                            {optionPcsperset
+                                            .map(item => item.Pcs_Per_Set)
+                                            .filter(option => option !== formData.Pcs_Per_Set) // Filter out the selected value
+                                            .map((option, index) => (
+                                                <option key={index} value={option}>
+                                                    {option}
+                                                </option>
+                                            ))}
+                                        </select>
                                 </Form.Group>
 
                                 <Form.Group controlId="Box_No">
