@@ -31,8 +31,6 @@ const Dashboard = () => {
           <Button as={Link} to="/bom" className="btn btn-info mx-1">
             Go BOM
           </Button>
-          
-
         </div>
       </div>
 

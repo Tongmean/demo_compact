@@ -35,9 +35,9 @@ const LoginPage = () => {
             <MDBRow className="d-flex justify-content-center align-items-center h-100">
 
                 <MDBCol col="12" md="6" className="d-flex flex-column align-items-center text-center">
-                    
+
                     <div className="text-center mt-4">
-                        <h5>ระบบจัดการข้อมูลผลิตภัณฑ์ ผ้าเบรก</h5>
+                        <h5>ระบบจัดการข้อมูลผลิตภัณฑ์ผ้าเบรก</h5>
                     </div>
                     <div className="d-flex justify-content-center w-100">
                         <img

@@ -6,7 +6,7 @@ const requireAuth = async (req, res, next) => {
     const { authorization } = req.headers;
 
     if (!authorization) {
-        return res.status(401).json({ error: 'Authorization token required' });
+        return res.status(401).json({ msg: 'Authorization token required' });
     }
 
     const token = authorization.split(' ')[1];
@@ -24,11 +24,11 @@ const requireAuth = async (req, res, next) => {
         dbconnect.query('SELECT * FROM "users" WHERE "id" = $1', [id], (err, result) => {
             if (err) {
                 console.error(err);
-                return res.status(500).json({ error: 'Database query failed' });
+                return res.status(500).json({ msg: 'Database query failed' });
             }
 
             if (result.rows.length === 0) {
-                return res.status(401).json({ error: 'User not found' });
+                return res.status(401).json({ msg: 'User not found' });
             }
 
             // Store user information in req.user
@@ -39,7 +39,7 @@ const requireAuth = async (req, res, next) => {
         });
     } catch (error) {
         console.log(error);
-        res.status(401).json({ error: 'Request is not Authorized' });
+        res.status(401).json({ msg: 'Request is not Authorized' });
     }
 };
 
