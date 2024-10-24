@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Button, Modal, Collapse } from 'react-bootstrap';
 import { useState } from 'react';
+import powerQueryscript from '../../Asset/Power-Query-Script.xlsx'
 import env from "react-dotenv";
 
 const HomePage = () => {
@@ -155,6 +156,7 @@ const HomePage = () => {
           </div>
         </Modal.Body>
         <Modal.Footer>
+          <a href={powerQueryscript} download="Power-Query-Script.xlsx" className="btn btn-success ">Power Query Script</a>
           <Button variant="secondary" onClick={handleClose}>
             Close
           </Button>
