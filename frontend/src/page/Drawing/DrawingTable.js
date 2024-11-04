@@ -23,7 +23,7 @@ const DrawingTable = () => {
         },
         { headerName: 'Part_No', field: 'Part_No', filter: 'agTextColumnFilter' },
         { headerName: 'Filename', field: 'filename', filter: 'agTextColumnFilter' },
-        { headerName: 'Filepath', field: 'filepath', filter: 'agTextColumnFilter' },
+        // { headerName: 'Filepath', field: 'filepath', filter: 'agTextColumnFilter' },
         { headerName: 'Created At', field: 'CreatedAt', filter: 'agDateColumnFilter' },
         { headerName: 'Created By', field: 'CreatedBy', filter: 'agTextColumnFilter' },
         {
